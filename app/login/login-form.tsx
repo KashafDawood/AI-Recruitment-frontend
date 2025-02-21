@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,11 +12,24 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { login } from "@/api/auth/login";
+import { useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [state, formAction] = useActionState(login, undefined);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.message) {
+      router.push("/dashboard");
+    }
+  }, [state, router]);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -24,7 +40,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form action={formAction}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4"></div>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-zinc-200 dark:after:border-zinc-800">
@@ -37,11 +53,15 @@ export function LoginForm({
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="m@example.com"
                     required
                   />
                 </div>
+                {state?.errors?.email && (
+                  <p className="text-red-500">{state.errors.email}</p>
+                )}
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
@@ -52,11 +72,20 @@ export function LoginForm({
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                  />
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
+                {state?.errors?.password && (
+                  <p className="text-red-500">{state.errors.password}</p>
+                )}
+                {state?.message && (
+                  <p className="text-green-500">{state.message}</p>
+                )}
+                <SubmitButton />
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
@@ -74,5 +103,15 @@ export function LoginForm({
         and <a href="#">Privacy Policy</a>.
       </div>
     </div>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button disabled={pending} type="submit" className="w-full">
+      Login
+    </Button>
   );
 }
