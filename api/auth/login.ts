@@ -2,13 +2,13 @@
 
 import axios from "axios";
 import { z } from "zod";
-import { cookies } from "next/headers";
+import { createSession } from "@/app/_lib/session";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address!" }).trim(),
   password: z
     .string()
-    .min(8, { message: "Password must be 8 character long!" })
+    .min(8, { message: "Password must be 8 characters long!" })
     .trim(),
 });
 
@@ -23,7 +23,7 @@ export const login = async (_: unknown, formData: FormData) => {
 
   try {
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/users/login/",
+      `${process.env.PUBLIC_URL}/api/users/login/`,
       result.data,
       {
         withCredentials: true,
@@ -34,14 +34,15 @@ export const login = async (_: unknown, formData: FormData) => {
     );
 
     if (response.data.status === 200) {
-      const cookieStore = await cookies();
-      cookieStore.set("user", JSON.stringify(response.data.user), {
-        path: "/",
-      });
+      await createSession(response.data.user.id);
       return { message: "Login successful", user: response.data.user };
     }
 
-    return response.data;
+    return {
+      errors: {
+        email: ["Invalid login credentials"],
+      },
+    };
   } catch (error) {
     console.error("Login error:", error);
     return {
