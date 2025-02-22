@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd } from "lucide-react";
+import Image from "next/image";
 import { LoginForm } from "./login-form";
 
 export default function LoginPage() {
@@ -7,9 +7,9 @@ export default function LoginPage() {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <a href="#" className="flex items-center gap-2 self-center font-medium">
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900">
-            <GalleryVerticalEnd className="size-4" />
+            <Image src={"/StaffeeLogo.svg"} alt="Logo" width={15} height={15} />
           </div>
-          Acme Inc.
+          Stafee.
         </a>
         <LoginForm />
       </div>
