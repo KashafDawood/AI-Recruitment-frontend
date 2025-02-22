@@ -1,5 +1,3 @@
-"use server";
-
 import axios from "axios";
 import { z } from "zod";
 import { createSession } from "@/app/_lib/session";
@@ -23,7 +21,7 @@ export const login = async (_: unknown, formData: FormData) => {
 
   try {
     const response = await axios.post(
-      `${process.env.PUBLIC_URL}/api/users/login/`,
+      `${process.env.NEXT_PUBLIC_URL}/api/users/login/`,
       result.data,
       {
         withCredentials: true,
@@ -35,6 +33,7 @@ export const login = async (_: unknown, formData: FormData) => {
 
     if (response.data.status === 200) {
       const user = response.data.user;
+      console.log(response.data);
       await createSession(user.id, user.role);
       return {
         message: "Login successful",

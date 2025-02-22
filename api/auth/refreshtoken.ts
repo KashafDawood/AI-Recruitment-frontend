@@ -10,7 +10,9 @@ const useTokenRefresh = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        await axios.post(`${process.env.PUBLIC_URL}/api/users/token/refresh/`);
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_URL}/api/users/token/refresh/`
+        );
       } catch (error) {
         console.error("Failed to refresh token", error);
         router.push("/login");
