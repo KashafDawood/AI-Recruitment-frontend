@@ -1,5 +1,8 @@
+"use server";
+
 import axios from "axios";
 import { z } from "zod";
+import { cookies } from "next/headers";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address!" }).trim(),
@@ -31,6 +34,10 @@ export const login = async (_: unknown, formData: FormData) => {
     );
 
     if (response.data.status === 200) {
+      const cookieStore = await cookies();
+      cookieStore.set("user", JSON.stringify(response.data.user), {
+        path: "/",
+      });
       return { message: "Login successful", user: response.data.user };
     }
 
