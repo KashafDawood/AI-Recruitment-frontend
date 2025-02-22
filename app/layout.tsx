@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import useTokenRefresh from "@/api/auth/refreshtoken";
 
 export const metadata: Metadata = {
   title: "Staffee",
@@ -12,6 +13,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useTokenRefresh();
   return (
     <html lang="en">
       <body>{children}</body>
