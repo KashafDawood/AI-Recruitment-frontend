@@ -1,3 +1,17 @@
-export default function Home() {
-  return <h1 className="text-3xl">Home page</h1>;
+import HeroSection from "@/home/HeroSection";
+import About from "@/home/About";
+import Features from "@/home/Features";
+import HowItWorks from "@/home/HowItWorks";
+import Contact from "@/home/Contact";
+
+export default function Home(): JSX.Element {
+  return (
+    <div>
+      <HeroSection />
+      <About />
+      <Features />
+      <HowItWorks />
+      <Contact />
+    </div>
+  );
 }
