@@ -34,8 +34,12 @@ export const login = async (_: unknown, formData: FormData) => {
     );
 
     if (response.data.status === 200) {
-      await createSession(response.data.user.id);
-      return { message: "Login successful", user: response.data.user };
+      const user = response.data.user;
+      await createSession(user.id, user.role);
+      return {
+        message: "Login successful",
+        user: response.data.user,
+      };
     }
 
     return {

@@ -26,7 +26,7 @@ export function LoginForm({
 
   useEffect(() => {
     if (state?.message) {
-      router.push("/dashboard");
+      router.push(`${state.user.role}`);
     }
   }, [state, router]);
 
