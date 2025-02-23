@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface LoginFormProps extends React.ComponentPropsWithoutRef<"div"> {
   formAction: (payload: FormData) => void;
@@ -103,9 +104,9 @@ export function LoginForm({
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <Link href="/signup" className="underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>
