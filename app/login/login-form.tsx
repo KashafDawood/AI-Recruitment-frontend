@@ -72,6 +72,7 @@ export function LoginForm({
                     name="email"
                     type="email"
                     placeholder="m@example.com"
+                    required={true}
                   />
                 </div>
                 {state?.errors?.email && (
@@ -87,7 +88,12 @@ export function LoginForm({
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" name="password" type="password" />
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required={true}
+                  />
                 </div>
                 {state?.errors?.password && (
                   <p className="text-red-500">{state.errors.password}</p>

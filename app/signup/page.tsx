@@ -1,14 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { login } from "@/api/auth/login";
 import { useActionState } from "react";
 import Alerts from "@/components/customAlert";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
+import { signup } from "@/api/auth/signup";
 
 export default function LoginPage() {
-  const [state, formAction] = useActionState(login, undefined);
+  const [state, formAction] = useActionState(signup, undefined);
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
       {state?.message && (

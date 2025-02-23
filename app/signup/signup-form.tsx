@@ -23,7 +23,6 @@ interface SignupFormProps extends React.ComponentPropsWithoutRef<"div"> {
     message?: string;
     errors?: {
       name?: string | string[];
-      username?: string | string[];
       email?: string | string[];
       password?: string | string[];
       role?: string | string[];
@@ -67,21 +66,6 @@ export function SignupForm({
                 />
                 {state?.errors?.name && (
                   <p className="text-sm text-red-500">{state.errors.name}</p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  placeholder="johndoe"
-                  required
-                />
-                {state?.errors?.username && (
-                  <p className="text-sm text-red-500">
-                    {state.errors.username}
-                  </p>
                 )}
               </div>
               <div className="grid gap-2">
