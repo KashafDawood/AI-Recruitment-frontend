@@ -3,11 +3,10 @@ import { z } from "zod";
 import { createSession } from "@/app/_lib/session";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address!" }).trim(),
+  email: z.string().email({ message: "Invalid email address!" }),
   password: z
     .string()
-    .min(8, { message: "Password must be 8 characters long!" })
-    .trim(),
+    .min(8, { message: "Password must be 8 characters long!" }),
 });
 
 export const login = async (_: unknown, formData: FormData) => {
@@ -31,27 +30,24 @@ export const login = async (_: unknown, formData: FormData) => {
       }
     );
 
-    if (response.data.status === 200) {
+    if (response.status === 200) {
       const user = response.data.user;
-      console.log(response.data);
       await createSession(user.id, user.role);
       return {
         message: "Login successful",
         user: response.data.user,
       };
     }
-
-    return {
-      errors: {
-        email: ["Invalid login credentials"],
-      },
-    };
   } catch (error) {
-    console.error("Login error:", error);
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        serverError:
+          error.response.data?.non_field_errors?.[0] ||
+          "An error occurred during login",
+      };
+    }
     return {
-      errors: {
-        email: ["An error occurred during login"],
-      },
+      serverError: "An unexpected error occurred during login",
     };
   }
 };
