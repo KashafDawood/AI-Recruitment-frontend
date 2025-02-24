@@ -40,6 +40,15 @@ export const login = async (_: unknown, formData: FormData) => {
     }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
+      if (
+        error.response.data?.error ===
+        "Please verify your email before logging in."
+      ) {
+        return {
+          serverError: "Please verify your email before logging in.",
+          verifyEmail: true,
+        };
+      }
       return {
         serverError:
           error.response.data?.non_field_errors?.[0] ||
