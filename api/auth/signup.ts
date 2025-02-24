@@ -1,6 +1,5 @@
 import axios from "axios";
 import { z } from "zod";
-import { createSession } from "@/app/_lib/session";
 
 const signupSchema = z.object({
   name: z.string().max(20, { message: "Name must be 20 characters or less!" }),
@@ -32,20 +31,26 @@ export const signup = async (_: unknown, formData: FormData) => {
       }
     );
 
-    if (response.status === 200) {
-      const user = response.data.user;
-      await createSession(user.id, user.role);
+    if (response.status === 201) {
       return {
-        message: "signup successful",
+        message: "signup successful! Please verify your email",
         user: response.data.user,
       };
     }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
+      const errorData = error.response.data;
+      if (
+        errorData.email &&
+        errorData.email.includes("user with this email already exists.")
+      ) {
+        return {
+          serverError: "User with this email already exists.",
+        };
+      }
       return {
         serverError:
-          error.response.data?.non_field_errors?.[0] ||
-          "An error occurred during signup",
+          errorData?.non_field_errors?.[0] || "An error occurred during signup",
       };
     }
     return {

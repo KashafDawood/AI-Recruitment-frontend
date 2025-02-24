@@ -1,14 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import Alerts from "@/components/customAlert";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";
+import useEmailVerification from "@/hooks/useEmailVerification";
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(signup, undefined);
+  const { EmailVerificationModal, open, setOpen } = useEmailVerification(
+    state?.user
+  );
+
+  useEffect(() => {
+    if (state?.message && state?.user) {
+      setOpen(true);
+    }
+  }, [state?.user, state?.message, setOpen]);
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
       {state?.message && (
@@ -34,6 +45,7 @@ export default function LoginPage() {
         </a>
         <SignupForm state={state} formAction={formAction} />
       </div>
+      {open && <EmailVerificationModal />}
     </div>
   );
 }

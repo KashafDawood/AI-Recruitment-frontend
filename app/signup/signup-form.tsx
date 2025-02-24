@@ -140,9 +140,6 @@ export function SignupForm({
                   <p className="text-sm text-red-500">{state.errors.role}</p>
                 )}
               </div>
-              {state?.serverError && (
-                <p className="text-sm text-red-500">{state.serverError}</p>
-              )}
               <SubmitButton />
             </div>
           </form>
