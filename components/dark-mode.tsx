@@ -4,7 +4,7 @@ import { LayoutGrid, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -15,7 +15,9 @@ export default function ThemeToggle() {
   if (!mounted) return null;
 
   return (
-    <div className="flex w-[100px] h-10 items-center justify-between rounded-full bg-neutral-900 p-1">
+    <div
+      className={`${className} flex w-[100px] h-10 items-center justify-between rounded-full bg-neutral-900 p-1`}
+    >
       <button
         onClick={() => setTheme("system")}
         className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
