@@ -2,12 +2,11 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "./app/_lib/session";
 
-// Define role-based protected routes
 const protectedRoutes = {
   candidate: ["/candidate"],
   employer: ["/employer"],
 };
-const publicRoutes = ["/login"];
+const publicRoutes = ["/login", "/signup"]; // signup is already included here
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -24,7 +23,7 @@ export default async function middleware(req: NextRequest) {
   } else {
     const userRole = session.role as keyof typeof protectedRoutes;
 
-    // Redirect to the correct dashboard if accessing the login page
+    // Redirect to the correct dashboard if accessing login or signup page
     if (isPublicRoute) {
       return NextResponse.redirect(
         new URL(protectedRoutes[userRole][0], req.nextUrl)
@@ -43,7 +42,7 @@ export default async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Apply middleware to relevant routes
+// Update matcher to include signup route
 export const config = {
-  matcher: ["/candidate/:path*", "/employer/:path*", "/login"],
+  matcher: ["/candidate/:path*", "/employer/:path*", "/login", "/signup"],
 };
