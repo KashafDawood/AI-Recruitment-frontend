@@ -1,7 +1,7 @@
 import React from "react";
 import { Briefcase, Search, UserCheck } from "lucide-react";
 import Image from "next/image";
-import { Button } from "../../components/ui/button";
+import { Button } from "../ui/button";
 
 const About: React.FC = () => {
   return (
