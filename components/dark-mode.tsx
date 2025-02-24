@@ -1,40 +1,54 @@
 "use client";
 
-import * as React from "react";
-import { Moon, Sun } from "lucide-react";
+import { LayoutGrid, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+export default function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-export function ModeToggle() {
-  const { setTheme } = useTheme();
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex w-[100px] h-10 items-center justify-between rounded-full bg-neutral-900 p-1">
+      <button
+        onClick={() => setTheme("system")}
+        className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
+          theme === "system"
+            ? "bg-neutral-700 text-white"
+            : "text-neutral-400 hover:text-neutral-200"
+        }`}
+      >
+        <LayoutGrid className="h-4 w-4" />
+        <span className="sr-only">System theme</span>
+      </button>
+      <button
+        onClick={() => setTheme("light")}
+        className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
+          theme === "light"
+            ? "bg-neutral-700 text-white"
+            : "text-neutral-400 hover:text-neutral-200"
+        }`}
+      >
+        <Sun className="h-4 w-4" />
+        <span className="sr-only">Light theme</span>
+      </button>
+      <button
+        onClick={() => setTheme("dark")}
+        className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
+          theme === "dark"
+            ? "bg-neutral-700 text-white"
+            : "text-neutral-400 hover:text-neutral-200"
+        }`}
+      >
+        <Moon className="h-4 w-4" />
+        <span className="sr-only">Dark theme</span>
+      </button>
+    </div>
   );
 }

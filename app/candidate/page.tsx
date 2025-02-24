@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ModeToggle } from "@/components/dark-mode";
+import ThemeToggle from "@/components/dark-mode";
 
 export default function Dashboard() {
   const [candidateData, setCandidateData] = useState(null);
@@ -26,7 +26,7 @@ export default function Dashboard() {
   return (
     <>
       <h1>Candidate Dashboard</h1>
-      <ModeToggle />
+      <ThemeToggle />
       <button onClick={handleClick}>Show Candidate Data</button>
       {showData && candidateData && (
         <div>

@@ -12,21 +12,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { login } from "@/api/auth/login";
 import { useFormStatus } from "react-dom";
-import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+interface LoginFormProps extends React.ComponentPropsWithoutRef<"div"> {
+  formAction: (payload: FormData) => void;
+  state?: {
+    message?: string;
+    user?: {
+      role: string;
+    };
+    errors?: {
+      email?: string | string[];
+      password?: string | string[];
+    };
+    serverError?: string;
+  };
+}
 
 export function LoginForm({
+  formAction,
+  state,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  const [state, formAction] = useActionState(login, undefined);
+}: LoginFormProps) {
   const router = useRouter();
 
   useEffect(() => {
     if (state?.message) {
-      router.push(`${state.user.role}`);
+      if (state?.user) {
+        router.push(`${state.user.role}`);
+      }
     }
   }, [state, router]);
 
@@ -56,7 +73,7 @@ export function LoginForm({
                     name="email"
                     type="email"
                     placeholder="m@example.com"
-                    required
+                    required={true}
                   />
                 </div>
                 {state?.errors?.email && (
@@ -76,30 +93,27 @@ export function LoginForm({
                     id="password"
                     name="password"
                     type="password"
-                    required
+                    required={true}
                   />
                 </div>
                 {state?.errors?.password && (
                   <p className="text-red-500">{state.errors.password}</p>
                 )}
-                {state?.message && (
-                  <p className="text-green-500">{state.message}</p>
-                )}
+
                 <SubmitButton />
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <Link href="/signup" className="underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-zinc-500 [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-zinc-900  dark:text-zinc-400 dark:[&_a]:hover:text-zinc-50">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>
-        {""}
+        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
       </div>
     </div>
