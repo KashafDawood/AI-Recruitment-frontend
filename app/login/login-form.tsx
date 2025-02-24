@@ -28,6 +28,7 @@ interface LoginFormProps extends React.ComponentPropsWithoutRef<"div"> {
       password?: string | string[];
     };
     serverError?: string;
+    verifyEmail?: boolean;
   };
 }
 
