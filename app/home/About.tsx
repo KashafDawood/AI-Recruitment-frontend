@@ -1,9 +1,9 @@
 import React from "react";
 import { Briefcase, Search, UserCheck } from "lucide-react";
 import Image from "next/image";
-import Button from "@/components/Button";
+import { Button } from "../../components/ui/button";
 
-const AboutSection: React.FC = () => {
+const About: React.FC = () => {
   return (
     <section className="py-16 bg-gray-50">
       {/* Candidate Section */}
@@ -33,7 +33,7 @@ const AboutSection: React.FC = () => {
               <span>Direct Employer Connections</span>
             </li>
           </ul>
-          <Button text="Find Your Job Now" />
+          <Button>Find Your Job Now</Button>
         </div>
 
         {/* Right: Candidate Image */}
@@ -75,7 +75,7 @@ const AboutSection: React.FC = () => {
               <span>Faster Onboarding Process</span>
             </li>
           </ul>
-          <Button text="Start Hiring Today" />
+          <Button>Start Hiring Today</Button>
         </div>
 
         {/* Right: Employer Image */}
@@ -93,4 +93,4 @@ const AboutSection: React.FC = () => {
   );
 };
 
-export default AboutSection;
+export default About;

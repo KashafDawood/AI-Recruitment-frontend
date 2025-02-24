@@ -1,7 +1,7 @@
 import React from "react";
 import { Users, Search, Mail, Filter, BarChart, FileText } from "lucide-react";
 import Image from "next/image";
-import Button from "@/components/Button";
+import { Button } from "../../components/ui/button";
 
 const features = [
   { icon: <Search className="w-6 h-6 text-blue-600" />, title: "AI-Powered Candidate Matching", description: "Employers find the best talent instantly." },
@@ -33,7 +33,7 @@ const FeaturesShowcase = () => {
 
       {/* CTA Button */}
       <div className="flex justify-center mt-10">
-        <Button text="Get Started Today" />
+        <Button>Get Started Today</Button>
       </div>
     </section>
   );

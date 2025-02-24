@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import TokenRefreshProvider from "@/lib/TokenRefreshProvider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Staffee",
@@ -16,8 +17,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <TokenRefreshProvider />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TokenRefreshProvider />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
