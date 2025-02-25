@@ -16,12 +16,20 @@ import { ChevronDown, LogOut, Settings2 } from "lucide-react";
 import { Breadcrumbs } from "./customBreadcrumb";
 import { useState, useEffect } from "react";
 import { useUserStore, User } from "@/store/userStore";
+import { logout } from "@/api/auth/logout";
+import { useRouter } from "next/navigation";
 
 export function DashboardNav() {
   const pathname = usePathname();
   const pageTitle = pathname.split("/").pop() || "Dashboard";
   const [userData, setUserData] = useState<User | null>(null);
   const getUser = useUserStore((state) => state.getUser);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
 
   useEffect(() => {
     const data = getUser();
@@ -95,7 +103,7 @@ export function DashboardNav() {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
                 <LogOut />
                 Log out
               </DropdownMenuItem>
