@@ -15,7 +15,7 @@ interface Education {
   institute_name: string;
 }
 
-interface User {
+export interface User {
   id: string;
   username: string;
   name: string;
