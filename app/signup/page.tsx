@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useActionState, useEffect } from "react";
-import Alerts from "@/components/customAlert";
+import Alerts from "@/components/custom/Alerts";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";

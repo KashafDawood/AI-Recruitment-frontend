@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import ThemeToggle from "./dark-mode";
-import { Breadcrumbs } from "./customBreadcrumb";
+import ThemeToggle from "../custom/dark-mode";
+import { Breadcrumbs } from "../custom/Breadcrumbs";
 import { Profile } from "./nav-profile";
 
 export function DashboardNav() {

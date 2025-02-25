@@ -4,7 +4,7 @@ import Image from "next/image";
 import { LoginForm } from "./login-form";
 import { login } from "@/api/auth/login";
 import { useActionState } from "react";
-import Alerts from "@/components/customAlert";
+import Alerts from "@/components/custom/Alerts";
 import { CheckCircle, XCircle } from "lucide-react";
 
 export default function LoginPage() {

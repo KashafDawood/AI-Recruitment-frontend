@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import EmailVerificationDrawer from "@/components/verifyEmailModel";
+import EmailVerificationDrawer from "@/components/custom/verifyEmailModel";
 import { User } from "@/api/auth/verifyEmail";
 
 const useEmailVerification = (user: User | undefined) => {

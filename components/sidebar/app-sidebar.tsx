@@ -11,7 +11,7 @@ import {
 import { LucideIcon } from "lucide-react";
 import { Header } from "./nav-header";
 import Link from "next/link";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   data: {

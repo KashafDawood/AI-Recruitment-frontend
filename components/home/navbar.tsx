@@ -4,9 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import ThemeToggle from "./dark-mode";
-import { Button } from "./ui/button";
-import { Profile } from "./nav-profile";
+import ThemeToggle from "../custom/dark-mode";
+import { Profile } from "../nav/nav-profile";
+import { Button } from "../ui/button";
 
 export function NavMenu() {
   return (

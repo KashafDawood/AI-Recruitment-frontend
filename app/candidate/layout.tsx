@@ -1,7 +1,7 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { navItems } from "./nav";
-import { DashboardNav } from "@/components/dashboard-nav";
+import { DashboardNav } from "@/components/nav/dashboard-nav";
 
 export default function CandidateLayout({
   children,
