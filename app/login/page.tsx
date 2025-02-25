@@ -30,7 +30,7 @@ export default function LoginPage() {
           <div className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900">
             <Image src={"/StaffeeLogo.svg"} alt="Logo" width={15} height={15} />
           </div>
-          Stafee.
+          Staffee.
         </a>
         <LoginForm state={state} formAction={formAction} />
       </div>
