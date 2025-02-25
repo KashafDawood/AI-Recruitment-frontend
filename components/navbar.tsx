@@ -6,10 +6,11 @@ import { Menu } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import ThemeToggle from "./dark-mode";
 import { Button } from "./ui/button";
+import { Profile } from "./nav-profile";
 
 export function NavMenu() {
   return (
-    <nav className="bg-white dark:bg-gray-700 px-6 py-3 shadow-md rounded-xl w-full">
+    <nav className="sticky z-10 top-0 px-6 py-3 shadow-md w-full backdrop-blur-md bg-white/70 dark:bg-gray-900/70">
       <div className="flex items-center justify-between">
         {/* Left Section: Logo & Dynamic Title */}
         <div className="flex items-center gap-6">
@@ -41,24 +42,30 @@ export function NavMenu() {
         </div>
 
         {/* Right Section: Icons & Profile */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <ThemeToggle className="hidden md:flex" />
 
           <div className="hidden md:flex items-center"></div>
-          <Link href="/login">
-            <Button variant="link" size="lg">
-              Login
-            </Button>
-          </Link>
-          <Link href="/signup">
-            <Button
-              variant="default"
-              size="lg"
-              className="bg-green-500 hover:bg-green-400 dark:bg-green-400 dark:hover:bg-green-300 text-white"
-            >
-              Get Started
-            </Button>
-          </Link>
+          {localStorage.getItem("user-store") ? (
+            <Profile />
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="link" size="lg">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="bg-green-500 hover:bg-green-400 dark:bg-green-400 dark:hover:bg-green-300 text-white"
+                >
+                  Get Started
+                </Button>
+              </Link>
+            </>
+          )}
           {/* Mobile Menu Button */}
           <Sheet>
             <SheetTrigger className="md:hidden">
