@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useUserStore, User } from "@/store/userStore";
 import { logout } from "@/api/auth/logout";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function Profile() {
   const [userData, setUserData] = useState<User | null>(null);
@@ -73,10 +74,12 @@ export function Profile() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Settings2 />
-            Profile
-          </DropdownMenuItem>
+          <Link href={`/${userData?.role}/profile`}>
+            <DropdownMenuItem>
+              <Settings2 />
+              Profile
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

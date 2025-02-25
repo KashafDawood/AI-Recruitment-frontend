@@ -6,14 +6,16 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
+import { getCurrentUser } from "@/hooks/useUser";
 
 export function Header() {
+  const user = getCurrentUser();
   return (
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem className="pl-1">
           <SidebarMenuButton size="lg" asChild>
-            <Link href="#">
+            <Link href={`/${user?.role}`}>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gray-800 dark:bg-white">
                 <Image
                   src="/StaffeeLogo.svg"
