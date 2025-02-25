@@ -23,7 +23,7 @@ export function Profile() {
   const handleLogout = async () => {
     await logout();
     await clearUser();
-    router.push("/login");
+    router.push("/");
   };
 
   useEffect(() => {
