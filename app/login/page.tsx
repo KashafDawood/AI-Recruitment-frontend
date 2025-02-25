@@ -3,12 +3,27 @@
 import Image from "next/image";
 import { LoginForm } from "./login-form";
 import { login } from "@/api/auth/login";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import Alerts from "@/components/customAlert";
 import { CheckCircle, XCircle } from "lucide-react";
+import useEmailVerification from "@/hooks/useEmailVerification";
+import { getUserFromLocalStorage } from "@/utils/localStorage";
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(login, undefined);
+  const { EmailVerificationModal, open, setOpen } = useEmailVerification(
+    state?.user
+  );
+
+  useEffect(() => {
+    const user = getUserFromLocalStorage();
+    console.log("LocalStorage User:", user); // Debugging statement
+    if (user && user.verifyEmail) {
+      console.log("Opening email verification modal from local storage"); // Debugging statement
+      setOpen(true);
+    }
+  }, [setOpen]);
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
       {state?.message && (
@@ -34,6 +49,7 @@ export default function LoginPage() {
         </a>
         <LoginForm state={state} formAction={formAction} />
       </div>
+      {open && <EmailVerificationModal />}
     </div>
   );
 }

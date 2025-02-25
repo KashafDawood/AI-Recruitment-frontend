@@ -7,15 +7,26 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
+import { getUserFromLocalStorage } from "@/utils/localStorage";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [state, formAction] = useActionState(signup, undefined);
   const { EmailVerificationModal, open, setOpen } = useEmailVerification(
     state?.user
   );
 
   useEffect(() => {
+    const user = getUserFromLocalStorage();
+    console.log("LocalStorage User:", user); // Debugging statement
+    if (user && user.verifyEmail) {
+      console.log("Opening email verification modal from local storage"); // Debugging statement
+      setOpen(true);
+    }
+  }, [setOpen]);
+
+  useEffect(() => {
     if (state?.message && state?.user) {
+      console.log("Opening email verification modal from state"); // Debugging statement
       setOpen(true);
     }
   }, [state?.user, state?.message, setOpen]);
