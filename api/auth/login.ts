@@ -1,7 +1,8 @@
-import axios from "axios";
 import { z } from "zod";
 import { createSession } from "@/app/_lib/session";
 import { getme } from "./getme";
+import axiosInstance from "../axiosConfig";
+import axios from "axios";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address!" }),
@@ -20,16 +21,8 @@ export const login = async (_: unknown, formData: FormData) => {
   }
 
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/users/login/`,
-      result.data,
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // Using axiosInstance instead of axios directly
+    const response = await axiosInstance.post(`/api/users/login/`, result.data);
 
     if (response.status === 200) {
       const user = response.data.user;
@@ -41,6 +34,7 @@ export const login = async (_: unknown, formData: FormData) => {
       };
     }
   } catch (error) {
+    // Error handling for axiosInstance errors
     if (axios.isAxiosError(error) && error.response) {
       if (
         error.response.data?.error ===

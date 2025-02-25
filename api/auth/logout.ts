@@ -1,17 +1,9 @@
 import { deleteSession } from "@/app/_lib/session";
-import axios from "axios";
+import axiosInstance from "../axiosConfig";
 
 export const logout = async () => {
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/users/logout/`,
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axiosInstance.post("/api/users/logout/");
     if (response.status === 200) {
       deleteSession();
     }

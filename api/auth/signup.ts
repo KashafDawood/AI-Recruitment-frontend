@@ -1,5 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
+import axiosInstance from "../axiosConfig";
 
 const signupSchema = z.object({
   name: z.string().max(20, { message: "Name must be 20 characters or less!" }),
@@ -20,15 +21,9 @@ export const signup = async (_: unknown, formData: FormData) => {
   }
 
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/users/signup/`,
-      result.data,
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+    const response = await axiosInstance.post(
+      "/api/users/signup/",
+      result.data
     );
 
     if (response.status === 201) {
