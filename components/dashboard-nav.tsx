@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Settings2 } from "lucide-react";
-import { Breadcrumbs } from "./CustomBreadcrumb";
+import { Breadcrumbs } from "./customBreadcrumb";
 
 export function DashboardNav() {
   const pathname = usePathname();
