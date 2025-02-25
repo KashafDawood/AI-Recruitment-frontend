@@ -18,7 +18,6 @@ import { useState, useEffect } from "react";
 import { useUserStore, User } from "@/store/userStore";
 import { logout } from "@/api/auth/logout";
 import { useRouter } from "next/navigation";
-import Spinner from "./ui/spinner";
 
 export function DashboardNav() {
   const pathname = usePathname();
@@ -27,15 +26,11 @@ export function DashboardNav() {
   const getUser = useUserStore((state) => state.getUser);
   const clearUser = useUserStore((state) => state.clearUser);
   const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggingOut(true);
     await logout();
     await clearUser();
-    setTimeout(() => {
-      router.push("/login");
-    }, 500);
+    router.push("/login");
   };
 
   useEffect(() => {
@@ -118,11 +113,6 @@ export function DashboardNav() {
           </DropdownMenu>
         </div>
       </div>
-      {isLoggingOut && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <Spinner /> {/* Show a spinner or loading indicator */}
-        </div>
-      )}
     </div>
   );
 }
