@@ -62,7 +62,10 @@ export const useUserStore = create<UserState>()(
       loading: false,
       error: null,
       setUser: (user) => set({ user }),
-      clearUser: () => set({ user: null }),
+      clearUser: () => {
+        set({ user: null });
+        localStorage.removeItem("user-store");
+      },
       setLoading: (loading) => set({ loading }),
       setError: (error) => set({ error }),
       getUser: () => get().user,
