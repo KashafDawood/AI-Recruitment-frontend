@@ -76,3 +76,10 @@ export const useUserStore = create<UserState>()(
     }
   )
 );
+
+// Add a direct export of the current user for simpler imports
+export const currentUser = {
+  get data(): User | null {
+    return useUserStore.getState().user;
+  },
+};
