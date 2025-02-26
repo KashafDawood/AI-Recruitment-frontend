@@ -14,7 +14,7 @@ import { useUserStore, User } from "@/store/userStore";
 import { logout } from "@/api/auth/logout";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import OptimizeImage from "../optimizeImage";
+import OptimizeImage from "../custom/optimizeImage";
 
 export function Profile() {
   const [userData, setUserData] = useState<User | null>(null);

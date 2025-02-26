@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
 import { User } from "@/store/userStore";
 import { Avatar } from "@/components/ui/avatar";
-import OptimizeImage from "../optimizeImage";
+import OptimizeImage from "../custom/optimizeImage";
 import Image from "next/image";
 
 type ProfileCardProps = {
