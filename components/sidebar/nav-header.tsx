@@ -6,10 +6,10 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
-import { getCurrentUser } from "@/hooks/useUser";
+import { useUserWithLoading } from "@/hooks/useUser";
 
 export function Header() {
-  const user = getCurrentUser();
+  const { user } = useUserWithLoading();
   return (
     <SidebarHeader>
       <SidebarMenu>
