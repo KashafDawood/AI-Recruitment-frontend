@@ -8,12 +8,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Settings2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { useState, useEffect } from "react";
 import { useUserStore, User } from "@/store/userStore";
 import { logout } from "@/api/auth/logout";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import OptimizeImage from "../optimizeImage";
 
 export function Profile() {
   const [userData, setUserData] = useState<User | null>(null);
@@ -36,9 +37,11 @@ export function Profile() {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2">
         <Avatar>
-          <AvatarImage
-            src={userData?.photo ?? undefined}
-            alt={userData?.name}
+          <OptimizeImage
+            src={userData?.photo}
+            alt={userData?.name || "image"}
+            width={100}
+            height={100}
           />
           <AvatarFallback className="rounded-lg">
             {userData?.name?.charAt(0)}
@@ -58,9 +61,11 @@ export function Profile() {
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage
-                src={userData?.photo ?? undefined}
-                alt={userData?.name}
+              <OptimizeImage
+                src={userData?.photo}
+                alt={userData?.name || "image"}
+                width={100}
+                height={100}
               />
               <AvatarFallback className="rounded-lg">
                 {userData?.name?.charAt(0)}

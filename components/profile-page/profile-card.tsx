@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
 import { User } from "@/store/userStore";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
+import OptimizeImage from "../optimizeImage";
 
 type ProfileCardProps = {
   user: User | null;
@@ -21,9 +22,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
               {/* This would be an actual image in production */}
               <div className="w-full h-full rounded-full border-white">
                 <Avatar className="relative w-[18rem] h-auto border-6 border-gray-300 shadow-md rounded-full">
-                  <AvatarImage
-                    src={user?.photo || "/default-avatar.png"}
-                    alt={user?.name ?? ""}
+                  <OptimizeImage
+                    src={user?.photo}
+                    alt={user?.name || "image"}
+                    width={500}
                   />
                 </Avatar>
               </div>
