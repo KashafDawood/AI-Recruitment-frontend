@@ -22,7 +22,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
             <div className="relative">
               {/* This would be an actual image in production */}
               <div className="w-full h-full rounded-full border-white">
-                <Avatar className="relative w-[18rem] h-auto border-6 border-gray-300 shadow-md rounded-full">
+                <Avatar className="relative w-[18rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-full overflow-hidden">
                   {user?.photo && (
                     <OptimizeImage
                       src={user?.photo}
@@ -35,6 +35,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                     width={500}
                     height={500}
                     alt="default image"
+                    className="rounded-full object-cover w-full h-full"
                   />
                 </Avatar>
               </div>
