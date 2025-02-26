@@ -33,19 +33,22 @@ export function Profile() {
     setUserData(data);
   }, [getUser]);
 
+  const userInitial = userData?.name?.charAt(0) || "U";
+  const fallback = (
+    <AvatarFallback className="rounded-lg">{userInitial}</AvatarFallback>
+  );
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2">
         <Avatar>
           <OptimizeImage
             src={userData?.photo}
-            alt={userData?.name || "image"}
+            alt={userData?.name || "User"}
             width={100}
             height={100}
+            fallback={fallback}
           />
-          <AvatarFallback className="rounded-lg">
-            {userData?.name?.charAt(0)}
-          </AvatarFallback>
         </Avatar>
         <div className="text-left hidden md:block">
           <p className="text-sm font-medium">{userData?.name}</p>
@@ -63,13 +66,11 @@ export function Profile() {
             <Avatar className="h-8 w-8 rounded-lg">
               <OptimizeImage
                 src={userData?.photo}
-                alt={userData?.name || "image"}
+                alt={userData?.name || "User"}
                 width={100}
                 height={100}
+                fallback={fallback}
               />
-              <AvatarFallback className="rounded-lg">
-                {userData?.name?.charAt(0)}
-              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{userData?.name}</span>
