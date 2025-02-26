@@ -6,6 +6,7 @@ import { CheckCircle } from "lucide-react";
 import { User } from "@/store/userStore";
 import { Avatar } from "@/components/ui/avatar";
 import OptimizeImage from "../optimizeImage";
+import Image from "next/image";
 
 type ProfileCardProps = {
   user: User | null;
@@ -22,10 +23,18 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
               {/* This would be an actual image in production */}
               <div className="w-full h-full rounded-full border-white">
                 <Avatar className="relative w-[18rem] h-auto border-6 border-gray-300 shadow-md rounded-full">
-                  <OptimizeImage
-                    src={user?.photo}
-                    alt={user?.name || "image"}
+                  {user?.photo && (
+                    <OptimizeImage
+                      src={user?.photo}
+                      alt={user?.name || "image"}
+                      width={500}
+                    />
+                  )}
+                  <Image
+                    src={"/default-avatar.png"}
                     width={500}
+                    height={500}
+                    alt="default image"
                   />
                 </Avatar>
               </div>
