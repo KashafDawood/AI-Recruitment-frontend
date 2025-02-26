@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { refreshToken } from "./auth/refreshToken";
+import { deleteSession } from "@/app/_lib/session";
 
 // Create axios instance
 const axiosInstance = axios.create({
@@ -70,12 +71,37 @@ axiosInstance.interceptors.response.use(
         // If refresh fails, reject all queued requests and redirect to login
         processQueue(refreshError as Error);
 
-        // You might want to handle logout or redirect to login here
-        // For example: window.location.href = '/login';
+        // Handle session deletion and redirect properly
+        if (typeof window !== "undefined") {
+          // Handle session deletion
+          deleteSession()
+            .then(() => {
+              // Redirect to login page after session is deleted
+              window.location.href = "/login";
+            })
+            .catch(() => {
+              // If session deletion fails, still redirect to login
+              window.location.href = "/login";
+            });
+        }
 
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
+      }
+    }
+
+    // For any 401 errors not related to the original request
+    if (error.response?.status === 401) {
+      if (typeof window !== "undefined") {
+        // Don't use await here, just handle the promise
+        deleteSession()
+          .then(() => {
+            window.location.href = "/login";
+          })
+          .catch(() => {
+            window.location.href = "/login";
+          });
       }
     }
 
