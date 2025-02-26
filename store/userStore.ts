@@ -27,6 +27,8 @@ export interface User {
   socials: Record<string, string> | null;
   certifications?: (string | Certification)[];
   education?: Record<string, Education>;
+  experience?: number;
+  interests?: string;
   skills?: {
     skills: string[];
   };
