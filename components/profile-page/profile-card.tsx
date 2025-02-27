@@ -9,6 +9,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import SocialIcon from "../social-icon/social-icon";
+import { CardBg } from "./card-bg";
 
 type ProfileCardProps = {
   user: User | null;
@@ -16,8 +17,13 @@ type ProfileCardProps = {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
   return (
-    <Card className="w-full h-[500px] bg-slate-200 dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border-0 flex items-center">
-      <div className="p-6 w-full">
+    <Card className="w-full h-auto bg-green-400 dark:bg-green-600 rounded-b-none shadow-sm overflow-hidden border-0 flex items-center relative">
+      {/* Background Overlay */}
+      <div className="absolute top-0 inset-0 overflow-hidden">
+        <CardBg name={user?.name} />
+      </div>
+
+      <div className="p-6 w-full relative z-10">
         <div className="flex flex-col md:flex-row gap-6 items-center">
           {/* Profile Image Section */}
           <div className="flex flex-col items-center w-full md:w-[50%] relative">
@@ -94,11 +100,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Role</p>
+                <p className="text-sm dark:text-gray-300 text-gray-700">Role</p>
                 <p className="font-semibold text-xl">{user?.interests}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Experience</p>
+                <p className="text-sm dark:text-gray-300 text-gray-700">
+                  Experience
+                </p>
                 <p className="font-semibold text-xl">
                   {user?.experience} years
                 </p>
@@ -106,7 +114,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
             </div>
 
             <div className="mt-6">
-              <p className="text-sm text-gray-500 mb-2">Skills</p>
+              <p className="text-sm dark:text-gray-300 text-gray-700 mb-2">
+                Skills
+              </p>
               <div className="flex flex-wrap gap-2">
                 {user?.skills && Array.isArray(user.skills)
                   ? user.skills.map((skill) => (

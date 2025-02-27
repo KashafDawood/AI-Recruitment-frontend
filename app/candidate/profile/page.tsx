@@ -19,11 +19,11 @@ export default function CandidateProfile() {
   return (
     <>
       <ProfileCard user={user} />
-      <div className="mt-6 bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl text-black font-semibold mb-4">My Story</h1>
+      <div className="bg-slate-200 dark:bg-slate-800 text-black dark:text-white shadow p-6 rounded-b-xl">
+        <h1 className="text-2xl font-semibold mb-4">My Story</h1>
         {user?.bio && (
           <div
-            className="prose max-w-none text-black"
+            className="prose max-w-none"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(user?.bio) }}
           />
         )}
