@@ -7,8 +7,17 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import ThemeToggle from "../custom/dark-mode";
 import { Profile } from "../nav/nav-profile";
 import { Button } from "../ui/button";
+import { useState, useEffect } from "react";
 
 export function NavMenu() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check user login status after component mounts
+  useEffect(() => {
+    const userStore = localStorage.getItem("user-store");
+    setIsLoggedIn(!!userStore);
+  }, []);
+
   return (
     <nav className="sticky z-10 top-0 px-6 py-3 shadow-md w-full backdrop-blur-md bg-white/70 dark:bg-gray-900/70">
       <div className="flex items-center justify-between">
@@ -46,7 +55,7 @@ export function NavMenu() {
           <ThemeToggle className="hidden md:flex" />
 
           <div className="hidden md:flex items-center"></div>
-          {localStorage.getItem("user-store") ? (
+          {isLoggedIn ? (
             <Profile />
           ) : (
             <>
