@@ -16,7 +16,7 @@ export function Header() {
         <SidebarMenuItem className="pl-1">
           <SidebarMenuButton size="lg" asChild>
             <Link href={`/${user?.role}`}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gray-800 dark:bg-white">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                 <Image
                   src="/StaffeeLogo.svg"
                   alt="Logo"

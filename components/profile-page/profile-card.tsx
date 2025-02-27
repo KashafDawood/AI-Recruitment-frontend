@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
 import { User } from "@/store/userStore";
-import { Avatar } from "@/components/ui/avatar";
 import OptimizeImage from "../custom/optimizeImage";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -25,17 +24,18 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
       <div className="py-12 w-full relative z-10">
         <div className="flex flex-col md:flex-row gap-6 items-center">
-          {/* Profile Image Section */}
+          {/* Profile Image Section - Vertical Pill Shape */}
           <div className="flex flex-col items-center w-full md:w-[50%] relative">
             <div className="relative">
-              {/* This would be an actual image in production */}
-              <div className="w-full h-full rounded-full border-white">
-                <Avatar className="relative w-[18rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-full overflow-hidden">
+              {/* Modified to create a vertical pill shape */}
+              <div className="w-full h-full border-white">
+                <div className="relative w-[12rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-[6rem] overflow-hidden">
                   {user?.photo && (
                     <OptimizeImage
                       src={user?.photo}
                       alt={user?.name || "image"}
                       width={500}
+                      height={700}
                     />
                   )}
                   <Image
@@ -43,9 +43,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                     width={500}
                     height={500}
                     alt="default image"
-                    className="rounded-full object-cover w-full h-full bg-white dark:bg-gray-800"
+                    className="object-cover w-full h-full bg-white dark:bg-gray-800"
                   />
-                </Avatar>
+                </div>
               </div>
             </div>
 
