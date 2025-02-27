@@ -1,12 +1,14 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle } from "lucide-react";
 import { User } from "@/store/userStore";
 import { Avatar } from "@/components/ui/avatar";
 import OptimizeImage from "../custom/optimizeImage";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import SocialIcon from "../social-icon/social-icon";
 
 type ProfileCardProps = {
   user: User | null;
@@ -58,34 +60,34 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 </h2>
 
                 <div className="flex space-x-2">
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="rounded-full bg-white"
-                  >
-                    <span className="font-bold">@</span>
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="rounded-full bg-white"
-                  >
-                    <span className="font-bold">X</span>
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="rounded-full bg-white"
-                  >
-                    <span className="font-bold">in</span>
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="rounded-full bg-white"
-                  >
-                    <span className="font-bold">☞</span>
-                  </Button>
+                  {user?.socials && typeof user.socials === "object"
+                    ? Object.entries(user.socials)
+                        .filter(([platform, url]) => platform && url)
+                        .map(([platform, url]) => (
+                          <Link
+                            href={url || "#"}
+                            key={platform}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="rounded-full bg-white dark:bg-slate-700"
+                              title={
+                                platform.charAt(0).toUpperCase() +
+                                platform.slice(1)
+                              }
+                            >
+                              <SocialIcon
+                                platform={platform}
+                                size={18}
+                                className="text-gray-700 dark:text-gray-200"
+                              />
+                            </Button>
+                          </Link>
+                        ))
+                    : null}
                 </div>
               </div>
             </div>
