@@ -17,13 +17,13 @@ type ProfileCardProps = {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
   return (
-    <Card className="w-full h-auto bg-green-400 dark:bg-green-600 rounded-b-none shadow-sm overflow-hidden border-0 flex items-center relative">
+    <Card className="w-full h-auto rounded-b-none shadow-sm overflow-hidden border-0 flex items-center relative">
       {/* Background Overlay */}
       <div className="absolute top-[-15] inset-0 overflow-hidden">
         <CardBg name={user?.name} />
       </div>
 
-      <div className="p-6 w-full relative z-10">
+      <div className="py-12 w-full relative z-10">
         <div className="flex flex-col md:flex-row gap-6 items-center">
           {/* Profile Image Section */}
           <div className="flex flex-col items-center w-full md:w-[50%] relative">

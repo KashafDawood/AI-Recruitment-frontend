@@ -7,7 +7,7 @@ export const CardBg = ({ name }: { name: string | undefined }) => {
       {[...Array(10)].map((_, i) => (
         <div
           key={i}
-          className="flex justify-center p-0 text-green-300 dark:text-green-700"
+          className="flex justify-center p-0 bg-green-400 dark:bg-green-600 text-green-300 dark:text-green-700"
         >
           <span className="text-[120px] md:text-[200px] font-black tracking-tighter opacity-80 leading-[0.7] whitespace-nowrap">
             {formatedName}
