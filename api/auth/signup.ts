@@ -23,7 +23,7 @@ export const signup = async (_: unknown, formData: FormData) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_URL}/api/users/signup/`,
-      result.data,
+      JSON.stringify(result.data), // Ensure the data is correctly formatted
       {
         withCredentials: true,
         headers: {
@@ -33,11 +33,11 @@ export const signup = async (_: unknown, formData: FormData) => {
     );
 
     if (response.status === 201) {
-      const user = { ...response.data.user, verifyEmail: true }; // Ensure verifyEmail flag is included
-      saveUserToLocalStorage(user); // Save user with verifyEmail flag to local storage
+      const user = { ...response.data.user, verifyEmail: true };
+      saveUserToLocalStorage(user);
       return {
         message: "signup successful! Please verify your email",
-        user, // Return user without verifyEmail flag
+        user,
       };
     }
   } catch (error) {
