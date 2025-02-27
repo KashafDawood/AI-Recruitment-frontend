@@ -4,6 +4,7 @@ import { useUserWithLoading } from "@/hooks/useUser";
 import Spinner from "@/components/ui/spinner";
 import ProfileCard from "@/components/profile-page/profile-card";
 import DOMPurify from "dompurify";
+import EducationTimeline from "@/components/profile-page/eduaction-card";
 
 export default function CandidateProfile() {
   const { user, isLoading } = useUserWithLoading();
@@ -26,6 +27,9 @@ export default function CandidateProfile() {
             className="prose max-w-none"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(user?.bio) }}
           />
+        )}
+        {user?.education && (
+          <EducationTimeline educationData={user?.education} />
         )}
       </div>
     </>
