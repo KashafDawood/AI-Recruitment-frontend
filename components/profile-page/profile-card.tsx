@@ -19,7 +19,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
   return (
     <Card className="w-full h-auto bg-green-400 dark:bg-green-600 rounded-b-none shadow-sm overflow-hidden border-0 flex items-center relative">
       {/* Background Overlay */}
-      <div className="absolute top-0 inset-0 overflow-hidden">
+      <div className="absolute top-[-15] inset-0 overflow-hidden">
         <CardBg name={user?.name} />
       </div>
 
