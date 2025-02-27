@@ -43,7 +43,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                     width={500}
                     height={500}
                     alt="default image"
-                    className="rounded-full object-cover w-full h-full"
+                    className="rounded-full object-cover w-full h-full bg-white dark:bg-gray-800"
                   />
                 </Avatar>
               </div>

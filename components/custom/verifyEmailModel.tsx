@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { type User, verifyEmail } from "@/api/auth/verifyEmail";
 import { useRouter } from "next/navigation";
 import { createSession } from "@/app/_lib/session";
+import { getme } from "@/api/auth/getme";
 
 interface EmailVerificationDrawerProps {
   user: User;
@@ -39,6 +40,7 @@ export default function EmailVerificationDrawer({
       toast.success("Email verified successfully!", {
         description: "You can now access all features of the app.",
       });
+      await getme();
       createSession(user.id, user.role);
       router.push(`/${user.role}`);
       onOpenChange(false);
