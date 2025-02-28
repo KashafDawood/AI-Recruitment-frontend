@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import EmailVerificationDrawer from "@/components/custom/verifyEmailModel";
-import { User } from "@/api/auth/verifyEmail"; // Ensure correct User type import
-import { getUserFromLocalStorage, saveUserToLocalStorage } from "@/utils/localStorage";
+
+import {
+  getUserFromLocalStorage,
+  saveUserToLocalStorage,
+  User,
+} from "@/utils/localStorage";
 
 const useEmailVerification = (user: User | undefined) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,10 +31,19 @@ const useEmailVerification = (user: User | undefined) => {
 
   const EmailVerificationModal = () =>
     storedUser ? (
-      <EmailVerificationDrawer user={storedUser} open={isOpen} onOpenChange={setIsOpen} />
+      <EmailVerificationDrawer
+        user={storedUser}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      />
     ) : null;
 
-  return { EmailVerificationModal, open: isOpen, setOpen: setIsOpen, setStoredUser };
+  return {
+    EmailVerificationModal,
+    open: isOpen,
+    setOpen: setIsOpen,
+    setStoredUser,
+  };
 };
 
 export default useEmailVerification;
