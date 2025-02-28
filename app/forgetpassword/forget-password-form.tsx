@@ -11,33 +11,29 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { RefObject } from "react";
 
 interface ForgetPasswordFormProps extends React.ComponentPropsWithoutRef<"div"> {
-  formAction: (payload: FormData) => void;
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   state?: {
     message?: string;
     errors?: {
       email?: string | string[];
     };
     serverError?: string;
+    pending?: boolean;
   };
+  emailRef: RefObject<HTMLInputElement>; // Prop to reset input field
 }
 
 export function ForgetPasswordForm({
-  formAction,
+  handleSubmit,
   state,
+  emailRef,
   className,
   ...props
 }: ForgetPasswordFormProps) {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    console.log("Form data before sending:", Object.fromEntries(formData.entries()));
-    formAction(formData);
-  };
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -57,13 +53,14 @@ export function ForgetPasswordForm({
                   name="email"
                   type="email"
                   placeholder="m@example.com"
-                  required={true}
+                  required
+                  ref={emailRef} // Attach ref for clearing input field
                 />
               </div>
               {state?.errors?.email && (
                 <p className="text-red-500">{state.errors.email}</p>
               )}
-              <SubmitButton />
+              <SubmitButton pending={state?.pending} />
             </div>
           </form>
         </CardContent>
@@ -78,9 +75,7 @@ export function ForgetPasswordForm({
   );
 }
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
+function SubmitButton({ pending }: { pending?: boolean }) {
   return (
     <Button disabled={pending} type="submit" className="w-full">
       {pending ? "Sending..." : "Send Reset Link"}
