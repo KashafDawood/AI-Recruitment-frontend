@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { createSession } from "@/app/_lib/session";
 import { removeUserFromLocalStorage } from "@/utils/localStorage";
 import ResendOtpButton from "@/components/ResendOtpButton"; // Import ResendOtpButton
+import { getme } from "@/api/auth/getme";
 
 interface EmailVerificationDrawerProps {
   user: User;
@@ -42,6 +43,7 @@ export default function EmailVerificationDrawer({
         description: "You can now access all features of the app.",
       });
       removeUserFromLocalStorage(); // Remove user from local storage after verification
+      await getme();
       createSession(user.id, user.role);
       router.push(`/${user.role}`); // Redirect to the page based on user role
       onOpenChange(false);

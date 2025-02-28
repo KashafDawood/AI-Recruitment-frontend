@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
 import { FC, useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../axiosConfig";
 
 export interface User {
   id: string;
@@ -10,16 +10,10 @@ export interface User {
 
 export const verifyEmail = async (user: User, otp: string) => {
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/users/verify-email/`,
-      { user, otp },
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axiosInstance.post("/api/users/verify-email/", {
+      user,
+      otp,
+    });
     return response.data;
   } catch (error) {
     console.error("Error verifying email:", error);

@@ -4,7 +4,7 @@ import Features from "../components/home/Features";
 import HowItWorks from "../components/home/HowItWorks";
 import Contact from "../components/home/Contact";
 import { JSX } from "react";
-import { NavMenu } from "@/components/nav";
+import { NavMenu } from "@/components/home/navbar";
 
 export default function Home(): JSX.Element {
   return (

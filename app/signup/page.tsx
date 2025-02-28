@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";
-import Alerts from "@/components/customAlert";
+import Alerts from "@/components/custom/Alerts";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
+import Link from "next/link";
 import { getUserFromLocalStorage } from "@/utils/localStorage";
 import EmailVerificationButton from "@/components/EmailVerificationButton";
 import { User } from "@/api/auth/verifyEmail"; // Ensure correct User type import
@@ -52,12 +53,15 @@ export default function SignupPage() {
         />
       )}
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
+        <Link
+          href="/"
+          className="flex items-center gap-2 self-center font-medium"
+        >
           <div className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900">
             <Image src={"/StaffeeLogo.svg"} alt="Logo" width={15} height={15} />
           </div>
-          Stafee.
-        </a>
+          Staffee.
+        </Link>
         <SignupForm state={state} formAction={formAction} />
         {unverifiedUser && <EmailVerificationButton user={unverifiedUser} />}
       </div>
