@@ -6,6 +6,7 @@ import { ForgetPasswordForm } from "./forget-password-form";
 import { forgetPassword } from "@/api/auth/forgetPassword";
 import { useState, useRef } from "react";
 import Alerts from "@/components/custom/Alerts";
+import Link from "next/link";
 
 export default function ForgetPasswordPage() {
   const [state, setState] = useState<{
@@ -13,37 +14,37 @@ export default function ForgetPasswordPage() {
     error?: string;
     pending?: boolean;
   }>({});
-  const emailRef = useRef<HTMLInputElement>(null); // Reference for email input
+  const emailRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setState({ pending: true, error: undefined, message: undefined });
+
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
-
-    if (!email) {
-      setState({ error: "Email is required" });
-      return;
-    }
-
-    console.log("Form data before sending:", { email });
-
-    setState({ pending: true, error: undefined, message: undefined }); // Disable button
+    console.log("Form data before sending:", { email: formData.get("email") });
 
     try {
-      const result = await forgetPassword({ email });
+      const result = await forgetPassword(formData);
       console.log("Forget password result:", result);
 
-      if (result?.message) {
+      if (result.success) {
         setState({ message: result.message, pending: false });
         if (emailRef.current) emailRef.current.value = ""; // Clear input field
       } else {
-        setState({
-          error: "Something went wrong. Please try again.",
-          pending: false,
-        });
+        if (result.errors?.email) {
+          setState({
+            error: result.errors.email[0] || "Invalid email",
+            pending: false,
+          });
+        } else {
+          setState({
+            error:
+              result.serverError || "Something went wrong. Please try again.",
+            pending: false,
+          });
+        }
       }
-    } catch (err) {
-      console.error("Error:", err);
+    } catch {
       setState({ error: "Failed to send reset email.", pending: false });
     }
   };
@@ -58,12 +59,15 @@ export default function ForgetPasswordPage() {
       )}
 
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
+        <Link
+          href="/"
+          className="flex items-center gap-2 self-center font-medium"
+        >
           <div className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900">
             <Image src="/StaffeeLogo.svg" alt="Logo" width={15} height={15} />
           </div>
           Staffee.
-        </a>
+        </Link>
 
         <ForgetPasswordForm
           handleSubmit={handleSubmit}

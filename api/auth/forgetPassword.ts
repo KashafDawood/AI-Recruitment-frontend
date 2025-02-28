@@ -5,16 +5,23 @@ const forgetPasswordSchema = z.object({
   email: z.string().email({ message: "Invalid email address!" }),
 });
 
-export const forgetPassword = async (formData: Record<string, any>) => {
-  console.log("Received formData:", formData); // Debugging log
+type ForgetPasswordResponse =
+  | { success: true; message: string; reset_url?: string }
+  | { success: false; errors?: Record<string, string[]>; serverError?: string };
 
-  if (!formData || !formData.email) {
-    console.error("Invalid formData:", formData);
-    return { serverError: "Form data is missing or incorrect" };
+export const forgetPassword = async (
+  formData: FormData
+): Promise<ForgetPasswordResponse> => {
+  const email = formData.get("email") as string;
+
+  const result = forgetPasswordSchema.safeParse({ email });
+
+  if (!result.success) {
+    return {
+      success: false,
+      errors: result.error.flatten().fieldErrors,
+    };
   }
-
-  const email = formData.email;
-  console.log("Extracted email:", email); // Debugging log
 
   try {
     const response = await axios.post(
@@ -28,12 +35,21 @@ export const forgetPassword = async (formData: Record<string, any>) => {
 
     if (response.status === 200) {
       return {
+        success: true,
         message: "Reset password email sent successfully!",
         reset_url: response.data.reset_url,
       };
     }
+
+    return {
+      success: false,
+      serverError: "Failed to send reset password email",
+    };
   } catch (error) {
     console.error("Error during forget password:", error);
-    return { serverError: "An unexpected error occurred during reset password" };
+    return {
+      success: false,
+      serverError: "An unexpected error occurred during reset password",
+    };
   }
 };
