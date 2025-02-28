@@ -33,6 +33,7 @@ export const signup = async (_: unknown, formData: FormData) => {
       return {
         message: "signup successful! Please verify your email",
         user,
+        verifyEmail: true,
       };
     }
   } catch (error) {
