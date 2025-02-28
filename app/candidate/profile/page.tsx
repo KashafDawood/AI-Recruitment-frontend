@@ -3,8 +3,8 @@
 import { useUserWithLoading } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProfileCard from "@/components/profile-page/profile-card";
-import DOMPurify from "dompurify";
 import EducationTimeline from "@/components/profile-page/eduaction-card";
+import ProfileBio from "@/components/profile-page/Bio";
 
 export default function CandidateProfile() {
   const { user, isLoading } = useUserWithLoading();
@@ -62,13 +62,7 @@ export default function CandidateProfile() {
     <>
       <ProfileCard user={user} />
       <div className="bg-slate-200 dark:bg-slate-800 text-black dark:text-white shadow p-6 rounded-b-xl">
-        <h1 className="text-2xl font-semibold mb-4">My Story</h1>
-        {user?.bio && (
-          <div
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(user?.bio) }}
-          />
-        )}
+        {user?.bio && <ProfileBio bio={user.bio} />}
         {user?.education && (
           <EducationTimeline educationData={user?.education} />
         )}

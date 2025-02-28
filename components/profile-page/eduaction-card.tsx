@@ -51,22 +51,25 @@ export default function EducationTimeline({
   if (educationArray.length === 0) return null;
 
   return (
-    <>
-      <div className="pt-12">
-        <h1 className="text-3xl font-bold text-center mb-8">
+    <div className="w-full overflow-x-hidden">
+      <div className="pt-8">
+        <h1 className="text-3xl font-bold text-center mb-6">
           My Education Journey
         </h1>
       </div>
-      <div className="relative container max-w-5xl mx-auto py-12 px-4">
-        {/* Center line */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-gray-300"></div>
+      <div className="relative container max-w-5xl mx-auto py-8 px-4">
+        {/* Center line - constrained height */}
+        <div
+          className="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-gray-300"
+          style={{ maxHeight: "calc(100% - 2rem)" }}
+        ></div>
 
         {/* Education items */}
         {educationArray.map((education, index) => (
           <div
             key={index}
             className={cn(
-              "relative flex items-center mb-16",
+              "relative flex items-center mb-12",
               index % 2 === 0 ? "flex-row" : "flex-row-reverse"
             )}
           >
@@ -113,6 +116,6 @@ export default function EducationTimeline({
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

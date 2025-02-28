@@ -1,9 +1,9 @@
 export const CardBg = ({ name }: { name: string | undefined }) => {
   const formatedName = name?.split(" ")[0].toUpperCase();
 
-  // Create an array of size 3 and map over it to render the repeated elements
+  // Reduce number of repetitions and add proper containment
   return (
-    <>
+    <div className="w-full h-full overflow-hidden">
       {[...Array(10)].map((_, i) => (
         <div
           key={i}
@@ -20,6 +20,6 @@ export const CardBg = ({ name }: { name: string | undefined }) => {
           </span>
         </div>
       ))}
-    </>
+    </div>
   );
 };
