@@ -12,9 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { RefObject } from "react";
 
-interface ForgetPasswordFormProps extends React.ComponentPropsWithoutRef<"div"> {
+interface ForgetPasswordFormProps
+  extends React.ComponentPropsWithoutRef<"div"> {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   state?: {
     message?: string;
@@ -24,7 +24,7 @@ interface ForgetPasswordFormProps extends React.ComponentPropsWithoutRef<"div"> 
     serverError?: string;
     pending?: boolean;
   };
-  emailRef: RefObject<HTMLInputElement>; // Prop to reset input field
+  emailRef: React.RefObject<HTMLInputElement | null>;
 }
 
 export function ForgetPasswordForm({

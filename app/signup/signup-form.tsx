@@ -29,6 +29,7 @@ interface SignupFormProps extends React.ComponentPropsWithoutRef<"div"> {
       role?: string | string[];
     };
     serverError?: string;
+    verifyEmail?: boolean;
   };
 }
 

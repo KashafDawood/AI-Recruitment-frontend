@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Alerts from "@/components/customAlert";
 import { CheckCircle, XCircle } from "lucide-react";
 import { ForgetPasswordForm } from "./forget-password-form";
 import { forgetPassword } from "@/api/auth/forgetPassword";
 import { useState, useRef } from "react";
+import Alerts from "@/components/custom/Alerts";
 
 export default function ForgetPasswordPage() {
   const [state, setState] = useState<{
@@ -37,7 +37,10 @@ export default function ForgetPasswordPage() {
         setState({ message: result.message, pending: false });
         if (emailRef.current) emailRef.current.value = ""; // Clear input field
       } else {
-        setState({ error: "Something went wrong. Please try again.", pending: false });
+        setState({
+          error: "Something went wrong. Please try again.",
+          pending: false,
+        });
       }
     } catch (err) {
       console.error("Error:", err);
@@ -47,8 +50,12 @@ export default function ForgetPasswordPage() {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
-      {state.message && <Alerts message={state.message} variant="success" Icon={CheckCircle} />}
-      {state.error && <Alerts message={state.error} variant="destructive" Icon={XCircle} />}
+      {state.message && (
+        <Alerts message={state.message} variant="success" Icon={CheckCircle} />
+      )}
+      {state.error && (
+        <Alerts message={state.error} variant="destructive" Icon={XCircle} />
+      )}
 
       <div className="flex w-full max-w-sm flex-col gap-6">
         <a href="#" className="flex items-center gap-2 self-center font-medium">
@@ -58,7 +65,11 @@ export default function ForgetPasswordPage() {
           Staffee.
         </a>
 
-        <ForgetPasswordForm handleSubmit={handleSubmit} state={state} emailRef={emailRef} />
+        <ForgetPasswordForm
+          handleSubmit={handleSubmit}
+          state={state}
+          emailRef={emailRef}
+        />
       </div>
     </div>
   );
