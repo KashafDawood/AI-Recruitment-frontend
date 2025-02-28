@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";
-import Alerts from "@/components/customAlert";
 import { CheckCircle, XCircle } from "lucide-react";
-import {Link} from 'next/Link';
 import { LoginForm } from "./login-form";
 import { login } from "@/api/auth/login";
 import useEmailVerification from "@/hooks/useEmailVerification";
 import { getUserFromLocalStorage } from "@/utils/localStorage";
-import EmailVerificationButton from "@/components/EmailVerificationButton"; // Import EmailVerificationButton
-import { User } from "@/types"; // Import User type
+import EmailVerificationButton from "@/components/EmailVerificationButton";
+import Alerts from "@/components/custom/Alerts";
+import Link from "next/link";
+import { User } from "@/api/auth/verifyEmail";
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(login, undefined);
@@ -21,26 +21,31 @@ export default function LoginPage() {
 
   useEffect(() => {
     const user = getUserFromLocalStorage();
-    console.log("LocalStorage User:", user); // Debugging statement
     if (user && user.verifyEmail) {
-      console.log("Opening email verification modal from local storage"); // Debugging statement
       setOpen(true);
     }
   }, [setOpen]);
 
   useEffect(() => {
     if (state?.message && state?.user) {
-      console.log("Opening email verification modal from state"); // Debugging statement
       setOpen(true);
     }
-    if (state?.serverError && state?.serverError.includes("verify your email")) {
+    if (
+      state?.serverError &&
+      state?.serverError.includes("verify your email")
+    ) {
       setUnverifiedUser(state.user);
     }
     if (state?.verifyEmail) {
-      console.log("Opening email verification modal due to verifyEmail flag"); // Debugging statement
       setOpen(true);
     }
-  }, [state?.user, state?.message, state?.serverError, state?.verifyEmail, setOpen]);
+  }, [
+    state?.user,
+    state?.message,
+    state?.serverError,
+    state?.verifyEmail,
+    setOpen,
+  ]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
