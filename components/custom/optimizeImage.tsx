@@ -64,10 +64,8 @@ export default function OptimizeImage({
       height={height || width}
       alt={alt || "Image"}
       onError={() => setImageError(true)}
-      crop={{
-        type: "auto",
-        source: true,
-      }}
+      crop="fill"
+      gravity="center"
     />
   );
 }

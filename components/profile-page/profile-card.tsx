@@ -1,7 +1,6 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle } from "lucide-react";
 import { User } from "@/store/userStore";
 import OptimizeImage from "../custom/optimizeImage";
 import Image from "next/image";
@@ -23,97 +22,75 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
       </div>
 
       <div className="py-12 w-full relative z-10">
-        <div className="flex flex-col md:flex-row gap-6 items-center">
-          {/* Profile Image Section - Vertical Pill Shape */}
-          <div className="flex flex-col items-center w-full md:w-[50%] relative">
-            <div className="relative">
-              {/* Modified to create a vertical pill shape */}
-              <div className="w-full h-full border-white">
-                <div className="relative w-[12rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-[6rem] overflow-hidden">
-                  {user?.photo && (
-                    <OptimizeImage
-                      src={user?.photo}
-                      alt={user?.name || "image"}
-                      width={500}
-                      height={700}
-                    />
-                  )}
-                  <Image
-                    src={"/default-avatar.png"}
-                    width={500}
-                    height={500}
-                    alt="default image"
-                    className="object-cover w-full h-full bg-white dark:bg-gray-800"
-                  />
-                </div>
-              </div>
-            </div>
+        <div className="flex flex-col md:flex-row justify-around items-center px-6 md:px-12">
+          {/* Left Side: Role and Socials */}
+          <div className="md:w-1/4 mb-6 md:mb-0 text-end">
+            <p className="text-sm dark:text-gray-300 text-gray-700">Role</p>
+            <p className="font-semibold text-xl">{user?.interests}</p>
 
-            <div className="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-              <Badge className="w-auto justify-center py-2 dark:bg-green-100 dark:hover:bg-green-100 bg-green-100 hover:bg-green-100 text-green-800 dark:text-green-800 rounded-full font-medium whitespace-nowrap border-0 dark:border-0">
-                <CheckCircle className="h-4 w-4 mr-1" />{" "}
-                {user?.role === "candidate" ? "Looking for Work" : "Hiring"}
-              </Badge>
+            <div className="flex space-x-2 mt-4 float-end">
+              {user?.socials && typeof user.socials === "object"
+                ? Object.entries(user.socials)
+                    .filter(([platform, url]) => platform && url)
+                    .map(([platform, url]) => (
+                      <Link
+                        href={url || "#"}
+                        key={platform}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="rounded-full bg-white dark:bg-slate-700"
+                          title={
+                            platform.charAt(0).toUpperCase() + platform.slice(1)
+                          }
+                        >
+                          <SocialIcon
+                            platform={platform}
+                            size={18}
+                            className="text-gray-700 dark:text-gray-200"
+                          />
+                        </Button>
+                      </Link>
+                    ))
+                : null}
             </div>
           </div>
 
-          {/* Profile Info Section */}
-          <div className="flex-1 w-full max-w-[500px] md:w-[50%]">
-            <div className="flex justify-between items-start">
-              <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-gray-700 dark:text-gray-100">
-                  {user?.name}
-                </h2>
+          {/* Center: Profile Image */}
+          <div className="mx-4">
+            <div className="relative w-[10rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-[6rem] overflow-hidden">
+              {user?.photo ? (
+                <OptimizeImage
+                  src={user.photo}
+                  alt={user?.name || "profile image"}
+                  width={500}
+                  height={900}
+                />
+              ) : (
+                <Image
+                  src={"/default-avatar.png"}
+                  width={500}
+                  height={500}
+                  alt="default profile image"
+                  className="object-cover w-full h-full bg-white dark:bg-gray-800"
+                />
+              )}
+            </div>
+          </div>
 
-                <div className="flex space-x-2">
-                  {user?.socials && typeof user.socials === "object"
-                    ? Object.entries(user.socials)
-                        .filter(([platform, url]) => platform && url)
-                        .map(([platform, url]) => (
-                          <Link
-                            href={url || "#"}
-                            key={platform}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="rounded-full bg-white dark:bg-slate-700"
-                              title={
-                                platform.charAt(0).toUpperCase() +
-                                platform.slice(1)
-                              }
-                            >
-                              <SocialIcon
-                                platform={platform}
-                                size={18}
-                                className="text-gray-700 dark:text-gray-200"
-                              />
-                            </Button>
-                          </Link>
-                        ))
-                    : null}
-                </div>
-              </div>
+          {/* Right Side: Experience and Skills */}
+          <div className="md:w-1/4 mt-6 md:mt-0">
+            <div>
+              <p className="text-sm dark:text-gray-300 text-gray-700">
+                Experience
+              </p>
+              <p className="font-semibold text-xl">{user?.experience} years</p>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm dark:text-gray-300 text-gray-700">Role</p>
-                <p className="font-semibold text-xl">{user?.interests}</p>
-              </div>
-              <div>
-                <p className="text-sm dark:text-gray-300 text-gray-700">
-                  Experience
-                </p>
-                <p className="font-semibold text-xl">
-                  {user?.experience} years
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6">
+            <div className="mt-4">
               <p className="text-sm dark:text-gray-300 text-gray-700 mb-2">
                 Skills
               </p>
