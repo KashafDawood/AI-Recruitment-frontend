@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { type User, verifyEmail } from "@/api/auth/verifyEmail";
 import { useRouter } from "next/navigation";
 import { createSession } from "@/app/_lib/session";
+import { removeUserFromLocalStorage } from "@/utils/localStorage";
+import ResendOtpButton from "@/components/ResendOtpButton"; // Import ResendOtpButton
 
 interface EmailVerificationDrawerProps {
   user: User;
@@ -39,8 +41,9 @@ export default function EmailVerificationDrawer({
       toast.success("Email verified successfully!", {
         description: "You can now access all features of the app.",
       });
+      removeUserFromLocalStorage(); // Remove user from local storage after verification
       createSession(user.id, user.role);
-      router.push(`/${user.role}`);
+      router.push(`/${user.role}`); // Redirect to the page based on user role
       onOpenChange(false);
     } catch (error) {
       toast.error("Verification failed", {
@@ -71,9 +74,9 @@ export default function EmailVerificationDrawer({
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} modal={false}>
       <div className="fixed inset-0 flex items-center justify-center">
-        <DrawerContent className="w-[350px] mx-auto">
+        <DrawerContent className="w-[350px] mx-auto" onClick={(e) => e.stopPropagation()}>
           <DrawerHeader>
             <DrawerTitle>Verify Your Email</DrawerTitle>
             <DrawerDescription>
@@ -109,6 +112,7 @@ export default function EmailVerificationDrawer({
             >
               {loading ? "Verifying..." : "Verify Email"}
             </Button>
+            <ResendOtpButton user={user} /> {/* Add ResendOtpButton */}
           </div>
           <DrawerClose asChild>
             <Button variant="outline" className="mt-4 w-full">

@@ -1,24 +1,39 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Alerts from "@/components/customAlert";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
+import { getUserFromLocalStorage } from "@/utils/localStorage";
+import EmailVerificationButton from "@/components/EmailVerificationButton";
+import { User } from "@/api/auth/verifyEmail"; // Ensure correct User type import
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [state, formAction] = useActionState(signup, undefined);
-  const { EmailVerificationModal, open, setOpen } = useEmailVerification(
-    state?.user
-  );
+  const { EmailVerificationModal, open, setOpen } = useEmailVerification(state?.user);
+  const [unverifiedUser, setUnverifiedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const user = getUserFromLocalStorage();
+    if (user && user.verifyEmail) {
+      setOpen(true);
+    }
+  }, [setOpen]);
 
   useEffect(() => {
     if (state?.message && state?.user) {
       setOpen(true);
     }
-  }, [state?.user, state?.message, setOpen]);
+    if (state?.serverError && state?.serverError.includes("verify your email")) {
+      setUnverifiedUser(state.user);
+    }
+    if (state?.verifyEmail) {
+      setOpen(true);
+    }
+  }, [state?.user, state?.message, state?.serverError, state?.verifyEmail, setOpen]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
@@ -44,6 +59,7 @@ export default function LoginPage() {
           Stafee.
         </a>
         <SignupForm state={state} formAction={formAction} />
+        {unverifiedUser && <EmailVerificationButton user={unverifiedUser} />}
       </div>
       {open && <EmailVerificationModal />}
     </div>

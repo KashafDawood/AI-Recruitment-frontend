@@ -1,5 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
+import { saveUserToLocalStorage } from "@/utils/localStorage";
 
 const signupSchema = z.object({
   name: z.string().max(20, { message: "Name must be 20 characters or less!" }),
@@ -22,7 +23,7 @@ export const signup = async (_: unknown, formData: FormData) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_URL}/api/users/signup/`,
-      result.data,
+      JSON.stringify(result.data), // Ensure the data is correctly formatted
       {
         withCredentials: true,
         headers: {
@@ -32,9 +33,11 @@ export const signup = async (_: unknown, formData: FormData) => {
     );
 
     if (response.status === 201) {
+      const user = { ...response.data.user, verifyEmail: true };
+      saveUserToLocalStorage(user);
       return {
         message: "signup successful! Please verify your email",
-        user: response.data.user,
+        user,
       };
     }
   } catch (error) {
