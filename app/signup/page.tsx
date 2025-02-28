@@ -9,7 +9,7 @@ import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
 import Link from "next/link";
 import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
-import EmailVerificationButton from "@/components/EmailVerificationButton";
+import EmailVerificationButton from "@/components/custom/EmailVerificationButton";
 import { User } from "@/api/auth/verifyEmail";
 
 export default function SignupPage() {
