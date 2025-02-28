@@ -1,6 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
-import { saveUserToLocalStorage } from "@/utils/localStorage";
+import { saveUserToLocalStorage } from "@/app/_lib/localStorage";
 import axiosInstance from "../axiosConfig";
 
 const signupSchema = z.object({

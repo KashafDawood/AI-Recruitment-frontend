@@ -8,7 +8,7 @@ import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
 import Link from "next/link";
-import { getUserFromLocalStorage } from "@/utils/localStorage";
+import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
 import EmailVerificationButton from "@/components/EmailVerificationButton";
 import { User } from "@/api/auth/verifyEmail";
 

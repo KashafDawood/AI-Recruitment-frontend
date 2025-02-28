@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { type User, verifyEmail } from "@/api/auth/verifyEmail";
 import { useRouter } from "next/navigation";
 import { createSession } from "@/app/_lib/session";
-import { removeUserFromLocalStorage } from "@/utils/localStorage";
+import { removeUserFromLocalStorage } from "@/app/_lib/localStorage";
 import ResendOtpButton from "@/components/ResendOtpButton"; // Import ResendOtpButton
 import { getme } from "@/api/auth/getme";
 
@@ -78,7 +78,10 @@ export default function EmailVerificationDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange} modal={false}>
       <div className="fixed inset-0 flex items-center justify-center">
-        <DrawerContent className="w-[350px] mx-auto" onClick={(e) => e.stopPropagation()}>
+        <DrawerContent
+          className="w-[350px] mx-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <DrawerHeader>
             <DrawerTitle>Verify Your Email</DrawerTitle>
             <DrawerDescription>

@@ -5,7 +5,7 @@ import {
   getUserFromLocalStorage,
   saveUserToLocalStorage,
   User,
-} from "@/utils/localStorage";
+} from "@/app/_lib/localStorage";
 
 const useEmailVerification = (user: User | undefined) => {
   const [isOpen, setIsOpen] = useState(false);

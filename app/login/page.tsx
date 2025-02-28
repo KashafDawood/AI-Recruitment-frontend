@@ -6,7 +6,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { LoginForm } from "./login-form";
 import { login } from "@/api/auth/login";
 import useEmailVerification from "@/hooks/useEmailVerification";
-import { getUserFromLocalStorage } from "@/utils/localStorage";
+import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
 import EmailVerificationButton from "@/components/EmailVerificationButton";
 import Alerts from "@/components/custom/Alerts";
 import Link from "next/link";
