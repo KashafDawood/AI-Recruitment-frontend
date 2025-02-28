@@ -1,6 +1,40 @@
+"use client";
 import DOMPurify from "dompurify";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function ProfileBio({ bio }: { bio: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Sanitize content
+  const sanitizedBio = DOMPurify.sanitize(bio);
+
+  // Check if content is overflowing and needs read more button
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (contentRef.current) {
+        // On small screens (< 768px), show button if content height > 150px
+        // On larger screens, always show full content
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          setShowButton(contentRef.current.scrollHeight > 150);
+        } else {
+          setShowButton(false);
+          setExpanded(true);
+        }
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+
+    return () => {
+      window.removeEventListener("resize", checkOverflow);
+    };
+  }, [bio]);
+
   return (
     <div className="relative py-10 px-6 md:px-10">
       {/* Decorative elements */}
@@ -15,10 +49,38 @@ export default function ProfileBio({ bio }: { bio: string }) {
           <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary rounded-full mt-4" />
         </div>
 
-        <div
-          className="prose max-w-none text-start relative overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(bio) }}
-        />
+        <div className="relative">
+          <div
+            ref={contentRef}
+            className={`prose max-w-none text-start relative overflow-hidden transition-all duration-300 ${
+              !expanded && showButton ? "max-h-[150px] md:max-h-none" : ""
+            }`}
+            dangerouslySetInnerHTML={{ __html: sanitizedBio }}
+          />
+
+          {/* Gradient fade effect when collapsed */}
+          {showButton && !expanded && (
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent"></div>
+          )}
+
+          {/* Read more/less button */}
+          {showButton && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-2 flex items-center justify-center w-full py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              {expanded ? (
+                <>
+                  Show Less <ChevronUp className="ml-1 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Read More <ChevronDown className="ml-1 h-4 w-4" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

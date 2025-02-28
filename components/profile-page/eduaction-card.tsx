@@ -58,9 +58,9 @@ export default function EducationTimeline({
         </h1>
       </div>
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
-        {/* Center line - constrained height */}
+        {/* Center line for large screens, left line for small screens */}
         <div
-          className="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-gray-300"
+          className="absolute md:left-1/2 left-0 md:transform md:-translate-x-1/2 h-full w-0.5 bg-gray-300 ml-5 md:ml-0"
           style={{ maxHeight: "calc(100% - 2rem)" }}
         ></div>
 
@@ -70,13 +70,19 @@ export default function EducationTimeline({
             key={index}
             className={cn(
               "relative flex items-center mb-12",
-              index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+              // For small screens, always keep items on the right
+              // For medium and larger screens, alternate sides
+              "flex-row",
+              {
+                "md:flex-row-reverse":
+                  index % 2 !== 0 && window.innerWidth >= 768,
+              }
             )}
           >
             {/* Date */}
             <div
               className={cn(
-                "w-1/2 text-sm text-gray-500 font-medium",
+                "hidden md:block md:w-1/2 text-sm text-gray-500 font-medium",
                 index % 2 === 0 ? "text-right pr-8" : "text-left pl-8"
               )}
             >
@@ -84,12 +90,17 @@ export default function EducationTimeline({
             </div>
 
             {/* Circle on timeline */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full dark:bg-green-400 bg-green-600 flex items-center justify-center z-10">
+            <div className="absolute md:left-1/2 left-0 transform md:-translate-x-1/2 w-10 h-10 rounded-full dark:bg-green-400 bg-green-600 flex items-center justify-center z-10 ml-0 md:ml-0">
               <Graduation className="w-5 h-5 text-white" />
             </div>
 
             {/* Education card */}
-            <div className={cn("w-1/2", index % 2 === 0 ? "pl-8" : "pr-8")}>
+            <div
+              className={cn(
+                "md:w-1/2 w-full pl-16 md:pl-8",
+                index % 2 === 0 ? "md:pl-8" : "md:pr-8 md:pl-0"
+              )}
+            >
               <div className="bg-gray-800 dark:bg-gray-200 p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <h3 className="text-xl font-bold dark:text-black text-white">
                   {education.degree_name}
@@ -98,7 +109,17 @@ export default function EducationTimeline({
                   {education.institute_name}
                 </h4>
 
-                <div className="flex items-center mt-3 text-sm text-gray-200 dark:text-gray-600">
+                {/* Date for small screens */}
+                <div className="flex items-center mt-3 text-sm md:hidden text-gray-200 dark:text-gray-600">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span>
+                    {formatDate(education.start_date)} -{" "}
+                    {formatDate(education.end_date)}
+                  </span>
+                </div>
+
+                {/* Date for medium and large screens */}
+                <div className="hidden md:flex items-center mt-3 text-sm text-gray-200 dark:text-gray-600">
                   <Calendar className="w-4 h-4 mr-2" />
                   <span>
                     {formatDate(education.start_date)} -{" "}

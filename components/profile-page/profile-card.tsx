@@ -22,13 +22,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
       </div>
 
       <div className="py-12 w-full relative z-10">
-        <div className="flex flex-col md:flex-row justify-around items-center px-6 md:px-12">
+        <div className="flex flex-col lg:flex-row justify-around items-center px-6 lg:px-12">
           {/* Left Side: Role and Socials */}
-          <div className="md:w-1/4 mb-6 md:mb-0 text-end">
+          <div className="lg:w-1/4 mb-6 lg:mb-0 text-center lg:text-end">
             <p className="text-sm dark:text-gray-300 text-gray-700">Role</p>
             <p className="font-semibold text-xl">{user?.interests}</p>
 
-            <div className="flex space-x-2 mt-4 float-end">
+            <div className="flex justify-center lg:justify-end space-x-2 mt-4">
               {user?.socials && typeof user.socials === "object"
                 ? Object.entries(user.socials)
                     .filter(([platform, url]) => platform && url)
@@ -60,7 +60,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
           </div>
 
           {/* Center: Profile Image */}
-          <div className="mx-4">
+          <div className="mx-4 my-6 lg:my-0">
             <div className="relative w-[10rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-[6rem] overflow-hidden">
               {user?.photo ? (
                 <OptimizeImage
@@ -82,7 +82,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
           </div>
 
           {/* Right Side: Experience and Skills */}
-          <div className="md:w-1/4 mt-6 md:mt-0">
+          <div className="lg:w-1/4 mt-6 lg:mt-0 text-center lg:text-start">
             <div>
               <p className="text-sm dark:text-gray-300 text-gray-700">
                 Experience
@@ -94,7 +94,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
               <p className="text-sm dark:text-gray-300 text-gray-700 mb-2">
                 Skills
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2">
                 {user?.skills && Array.isArray(user.skills)
                   ? user.skills.map((skill) => (
                       <Badge
