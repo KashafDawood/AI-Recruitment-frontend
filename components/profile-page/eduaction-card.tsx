@@ -1,6 +1,8 @@
 "use client";
 import { Calendar, GraduationCapIcon as Graduation } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { GlowCard, vibrantColors } from "../custom/GlowCard";
 
 // Redefining the type to match exactly what's expected
 export type Education = {
@@ -32,6 +34,12 @@ export default function EducationTimeline({
 }: {
   educationData?: EducationData | null | undefined;
 }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   if (!educationData) return null;
 
   // Convert the education data object to an array safely and sort by start date (newest first)
@@ -50,6 +58,12 @@ export default function EducationTimeline({
 
   if (educationArray.length === 0) return null;
 
+  // Assign a color to each education item
+  const educationWithColors = educationArray.map((edu, index) => ({
+    ...edu,
+    color: vibrantColors[index % vibrantColors.length],
+  }));
+
   return (
     <div className="w-full overflow-x-hidden">
       <div className="pt-8">
@@ -65,77 +79,82 @@ export default function EducationTimeline({
         ></div>
 
         {/* Education items */}
-        {educationArray.map((education, index) => (
-          <div
-            key={index}
-            className={cn(
-              "relative flex items-center mb-12",
-              // For small screens, always keep items on the right
-              // For medium and larger screens, alternate sides
-              "flex-row",
-              {
-                "md:flex-row-reverse":
-                  index % 2 !== 0 && window.innerWidth >= 768,
-              }
-            )}
-          >
-            {/* Date */}
+        {educationWithColors.map((education, index) => {
+          const isAlternate =
+            isMounted && index % 2 !== 0 && window.innerWidth >= 768;
+
+          return (
             <div
-              className={cn(
-                "hidden md:block md:w-1/2 text-sm text-gray-500 font-medium",
-                index % 2 === 0 ? "text-right pr-8" : "text-left pl-8"
-              )}
+              key={index}
+              className={cn("relative flex items-center mb-12", "flex-row", {
+                "md:flex-row-reverse": isAlternate,
+              })}
             >
-              {formatDate(education.start_date)}
-            </div>
-
-            {/* Circle on timeline */}
-            <div className="absolute md:left-1/2 left-0 transform md:-translate-x-1/2 w-10 h-10 rounded-full dark:bg-green-400 bg-green-600 flex items-center justify-center z-10 ml-0 md:ml-0">
-              <Graduation className="w-5 h-5 text-white" />
-            </div>
-
-            {/* Education card */}
-            <div
-              className={cn(
-                "md:w-1/2 w-full pl-16 md:pl-8",
-                index % 2 === 0 ? "md:pl-8" : "md:pr-8 md:pl-0"
-              )}
-            >
-              <div className="bg-gray-800 dark:bg-gray-200 p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-bold dark:text-black text-white">
-                  {education.degree_name}
-                </h3>
-                <h4 className="text-lg font-black text-green-400 dark:text-green-600 mt-1">
-                  {education.institute_name}
-                </h4>
-
-                {/* Date for small screens */}
-                <div className="flex items-center mt-3 text-sm md:hidden text-gray-200 dark:text-gray-600">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>
-                    {formatDate(education.start_date)} -{" "}
-                    {formatDate(education.end_date)}
-                  </span>
-                </div>
-
-                {/* Date for medium and large screens */}
-                <div className="hidden md:flex items-center mt-3 text-sm text-gray-200 dark:text-gray-600">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>
-                    {formatDate(education.start_date)} -{" "}
-                    {formatDate(education.end_date)}
-                  </span>
-                </div>
-
-                {!education.end_date && (
-                  <div className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Currently Studying
-                  </div>
+              {/* Date */}
+              <div
+                className={cn(
+                  "hidden md:block md:w-1/2 text-sm text-gray-500 font-medium",
+                  index % 2 === 0 ? "text-right pr-8" : "text-left pl-8"
                 )}
+              >
+                {formatDate(education.start_date)}
               </div>
+
+              {/* Circle on timeline */}
+              <div
+                className="absolute md:left-1/2 left-0 transform md:-translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center z-10 ml-0 md:ml-0"
+                style={{ backgroundColor: education.color }}
+              >
+                <Graduation className="w-5 h-5 text-white" />
+              </div>
+
+              {/* Education card */}
+              <GlowCard color={education.color} isAlternate={isAlternate}>
+                <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg">
+                  <h3 className="text-xl font-bold text-black dark:text-white">
+                    {education.degree_name}
+                  </h3>
+                  <h4
+                    className="text-lg font-black mt-1"
+                    style={{ color: education.color }}
+                  >
+                    {education.institute_name}
+                  </h4>
+
+                  {/* Date for small screens */}
+                  <div className="flex items-center mt-3 text-sm md:hidden text-gray-200 dark:text-gray-600">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span>
+                      {formatDate(education.start_date)} -{" "}
+                      {formatDate(education.end_date)}
+                    </span>
+                  </div>
+
+                  {/* Date for medium and large screens */}
+                  <div className="hidden md:flex items-center mt-3 text-sm dark:text-gray-200 text-gray-600">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span>
+                      {formatDate(education.start_date)} -{" "}
+                      {formatDate(education.end_date)}
+                    </span>
+                  </div>
+
+                  {!education.end_date && (
+                    <div
+                      className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      style={{
+                        backgroundColor: `${education.color}20`,
+                        color: education.color,
+                      }}
+                    >
+                      Currently Studying
+                    </div>
+                  )}
+                </div>
+              </GlowCard>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
