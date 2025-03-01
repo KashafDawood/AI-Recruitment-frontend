@@ -74,7 +74,7 @@ export default function EducationTimeline({
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
         {/* Center line for large screens, left line for small screens */}
         <div
-          className="absolute md:left-1/2 left-0 md:transform md:-translate-x-1/2 h-full w-0.5 bg-gray-300 ml-5 md:ml-0"
+          className="hidden md:block absolute md:left-1/2 left-0 md:transform md:-translate-x-1/2 h-full w-0.5 bg-gray-300 ml-5 md:ml-0"
           style={{ maxHeight: "calc(100% - 2rem)" }}
         ></div>
 
@@ -102,7 +102,7 @@ export default function EducationTimeline({
 
               {/* Circle on timeline */}
               <div
-                className="absolute md:left-1/2 left-0 transform md:-translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center z-10 ml-0 md:ml-0"
+                className="absolute md:left-1/2 left-0 transform md:-translate-x-1/2 w-10 h-10 rounded-full hidden md:flex items-center justify-center z-10 ml-0 md:ml-0"
                 style={{ backgroundColor: education.color }}
               >
                 <Graduation className="w-5 h-5 text-white" />
