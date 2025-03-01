@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import { Toaster } from "sonner";
+import { Fruktur } from "next/font/google";
+
+const fruktur = Fruktur({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-fruktur",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Staffee",
@@ -16,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={fruktur.variable}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
