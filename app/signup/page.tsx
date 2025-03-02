@@ -9,7 +9,6 @@ import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
 import Link from "next/link";
 import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
-import EmailVerificationButton from "@/components/custom/EmailVerificationButton";
 import { User } from "@/api/auth/verifyEmail";
 
 export default function SignupPage() {
@@ -17,7 +16,6 @@ export default function SignupPage() {
   const { EmailVerificationModal, open, setOpen } = useEmailVerification(
     state?.user
   );
-  const [unverifiedUser, setUnverifiedUser] = useState<User | null>(null);
 
   useEffect(() => {
     const user = getUserFromLocalStorage();
@@ -34,16 +32,12 @@ export default function SignupPage() {
       state?.serverError &&
       state?.serverError.includes("verify your email")
     ) {
-      setUnverifiedUser(state.user);
-    }
-    if (state?.verifyEmail) {
       setOpen(true);
     }
   }, [
     state?.user,
     state?.message,
     state?.serverError,
-    state?.verifyEmail,
     setOpen,
   ]);
 
@@ -74,7 +68,6 @@ export default function SignupPage() {
           Staffee.
         </Link>
         <SignupForm state={state} formAction={formAction} />
-        {unverifiedUser && <EmailVerificationButton user={unverifiedUser} />}
       </div>
       {open && <EmailVerificationModal />}
     </div>

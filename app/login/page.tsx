@@ -7,44 +7,34 @@ import { LoginForm } from "./login-form";
 import { login } from "@/api/auth/login";
 import useEmailVerification from "@/hooks/useEmailVerification";
 import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
-import EmailVerificationButton from "@/components/custom/EmailVerificationButton";
 import Alerts from "@/components/custom/Alerts";
 import Link from "next/link";
-import { User } from "@/api/auth/verifyEmail";
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(login, undefined);
   const { EmailVerificationModal, open, setOpen } = useEmailVerification(
     state?.user
   );
-  const [unverifiedUser, setUnverifiedUser] = useState<User | null>(null);
+  const [modalOpened, setModalOpened] = useState(false);
 
   useEffect(() => {
     const user = getUserFromLocalStorage();
-    if (user && user.verifyEmail) {
-      setOpen(true);
-    }
-  }, [setOpen]);
-
-  useEffect(() => {
-    if (state?.message && state?.user) {
-      setOpen(true);
-    }
-    if (
-      state?.serverError &&
-      state?.serverError.includes("verify your email")
-    ) {
-      setUnverifiedUser(state.user);
-    }
-    if (state?.verifyEmail) {
-      setOpen(true);
+    if (!modalOpened) {
+      if (user && user.verifyEmail) {
+        setOpen(true);
+        setModalOpened(true);
+      } else if (
+        state?.serverError &&
+        state?.serverError.includes("verify your email")
+      ) {
+        setOpen(true);
+        setModalOpened(true);
+      }
     }
   }, [
-    state?.user,
-    state?.message,
     state?.serverError,
-    state?.verifyEmail,
     setOpen,
+    modalOpened,
   ]);
 
   return (
@@ -74,7 +64,6 @@ export default function LoginPage() {
           Staffee.
         </Link>
         <LoginForm state={state} formAction={formAction} />
-        {unverifiedUser && <EmailVerificationButton user={unverifiedUser} />}
       </div>
       {open && <EmailVerificationModal />}
     </div>

@@ -23,7 +23,7 @@ export const signup = async (_: unknown, formData: FormData) => {
 
   try {
     const response = await axiosInstance.post(
-      "/api/users/signup/",
+      `${process.env.NEXT_PUBLIC_URL}/api/users/signup/`,
       result.data
     );
 

@@ -21,8 +21,8 @@ export const login = async (_: unknown, formData: FormData) => {
   }
 
   try {
-    // Using axiosInstance instead of axios directly
-    const response = await axiosInstance.post(`/api/users/login/`, result.data);
+    const response = await axiosInstance.post(
+      `${process.env.NEXT_PUBLIC_URL}/api/users/login/`, result.data);
 
     if (response.status === 200) {
       const user = response.data.user;

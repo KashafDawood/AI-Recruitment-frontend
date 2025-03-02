@@ -21,7 +21,6 @@ const useEmailVerification = (user: User | undefined) => {
 
   useEffect(() => {
     if (user) {
-      saveUserToLocalStorage(user);
       setStoredUser(user);
       if (user.verifyEmail) {
         setIsOpen(true);

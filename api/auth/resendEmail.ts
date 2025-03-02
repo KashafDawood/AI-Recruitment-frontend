@@ -3,10 +3,9 @@ import type { User } from "./verifyEmail";
 
 export const resendEmail = async (user: User) => {
   try {
-    console.log(JSON.stringify(user)); // Debugging statement
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_URL}/api/users/resend-otp-email/`,
-      JSON.stringify({ user }), // Wrap user object inside another object with a user key
+      JSON.stringify({ user }),
       {
         withCredentials: true,
         headers: {
@@ -14,7 +13,7 @@ export const resendEmail = async (user: User) => {
         },
       }
     );
-    return response.data; // Return the response data
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       const errorData = error.response.data;
