@@ -79,6 +79,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 />
               )}
             </div>
+            {/* <h1 className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center text-4xl font-vertigo w-full">
+              {user?.name}
+            </h1> */}
           </div>
 
           {/* Right Side: Experience and Skills */}
