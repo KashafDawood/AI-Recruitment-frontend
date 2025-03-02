@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ProfileCard from "@/components/profile-page/profile-card";
 import EducationTimeline from "@/components/profile-page/eduaction-card";
 import ProfileBio from "@/components/profile-page/Bio";
+import Certifications from "@/components/profile-page/certifications";
 
 export default function CandidateProfile() {
   const { user, isLoading } = useUserWithLoading();
@@ -65,6 +66,9 @@ export default function CandidateProfile() {
         {user?.bio && <ProfileBio bio={user.bio} />}
         {user?.education && (
           <EducationTimeline educationData={user?.education} />
+        )}
+        {user?.certifications && (
+          <Certifications certifications={user?.certifications} />
         )}
       </div>
     </>
