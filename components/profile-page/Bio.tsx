@@ -11,8 +11,9 @@ export default function ProfileBio({ bio }: { bio: string }) {
   const bioRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Sanitize content
-  const sanitizedBio = DOMPurify.sanitize(bio || "");
+  // Sanitize content and add spacing between paragraphs
+  const processedBio = bio ? bio.replace(/<\/p>/g, "</p><br/>") : "";
+  const sanitizedBio = DOMPurify.sanitize(processedBio || "");
 
   useEffect(() => {
     const updateHeight = () => {
