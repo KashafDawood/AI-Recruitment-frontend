@@ -67,7 +67,7 @@ export default function EducationTimeline({
   return (
     <div className="w-full overflow-x-hidden">
       <div className="pt-8">
-        <h1 className="text-3xl font-bold text-center mb-6">
+        <h1 className="text-6xl font-bold font-aclonica text-center mb-6">
           My Education Journey
         </h1>
       </div>

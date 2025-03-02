@@ -45,7 +45,9 @@ export default function ProfileBio({ bio }: { bio: string }) {
       <div className="relative z-10 backdrop-blur-sm bg-background/60 rounded-xl p-6 border border-muted shadow-lg">
         {/* Simple heading that will definitely be visible */}
         <div className="relative mb-8">
-          <h1 className="text-3xl font-bold text-start">My Story</h1>
+          <h1 className="text-6xl font-bold font-aclonica text-start">
+            My Story
+          </h1>
           <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary rounded-full mt-4" />
         </div>
 

@@ -2,12 +2,19 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import { Toaster } from "sonner";
-import { Fruktur } from "next/font/google";
+import { Aclonica, Pixelify_Sans } from "next/font/google";
 
-const fruktur = Fruktur({
+const aclonica = Aclonica({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-fruktur",
+  variable: "--font-aclonica",
+  display: "swap",
+});
+
+const pixelify = Pixelify_Sans({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-pixelify",
   display: "swap",
 });
 
@@ -24,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={fruktur.variable}>
+      <body className={`${aclonica.variable} ${pixelify.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

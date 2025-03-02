@@ -11,7 +11,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        fruktur: ["var(--font-fruktur)"],
+        aclonica: ["var(--font-aclonica)"],
+        pixelify: ["var(--font-pixelify)"],
+        vertigo: ['"vertigo"', "sans-serif"],
       },
       colors: {
         background: "var(--background)",
