@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { getme } from "@/api/auth/getme";
 
 interface Certification {
   source?: string;
@@ -55,6 +56,7 @@ interface UserState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   getUser: () => User | null;
+  refreshUser: () => Promise<User | null>;
 }
 
 export const useUserStore = create<UserState>()(
@@ -71,6 +73,16 @@ export const useUserStore = create<UserState>()(
       setLoading: (loading) => set({ loading }),
       setError: (error) => set({ error }),
       getUser: () => get().user,
+      refreshUser: async () => {
+        try {
+          const userData = await getme();
+          set({ user: userData });
+          return userData;
+        } catch (error) {
+          console.error("Failed to refresh user data:", error);
+          return null;
+        }
+      },
     }),
     {
       name: "user-store",
