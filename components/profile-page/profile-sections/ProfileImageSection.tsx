@@ -18,7 +18,13 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
     <div className="relative mx-4 my-6 lg:my-0">
       <div className="w-[18rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-full overflow-hidden">
         {preview ? (
-          <Image src={preview} alt="image" width={500} height={500} />
+          <Image
+            className="object-cover w-full h-full"
+            src={preview}
+            alt="image"
+            width={500}
+            height={500}
+          />
         ) : user?.photo ? (
           <OptimizeImage
             src={user.photo}
