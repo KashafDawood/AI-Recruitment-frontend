@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { type User, verifyEmail } from "@/api/auth/verifyEmail";
+import { User } from "@/types/user";
+import { verifyEmail } from "@/api/auth/verifyEmail";
 import { useRouter } from "next/navigation";
 import { createSession } from "@/app/_lib/session";
 import { removeUserFromLocalStorage } from "@/app/_lib/localStorage";
