@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User } from "@/store/userStore";
@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import SocialIcon from "../social-icon/social-icon";
 import { CardBg } from "./card-bg";
-import { X, Plus } from "lucide-react"; // Import icons
+import { X, Plus, Check } from "lucide-react";
 
 type ProfileCardProps = {
   user: User | null;
@@ -25,6 +25,9 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
   const [socials, setSocials] = useState<Record<string, string>>(
     user?.socials || {}
   );
+  const [showSocialInput, setShowSocialInput] = useState(false);
+  const [newSocialData, setNewSocialData] = useState({ platform: "", url: "" });
+  const socialInputRef = useRef<HTMLDivElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,6 +50,83 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
     }
   };
 
+  const handleAddSocialClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setShowSocialInput(true);
+  };
+
+  const handleSocialInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewSocialData((prev) => ({ ...prev, [name]: value }));
+
+    // Only try to extract platform if the URL is valid
+    if (value) {
+      try {
+        // Add https:// prefix if missing
+        let urlValue = value;
+        if (
+          !urlValue.startsWith("http://") &&
+          !urlValue.startsWith("https://")
+        ) {
+          urlValue = "https://" + urlValue;
+        }
+
+        const url = new URL(urlValue);
+        const platform = url.hostname.replace("www.", "").split(".")[0];
+
+        // Set the platform based on the hostname
+        if (platform) {
+          setNewSocialData((prev) => ({
+            ...prev,
+            platform: platform,
+            url: value,
+          }));
+        }
+      } catch {
+        // If URL is invalid, just update the URL field without extracting platform
+        setNewSocialData((prev) => ({ ...prev, url: value }));
+      }
+    }
+  };
+
+  const handleSocialSave = () => {
+    let platformName = newSocialData.platform;
+    let urlValue = newSocialData.url;
+
+    // If URL is provided but platform is empty, try to extract platform
+    if (urlValue && !platformName) {
+      try {
+        // Add https:// prefix if missing
+        if (
+          !urlValue.startsWith("http://") &&
+          !urlValue.startsWith("https://")
+        ) {
+          urlValue = "https://" + urlValue;
+        }
+
+        const url = new URL(urlValue);
+        platformName = url.hostname.replace("www.", "").split(".")[0];
+      } catch {
+        // If URL parsing fails, use a default platform name
+        platformName = "website";
+      }
+    }
+
+    if (urlValue) {
+      setSocials((prev) => ({
+        ...prev,
+        [platformName.toLowerCase()]: urlValue,
+      }));
+      setNewSocialData({ platform: "", url: "" });
+      setShowSocialInput(false);
+    }
+  };
+
+  const handleCancelAdd = () => {
+    setNewSocialData({ platform: "", url: "" });
+    setShowSocialInput(false);
+  };
+
   const handleDeleteSocial = (platform: string) => {
     // Delete after animation completes
     setTimeout(() => {
@@ -56,12 +136,25 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
     }, 500);
   };
 
-  const handleAddSocial = () => {
-    // You could implement a modal or form to add a new social
-    console.log("Add new social clicked");
-    // Example implementation - add a placeholder that can be edited
-    setSocials((prev) => ({ ...prev, newplatform: "https://" }));
-  };
+  //   handle outside clicks
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        showSocialInput &&
+        socialInputRef.current &&
+        !socialInputRef.current.contains(event.target as Node)
+      ) {
+        handleCancelAdd();
+      }
+    }
+
+    if (showSocialInput) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSocialInput]);
 
   return (
     <Card className=" h-auto rounded-b-none shadow-sm overflow-hidden border-0 items-center relative">
@@ -90,59 +183,100 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
                 }
               </p>
 
-              <div className="flex justify-center lg:justify-end space-x-2 mt-4">
-                {/* Add new social button */}
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="rounded-full bg-white dark:bg-slate-700"
-                  title="Add social media"
-                  onClick={handleAddSocial}
-                >
-                  <Plus
-                    size={18}
-                    className="text-gray-700 dark:text-gray-200"
-                  />
-                </Button>
+              <div className="flex flex-col items-center lg:items-end mt-4">
+                <p className="text-sm dark:text-gray-300 text-gray-700 mb-2">
+                  Socials
+                </p>
+                <div className="flex flex-wrap gap-y-2 justify-center lg:justify-end space-x-2">
+                  {/* Add new social button */}
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="rounded-full bg-white dark:bg-slate-700"
+                    title="Add social media"
+                    onClick={handleAddSocialClick}
+                  >
+                    <Plus
+                      size={18}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
+                  </Button>
 
-                {socials && typeof socials === "object"
-                  ? Object.entries(socials)
-                      .filter(([platform, url]) => platform && url)
-                      .map(([platform, url]) => (
-                        <div key={platform} className="relative group">
-                          <Link
-                            href={url || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className={`rounded-full bg-white dark:bg-slate-700`}
-                              title={
-                                platform.charAt(0).toUpperCase() +
-                                platform.slice(1)
-                              }
+                  {socials && typeof socials === "object"
+                    ? Object.entries(socials)
+                        .filter(([platform, url]) => platform && url)
+                        .map(([platform, url]) => (
+                          <div key={platform} className="relative group">
+                            <Link
+                              href={url || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              <SocialIcon
-                                platform={platform}
-                                size={18}
-                                className="text-gray-700 dark:text-gray-200"
-                              />
-                            </Button>
-                          </Link>
-                          {/* Delete button */}
-                          <button
-                            type="button"
-                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => handleDeleteSocial(platform)}
-                            title="Delete social"
-                          >
-                            <X size={12} />
-                          </button>
-                        </div>
-                      ))
-                  : null}
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className={`rounded-full bg-white dark:bg-slate-700`}
+                                title={
+                                  platform.charAt(0).toUpperCase() +
+                                  platform.slice(1)
+                                }
+                              >
+                                <SocialIcon
+                                  platform={platform}
+                                  size={18}
+                                  className="text-gray-700 dark:text-gray-200"
+                                />
+                              </Button>
+                            </Link>
+                            {/* Delete button */}
+                            <button
+                              type="button"
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => handleDeleteSocial(platform)}
+                              title="Delete social"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))
+                    : null}
+                </div>
+
+                {/* Social Input Form */}
+                {showSocialInput && (
+                  <div
+                    ref={socialInputRef}
+                    className="mt-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md w-full lg:w-64 border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="space-y-2">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">
+                          URL
+                        </label>
+                        <input
+                          type="text"
+                          name="url"
+                          placeholder="https://"
+                          value={newSocialData.url}
+                          onChange={handleSocialInputChange}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+                      <div className="flex justify-between pt-2">
+                        <Button
+                          type="button"
+                          variant="default"
+                          size="sm"
+                          onClick={handleSocialSave}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Check size={16} className="mr-1" />
+                          Save
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
