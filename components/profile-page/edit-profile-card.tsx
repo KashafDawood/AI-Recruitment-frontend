@@ -9,13 +9,20 @@ import SocialMediaSection from "./profile-sections/SocialMediaSection";
 import SkillsSection from "./profile-sections/SkillsSection";
 import ProfileInfoSection from "./profile-sections/ProfileInfoSection";
 import SubmitButton from "./profile-sections/SubmitButton";
+import { Button } from "../ui/button";
+import { X } from "lucide-react";
 
 type ProfileCardProps = {
   user: User | null;
   onChange?: (file: File | null) => void;
+  onEditComplete?: () => void;
 };
 
-const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
+const EditProfileCard: React.FC<ProfileCardProps> = ({
+  user,
+  onChange,
+  onEditComplete,
+}) => {
   // Main state for form data
   const [formData, setFormData] = useState({
     experience: user?.experience || "",
@@ -89,11 +96,21 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
       await updateMe(formDataObj);
       await refreshUser();
       toast.success("Profile updated successfully!");
+
+      if (onEditComplete) {
+        onEditComplete();
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (onEditComplete) {
+      onEditComplete();
     }
   };
 
@@ -103,6 +120,19 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
       <div className="absolute top-[-15] inset-0 overflow-hidden">
         <CardBg name={user?.name} />
       </div>
+
+      {/* Cancel Button */}
+      {onEditComplete && (
+        <Button
+          onClick={handleCancel}
+          variant="outline"
+          size="icon"
+          className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          title="Cancel Editing"
+        >
+          <X size={18} />
+        </Button>
+      )}
 
       <form className="w-full flex py-10" onSubmit={handleSubmit}>
         <div className="py-12 w-full relative z-10">
@@ -160,7 +190,19 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({ user, onChange }) => {
         </div>
 
         {/* Submit button */}
-        <SubmitButton isSubmitting={isSubmitting} />
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+          <SubmitButton isSubmitting={isSubmitting} />
+          {onEditComplete && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              className="bg-white dark:bg-slate-700"
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </form>
     </Card>
   );

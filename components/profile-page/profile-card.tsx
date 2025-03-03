@@ -8,18 +8,33 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import SocialIcon from "../social-icon/social-icon";
 import { CardBg } from "./card-bg";
+import { Pencil } from "lucide-react";
 
 type ProfileCardProps = {
   user: User | null;
+  onEditClick?: () => void;
 };
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ user, onEditClick }) => {
   return (
     <Card className="w-full h-auto rounded-b-none shadow-sm overflow-hidden border-0 flex items-center relative">
       {/* Background Overlay */}
       <div className="absolute top-[-15] inset-0 overflow-hidden">
         <CardBg name={user?.name} />
       </div>
+
+      {/* Edit Button */}
+      {onEditClick && (
+        <Button
+          onClick={onEditClick}
+          variant="outline"
+          size="icon"
+          className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          title="Edit Profile"
+        >
+          <Pencil size={18} />
+        </Button>
+      )}
 
       <div className="py-12 w-full relative z-10">
         <div className="flex flex-col lg:flex-row justify-around items-center px-6 lg:px-12">

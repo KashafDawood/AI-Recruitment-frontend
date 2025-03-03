@@ -1,21 +1,27 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
-type SubmitButtonProps = {
+interface SubmitButtonProps {
   isSubmitting: boolean;
-};
+}
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ isSubmitting }) => {
   return (
-    <div className="absolute bottom-4 right-4">
-      <Button
-        type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? "Saving..." : "Save Changes"}
-      </Button>
-    </div>
+    <Button
+      type="submit"
+      disabled={isSubmitting}
+      className="bg-primary hover:bg-primary/90 text-white"
+    >
+      {isSubmitting ? (
+        <>
+          <Loader2 size={16} className="mr-2 animate-spin" />
+          Saving...
+        </>
+      ) : (
+        "Save Changes"
+      )}
+    </Button>
   );
 };
 

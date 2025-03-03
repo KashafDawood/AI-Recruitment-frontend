@@ -7,9 +7,19 @@ import EducationTimeline from "@/components/profile-page/eduaction-card";
 import ProfileBio from "@/components/profile-page/Bio";
 import Certifications from "@/components/profile-page/certifications";
 import EditProfileCard from "@/components/profile-page/edit-profile-card";
+import { useState } from "react";
 
 export default function CandidateProfile() {
   const { user, isLoading } = useUserWithLoading();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleEditComplete = () => {
+    setIsEditing(false);
+  };
 
   if (isLoading) {
     return (
@@ -62,8 +72,11 @@ export default function CandidateProfile() {
 
   return (
     <>
-      <ProfileCard user={user} />
-      <EditProfileCard user={user} />
+      {isEditing ? (
+        <EditProfileCard user={user} onEditComplete={handleEditComplete} />
+      ) : (
+        <ProfileCard user={user} onEditClick={handleEditClick} />
+      )}
       <div className="bg-slate-200 dark:bg-slate-800 text-black dark:text-white shadow p-6 rounded-b-xl">
         {user?.bio && <ProfileBio bio={user.bio} />}
         {user?.education && (

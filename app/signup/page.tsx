@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import Alerts from "@/components/custom/Alerts";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
@@ -9,7 +9,6 @@ import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
 import Link from "next/link";
 import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
-import { User } from "@/api/auth/verifyEmail";
 
 export default function SignupPage() {
   const [state, formAction] = useActionState(signup, undefined);
@@ -34,12 +33,7 @@ export default function SignupPage() {
     ) {
       setOpen(true);
     }
-  }, [
-    state?.user,
-    state?.message,
-    state?.serverError,
-    setOpen,
-  ]);
+  }, [state?.user, state?.message, state?.serverError, setOpen]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
