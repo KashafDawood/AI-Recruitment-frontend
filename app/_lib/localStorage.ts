@@ -1,11 +1,4 @@
-export interface User {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  role: string;
-  verifyEmail?: boolean;
-}
+import { User } from "@/types/user";
 
 const USER_STORAGE_KEY = "user";
 const USER_TIMESTAMP_KEY = "user_timestamp";

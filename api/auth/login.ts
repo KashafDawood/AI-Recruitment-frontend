@@ -3,6 +3,7 @@ import { createSession } from "@/app/_lib/session";
 import { getme } from "./getme";
 import axiosInstance from "../axiosConfig";
 import axios from "axios";
+import { User } from "@/types/user";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address!" }),
@@ -25,7 +26,7 @@ export const login = async (_: unknown, formData: FormData) => {
       `${process.env.NEXT_PUBLIC_URL}/api/users/login/`, result.data);
 
     if (response.status === 200) {
-      const user = response.data.user;
+      const user: User = response.data.user;
       await createSession(user.id, user.role);
       await getme();
       return {

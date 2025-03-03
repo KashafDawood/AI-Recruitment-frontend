@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import EmailVerificationDrawer from "@/components/custom/verifyEmailModel";
 
-import {
-  getUserFromLocalStorage,
-  saveUserToLocalStorage,
-  User,
-} from "@/app/_lib/localStorage";
+import { User } from "@/types/user";
+import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
 
 const useEmailVerification = (user: User | undefined) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User } from "./verifyEmail";
+import type { User } from "@/types/user";
 
 export const resendEmail = async (user: User) => {
   try {
