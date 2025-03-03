@@ -79,7 +79,7 @@ export default function UpdateButton({
             {state === "loading" && (
               <>
                 <IOSpinner />
-                <div className="text-[13px] font-normal font-['Geist'] leading-tight whitespace-nowrap">
+                <div className="text-[13px] font-normal leading-tight whitespace-nowrap">
                   Saving
                 </div>
               </>
@@ -89,7 +89,7 @@ export default function UpdateButton({
                 <div className="p-0.5 dark:bg-white/25 bg-gray-200/80 rounded-[99px] shadow-sm dark:border-white/10 border-gray-300 border justify-center items-center gap-1.5 flex overflow-hidden">
                   <Check className="w-3.5 h-3.5 dark:text-white text-gray-700" />
                 </div>
-                <div className="text-[13px] font-normal font-['Geist'] leading-tight whitespace-nowrap">
+                <div className="text-[13px] font-normal leading-tight whitespace-nowrap">
                   Changes Saved
                 </div>
               </>
@@ -97,7 +97,7 @@ export default function UpdateButton({
             {state === "initial" && (
               <>
                 <InfoIcon />
-                <div className="text-[13px] font-normal font-['Geist'] leading-tight whitespace-nowrap">
+                <div className="text-[13px] font-normal leading-tight whitespace-nowrap">
                   Unsaved changes
                 </div>
               </>
@@ -115,17 +115,17 @@ export default function UpdateButton({
             >
               <button
                 onClick={onReset}
-                className="px-3 rounded-[99px] justify-center items-center flex dark:hover:bg-white/[0.08] hover:bg-gray-100 transition-colors"
+                className="px-3 py-1 rounded-[99px] justify-center items-center flex dark:hover:bg-white/[0.08] hover:bg-gray-100 transition-colors"
               >
-                <div className="text-[13px] font-normal font-['Geist'] leading-tight">
+                <div className="text-[13px] font-normal leading-tight">
                   Reset
                 </div>
               </button>
               <div
                 onClick={onSave}
-                className="h-7 px-3 bg-gradient-to-b dark:from-[#7c5aff] dark:to-[#6c47ff] from-[#6742ff] to-[#5835ff] rounded-[99px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.10)] justify-center items-center inline-flex overflow-hidden cursor-pointer dark:hover:from-[#8f71ff] dark:hover:to-[#7c5aff] hover:from-[#7c5aff] hover:to-[#6c47ff] active:from-[#6c47ff] active:to-[#5835ff] transition-all duration-200"
+                className="h-7 px-3 bg-green-400 rounded-[99px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.10)] justify-center items-center inline-flex overflow-hidden cursor-pointer hover:bg-green-500 active:bg-green-600 transition-all duration-200"
               >
-                <div className="text-white text-[13px] font-medium font-['Geist'] leading-tight">
+                <div className="text-gray-800 text-[13px] font-medium leading-tight">
                   Save
                 </div>
               </div>
