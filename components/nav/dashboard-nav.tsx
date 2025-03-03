@@ -10,11 +10,11 @@ export function DashboardNav() {
   const pageTitle = pathname.split("/").pop() || "Dashboard";
 
   return (
-    <div className="h-20 border-b flex flex-col justify-center dark:border-gray-600 px-8">
+    <div className="h-20 border-b flex flex-col justify-center dark:border-gray-600 px-16">
       <div className="flex justify-between items-center">
         {/* Title Section */}
         <div className="space-y-1">
-          <h1 className="text-lg font-semibold capitalize">
+          <h1 className="text-2xl font-aclonica font-semibold capitalize">
             {pageTitle === "candidate" || pageTitle === "employer"
               ? `${pageTitle} Dashboard`
               : pageTitle}

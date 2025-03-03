@@ -61,13 +61,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
 
           {/* Center: Profile Image */}
           <div className="mx-4 my-6 lg:my-0">
-            <div className="relative w-[10rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-[6rem] overflow-hidden">
+            <div className="relative w-[18rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-full overflow-hidden">
               {user?.photo ? (
                 <OptimizeImage
                   src={user.photo}
                   alt={user?.name || "profile image"}
                   width={500}
-                  height={900}
                 />
               ) : (
                 <Image
@@ -79,6 +78,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                 />
               )}
             </div>
+            {/* <h1 className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center text-4xl font-vertigo w-full">
+              {user?.name}
+            </h1> */}
           </div>
 
           {/* Right Side: Experience and Skills */}

@@ -2,6 +2,21 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import { Toaster } from "sonner";
+import { Aclonica, Pixelify_Sans } from "next/font/google";
+
+const aclonica = Aclonica({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-aclonica",
+  display: "swap",
+});
+
+const pixelify = Pixelify_Sans({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-pixelify",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Staffee",
@@ -16,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={`${aclonica.variable} ${pixelify.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
