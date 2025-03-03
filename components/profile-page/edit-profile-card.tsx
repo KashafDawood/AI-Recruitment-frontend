@@ -23,7 +23,6 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
   onChange,
   onEditComplete,
 }) => {
-  // Main state for form data
   const [formData, setFormData] = useState({
     experience: user?.experience || "",
     interest: user?.interests || "",
@@ -178,7 +177,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   return (
-    <Card className="h-auto rounded-b-none shadow-sm overflow-hidden border-0 items-center relative">
+    <Card className="h-auto pb-8 rounded-b-none shadow-sm overflow-hidden border-0 items-center relative">
       {/* Background */}
       <div className="absolute top-[-15] inset-0 overflow-hidden">
         <CardBg name={user?.name} />
