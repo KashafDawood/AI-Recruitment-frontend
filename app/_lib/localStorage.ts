@@ -1,15 +1,8 @@
-export interface User {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  role: string;
-  verifyEmail?: boolean;
-}
+import { User } from "@/types/user";
 
 const USER_STORAGE_KEY = "user";
 const USER_TIMESTAMP_KEY = "user_timestamp";
-const EXPIRATION_DAYS = 7;
+const EXPIRATION_DAYS = 3;
 
 export const saveUserToLocalStorage = (user: User) => {
   const timestamp = new Date().getTime();

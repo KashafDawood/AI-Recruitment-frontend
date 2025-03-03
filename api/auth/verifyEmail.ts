@@ -1,12 +1,5 @@
 import axiosInstance from "../axiosConfig";
-
-export interface User {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  role: string;
-}
+import { User } from "@/types/user";
 
 export const verifyEmail = async (user: User, otp: string) => {
   try {
