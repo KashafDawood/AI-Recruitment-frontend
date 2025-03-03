@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { User, useUserStore } from "@/store/userStore";
 import { updateMe } from "@/api/user/upadateuser";
@@ -8,9 +8,9 @@ import ProfileImageSection from "./profile-sections/ProfileImageSection";
 import SocialMediaSection from "./profile-sections/SocialMediaSection";
 import SkillsSection from "./profile-sections/SkillsSection";
 import ProfileInfoSection from "./profile-sections/ProfileInfoSection";
-import SubmitButton from "./profile-sections/SubmitButton";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
+import UpdateButton from "../custom/updateButton";
 
 type ProfileCardProps = {
   user: User | null;
@@ -39,7 +39,49 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
   );
   const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updateState, setUpdateState] = useState<
+    "initial" | "loading" | "success"
+  >("initial");
+
+  // Keep original data for reset functionality
+  const [originalData, setOriginalData] = useState({
+    formData: { ...formData },
+    socials: { ...socials },
+    skills: [...skills],
+    preview: null as string | null,
+    file: null as File | null,
+  });
+
+  // Track if form is dirty (has changes)
+  const [formDirty, setFormDirty] = useState(false);
+
+  // Set original data on component mount
+  useEffect(() => {
+    setOriginalData({
+      formData: { ...formData },
+      socials: { ...socials },
+      skills: [...skills],
+      preview: null,
+      file: null,
+    });
+  }, [user, formData, socials, skills]);
+
+  // Check if form is dirty when any input changes
+  useEffect(() => {
+    const isDirty =
+      JSON.stringify(formData) !== JSON.stringify(originalData.formData) ||
+      JSON.stringify(socials) !== JSON.stringify(originalData.socials) ||
+      JSON.stringify(skills) !== JSON.stringify(originalData.skills) ||
+      file !== originalData.file;
+
+    setFormDirty(isDirty);
+
+    // Reset to initial state if form changes
+    if (isDirty && updateState === "success") {
+      setUpdateState("initial");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, socials, skills, file]);
 
   const { refreshUser } = useUserStore();
 
@@ -67,10 +109,9 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   // Form submission handler
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     try {
-      setIsSubmitting(true);
+      setUpdateState("loading");
 
       // Create form data for multipart/form-data
       const formDataObj = new FormData();
@@ -95,17 +136,39 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
       // Submit data
       await updateMe(formDataObj);
       await refreshUser();
-      toast.success("Profile updated successfully!");
 
-      if (onEditComplete) {
-        onEditComplete();
-      }
+      // Update the original data with current state so form is no longer dirty
+      setOriginalData({
+        formData: { ...formData },
+        socials: { ...socials },
+        skills: [...skills],
+        preview,
+        file,
+      });
+
+      setUpdateState("success");
+
+      setTimeout(() => {
+        if (onEditComplete) {
+          onEditComplete();
+        }
+      }, 1500);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      setUpdateState("initial");
     }
+  };
+
+  const handleReset = () => {
+    // Reset all form fields to original values without canceling edit mode
+    setFormData({ ...originalData.formData });
+    setSocials({ ...originalData.socials });
+    setSkills([...originalData.skills]);
+    setPreview(originalData.preview);
+    setFile(originalData.file);
+
+    // Don't call onEditComplete here so we stay in edit mode
   };
 
   const handleCancel = () => {
@@ -122,7 +185,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
       </div>
 
       {/* Cancel Button */}
-      {onEditComplete && (
+      {onEditComplete && !formDirty && (
         <Button
           onClick={handleCancel}
           variant="outline"
@@ -134,7 +197,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
         </Button>
       )}
 
-      <form className="w-full flex py-10" onSubmit={handleSubmit}>
+      <div className="w-full flex py-10">
         <div className="py-12 w-full relative z-10">
           <div className="flex flex-col lg:flex-row justify-around items-center px-6 lg:px-12">
             {/* Left Side: Role and Socials */}
@@ -189,21 +252,17 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
           </div>
         </div>
 
-        {/* Submit button */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
-          <SubmitButton isSubmitting={isSubmitting} />
-          {onEditComplete && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              className="bg-white dark:bg-slate-700"
-            >
-              Cancel
-            </Button>
+        {/* UpdateButton */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+          {(formDirty || updateState !== "initial") && (
+            <UpdateButton
+              state={updateState}
+              onReset={handleReset}
+              onSave={handleSubmit}
+            />
           )}
         </div>
-      </form>
+      </div>
     </Card>
   );
 };
