@@ -78,7 +78,7 @@ export default function CandidateProfile() {
         <ProfileCard user={user} onEditClick={handleEditClick} />
       )}
       <div className="bg-slate-200 dark:bg-slate-800 text-black dark:text-white shadow p-6 rounded-b-xl">
-        {user?.bio && <ProfileBio bio={user.bio} />}
+        <ProfileBio initialBio={user?.bio || ""} />
         {user?.education && (
           <EducationTimeline educationData={user?.education} />
         )}
