@@ -3,14 +3,14 @@ import { Card } from "@/components/ui/card";
 import { User, useUserStore } from "@/store/userStore";
 import { updateMe } from "@/api/user/upadateuser";
 import { toast } from "sonner";
-import { CardBg } from "./card-bg";
-import ProfileImageSection from "./profile-sections/ProfileImageSection";
-import SocialMediaSection from "./profile-sections/SocialMediaSection";
-import SkillsSection from "./profile-sections/SkillsSection";
-import ProfileInfoSection from "./profile-sections/ProfileInfoSection";
-import { Button } from "../ui/button";
+import { CardBg } from "../card-bg";
+import ProfileImageSection from "./ProfileImageSection";
+import SocialMediaSection from "./SocialMediaSection";
+import SkillsSection from "./SkillsSection";
+import ProfileInfoSection from "./ProfileInfoSection";
+import { Button } from "../../ui/button";
 import { X } from "lucide-react";
-import UpdateButton from "../custom/updateButton";
+import UpdateButton from "../../custom/updateButton";
 
 type ProfileCardProps = {
   user: User | null;
