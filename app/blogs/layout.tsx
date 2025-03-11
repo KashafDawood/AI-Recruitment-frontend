@@ -7,14 +7,12 @@ export default function BlogsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <header>
         <NavMenu />
       </header>
-      <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
-        {children}
-      </main>
+      <main>{children}</main>
       <Footer />
-    </div>
+    </>
   );
 }
