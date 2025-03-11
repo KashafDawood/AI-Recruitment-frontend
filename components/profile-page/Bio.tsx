@@ -3,25 +3,13 @@ import DOMPurify from "dompurify";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { getBio } from "../../api/candidate/bio/getBio";
 
-export default function ProfileBio({ initialBio }: { initialBio: string }) {
-  const [bio, setBio] = useState(initialBio);
+export default function ProfileBio({ bio }: { bio: string }) {
   const [expanded, setExpanded] = useState(false);
   const [bioHeight, setBioHeight] = useState(0);
   const [needsExpansion, setNeedsExpansion] = useState(false);
   const bioRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  // Fetch bio from backend
-  useEffect(() => {
-    const fetchBio = async () => {
-      const fetchedBio = await getBio();
-      setBio(fetchedBio);
-    };
-
-    fetchBio();
-  }, []);
 
   // Sanitize content and add spacing between paragraphs
   const processedBio = bio ? bio.replace(/<\/p>/g, "</p><br/>") : "";
