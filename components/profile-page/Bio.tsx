@@ -59,7 +59,7 @@ export default function ProfileBio({ bio, onEditClick }: BioProps) {
           onClick={onEditClick}
           variant="outline"
           size="icon"
-          className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
           title="Edit Profile"
         >
           <Pencil size={18} />

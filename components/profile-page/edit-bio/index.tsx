@@ -53,6 +53,11 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
       toast.info("Generating your bio with AI...");
 
       const { bio } = await generateBio();
+
+      if (!bio) {
+        throw { message: "Received empty bio from AI. Please try again." };
+      }
+
       setContent(bio);
       setEditorKey(Date.now());
       setUpdateState("initial");
@@ -60,10 +65,7 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
 
       toast.success("Bio generated successfully!");
     } catch (error: any) {
-      console.error("Error generating bio:", error);
-      toast.error(
-        error?.message || "Failed to generate bio. Please try again."
-      );
+      toast.error(error.message || "Failed to generate bio. Please try again.");
     } finally {
       setIsGeneratingBio(false);
     }
@@ -123,7 +125,7 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
           onClick={handleCancel}
           variant="outline"
           size="icon"
-          className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
           title="Edit Profile"
         >
           <X size={18} />
