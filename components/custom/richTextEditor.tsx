@@ -387,9 +387,11 @@ export function RichTextEditor({
         ) : (
           <Button
             onClick={onAiGenerate}
-            className="absolute bottom-2 right-2 bg-transparent border-none text-transparent bg-clip-text 
+            className="absolute bottom-2 right-2 bg-transparent border-none text-transparent bg-clip-text
+            dark:bg-gradient-to-r dark:from-pink-600 dark:to-purple-700
+            dark:hover:bg-gradient-to-r dark:hover:from-purple-600 dark:hover:to-pink-500
             bg-gradient-to-r from-pink-600 to-purple-700
-            hover:bg-gradient-to-r  hover:from-purple-600 hover:to-pink-500 p-0 shadow-none"
+            hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-500 p-0 shadow-none"
             size="sm"
             disabled={isGenerating}
             variant="link"
