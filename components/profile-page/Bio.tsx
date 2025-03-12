@@ -1,10 +1,15 @@
 "use client";
 import DOMPurify from "dompurify";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil } from "lucide-react";
 
-export default function ProfileBio({ bio }: { bio: string }) {
+type BioProps = {
+  bio?: string;
+  onEditClick?: () => void;
+};
+
+export default function ProfileBio({ bio, onEditClick }: BioProps) {
   const [expanded, setExpanded] = useState(false);
   const [bioHeight, setBioHeight] = useState(0);
   const [needsExpansion, setNeedsExpansion] = useState(false);
@@ -36,22 +41,22 @@ export default function ProfileBio({ bio }: { bio: string }) {
     };
   }, [bio]);
 
-  if (!bio?.trim()) {
-    return (
-      <div className="py-10 px-6 md:px-10">
+  return (
+    <div className="relative py-10 px-6 md:px-10">
+      <div className="flex justify-between">
         <h1 className="text-6xl font-bold font-aclonica text-start">
           My Story
         </h1>
-        <p className="pt-8 text-muted-foreground italic">
-          No bio provided yet.
-        </p>
+        <Button
+          onClick={onEditClick}
+          variant="outline"
+          size="icon"
+          className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          title="Edit Profile"
+        >
+          <Pencil size={18} />
+        </Button>
       </div>
-    );
-  }
-
-  return (
-    <div className="py-10 px-6 md:px-10">
-      <h1 className="text-6xl font-bold font-aclonica text-start">My Story</h1>
       <div
         ref={bioRef}
         className="relative prose prose-sm sm:prose-base max-w-none dark:prose-invert overflow-hidden transition-all duration-500 ease-in-out"

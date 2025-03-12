@@ -8,17 +8,21 @@ import ProfileBio from "@/components/profile-page/Bio";
 import Certifications from "@/components/profile-page/certifications";
 import EditProfileCard from "@/components/profile-page/edit-profile-card";
 import { useState } from "react";
+import EditProfileBio from "@/components/profile-page/edit-bio";
+
+// Define edit section types
+type EditSection = "profile" | "bio" | "education" | "certifications" | null;
 
 export default function CandidateProfile() {
   const { user, isLoading } = useUserWithLoading();
-  const [isEditing, setIsEditing] = useState(false);
+  const [editSection, setEditSection] = useState<EditSection>(null);
 
-  const handleEditClick = () => {
-    setIsEditing(true);
+  const handleEditClick = (section: EditSection) => {
+    setEditSection(section);
   };
 
   const handleEditComplete = () => {
-    setIsEditing(false);
+    setEditSection(null);
   };
 
   if (isLoading) {
@@ -72,18 +76,33 @@ export default function CandidateProfile() {
 
   return (
     <>
-      {isEditing ? (
+      {editSection === "profile" ? (
         <EditProfileCard user={user} onEditComplete={handleEditComplete} />
       ) : (
-        <ProfileCard user={user} onEditClick={handleEditClick} />
+        <ProfileCard
+          user={user}
+          onEditClick={() => handleEditClick("profile")}
+        />
       )}
       <div className="bg-slate-200 dark:bg-slate-800 text-black dark:text-white shadow p-6 rounded-b-xl">
-        <ProfileBio bio={user?.bio || ""} />
-        {user?.education && (
-          <EducationTimeline educationData={user?.education} />
+        {editSection === "bio" ? (
+          <EditProfileBio
+            bio={user?.bio || ""}
+            onEditCencel={handleEditComplete}
+          />
+        ) : (
+          <ProfileBio
+            bio={user?.bio || ""}
+            onEditClick={() => handleEditClick("bio")}
+          />
         )}
+
+        {user?.education && (
+          <EducationTimeline educationData={user.education} />
+        )}
+
         {user?.certifications && (
-          <Certifications certifications={user?.certifications} />
+          <Certifications certifications={user.certifications} />
         )}
       </div>
     </>
