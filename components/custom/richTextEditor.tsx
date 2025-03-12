@@ -5,6 +5,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
+import Placeholder from "@tiptap/extension-placeholder";
 import { useState } from "react";
 import {
   Bold,
@@ -24,7 +25,6 @@ import {
   Quote,
   Undo,
   Redo,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
@@ -35,6 +35,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { AILoadingAnimation } from "./ailoader";
 
 interface RichTextEditorProps {
   content?: string;
@@ -68,13 +69,16 @@ export function RichTextEditor({
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
+      Placeholder.configure({
+        placeholder,
+        emptyEditorClass: "is-editor-empty",
+      }),
     ],
     content,
     editorProps: {
       attributes: {
         class:
           "min-h-[150px] w-full rounded-md border-none bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        placeholder: placeholder,
       },
     },
     onUpdate: ({ editor }) => {
@@ -375,21 +379,21 @@ export function RichTextEditor({
         </div>
 
         {isGenerating ? (
-          <div className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white py-1 px-3 rounded-md shadow-md flex items-center">
-            <div className="sparkle-loader mr-2">
-              <span className="sparkle"></span>
-              <span className="sparkle"></span>
-              <span className="sparkle"></span>
+          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
+            <div className="dark:text-white text-gray-800 p-4">
+              <AILoadingAnimation />
             </div>
-            <span>Generating...</span>
           </div>
         ) : (
           <Button
             onClick={onAiGenerate}
-            className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:text-white text-white shadow-md"
+            className="absolute bottom-2 right-2 bg-transparent border-none text-transparent bg-clip-text 
+            bg-gradient-to-r from-pink-600 to-purple-700
+            hover:bg-gradient-to-r  hover:from-purple-600 hover:to-pink-500 p-0 shadow-none"
             size="sm"
+            disabled={isGenerating}
+            variant="link"
           >
-            <Sparkles className="h-4 w-4 mr-2" />
             Generate using AI
           </Button>
         )}
@@ -400,6 +404,15 @@ export function RichTextEditor({
           min-height: 150px;
           padding: 0.5rem;
           outline: none;
+        }
+
+        /* Add placeholder styling */
+        .ProseMirror p.is-editor-empty:first-child::before {
+          color: #adb5bd;
+          content: attr(data-placeholder);
+          float: left;
+          height: 0;
+          pointer-events: none;
         }
 
         /* List styling */
@@ -460,7 +473,7 @@ export function RichTextEditor({
           margin-bottom: 0.5rem;
         }
 
-        /* Sparkle loader animation */
+        /* Sparkle loader animation - no longer needed */
         .sparkle-loader {
           display: flex;
           align-items: center;
@@ -499,6 +512,62 @@ export function RichTextEditor({
             transform: scale(1.5);
             opacity: 1;
           }
+        }
+
+        /* New animation styles for the AILoadingAnimation */
+        @keyframes pulse-slow {
+          0%,
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.7;
+            transform: scale(0.95);
+          }
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+          0% {
+            opacity: 0;
+            transform: scale(0);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0);
+            transform: translate(10px, -10px);
+          }
+        }
+
+        .animate-sparkle {
+          animation: sparkle 2s ease-in-out forwards;
+        }
+
+        @keyframes fade-in {
+          0% {
+            opacity: 0;
+          }
+          25% {
+            opacity: 1;
+          }
+          75% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 2s ease-in-out;
         }
       `}</style>
     </div>
