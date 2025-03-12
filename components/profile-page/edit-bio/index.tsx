@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "../../ui/button";
 import { X } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/custom/richTextEditor";
 
 type BioProps = {
   bio?: string;
@@ -27,11 +27,10 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
         </Button>
       </div>
       <div className="py-8">
-        <Textarea
-          className="resize-none dark:border-white border-black"
+        <RichTextEditor
+          showToolbar={false}
+          content={bio || ""}
           placeholder="Type your Bio Here"
-          value={bio || ""}
-          rows={20}
         />
       </div>
     </div>
