@@ -1,5 +1,4 @@
 import OptimizeImage from "@/components/custom/optimizeImage";
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BlogPost } from "@/types/blog";
@@ -42,7 +41,7 @@ export default function BlogCard({ post, size }: BlogCardProps) {
       {/* Background Image or Color */}
       {post.thumbnail ? (
         <div className="absolute inset-0 z-0">
-          <Image
+          <OptimizeImage
             src={post.thumbnail || "/default.png"}
             alt="image"
             width={900}
@@ -68,10 +67,12 @@ export default function BlogCard({ post, size }: BlogCardProps) {
 
         <div className="flex flex-col h-full justify-end">
           <h3 className="text-xl md:text-2xl font-bold mb-2">{post.title}</h3>
-            <p 
-            className="text-sm text-white/80 mb-4" 
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(truncateContent(post.content,100)) }}
-            ></p>
+          <p
+            className="text-sm text-white/80 mb-4"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(truncateContent(post.content, 100)),
+            }}
+          ></p>
         </div>
       </div>
     </div>
