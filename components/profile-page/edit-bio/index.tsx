@@ -64,8 +64,12 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
       setIsDirty(true);
 
       toast.success("Bio generated successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to generate bio. Please try again.");
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === "object" && "message" in error
+          ? String(error.message)
+          : "Failed to generate bio. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsGeneratingBio(false);
     }
