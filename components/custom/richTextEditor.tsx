@@ -42,6 +42,7 @@ interface RichTextEditorProps {
   placeholder?: string;
   showToolbar?: boolean;
   onAiGenerate?: () => void;
+  isGenerating?: boolean;
 }
 
 export function RichTextEditor({
@@ -49,7 +50,8 @@ export function RichTextEditor({
   onChange,
   placeholder = "Start writing...",
   showToolbar = true,
-  onAiGenerate = () => alert("AI generation would happen here"),
+  isGenerating,
+  onAiGenerate,
 }: RichTextEditorProps) {
   const [linkUrl, setLinkUrl] = useState("");
 
@@ -372,14 +374,25 @@ export function RichTextEditor({
           <EditorContent editor={editor} />
         </div>
 
-        <Button
-          onClick={onAiGenerate}
-          className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:text-white text-white shadow-md"
-          size="sm"
-        >
-          <Sparkles className="h-4 w-4 mr-2" />
-          Generate using AI
-        </Button>
+        {isGenerating ? (
+          <div className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white py-1 px-3 rounded-md shadow-md flex items-center">
+            <div className="sparkle-loader mr-2">
+              <span className="sparkle"></span>
+              <span className="sparkle"></span>
+              <span className="sparkle"></span>
+            </div>
+            <span>Generating...</span>
+          </div>
+        ) : (
+          <Button
+            onClick={onAiGenerate}
+            className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:text-white text-white shadow-md"
+            size="sm"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            Generate using AI
+          </Button>
+        )}
       </div>
 
       <style jsx global>{`
@@ -445,6 +458,47 @@ export function RichTextEditor({
         .ProseMirror p {
           margin-top: 0.5rem;
           margin-bottom: 0.5rem;
+        }
+
+        /* Sparkle loader animation */
+        .sparkle-loader {
+          display: flex;
+          align-items: center;
+        }
+
+        .sparkle {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: white;
+          margin: 0 2px;
+          opacity: 0.6;
+          animation: sparkle-pulse 1.5s infinite ease-in-out;
+        }
+
+        .sparkle:nth-child(1) {
+          animation-delay: 0s;
+        }
+
+        .sparkle:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+
+        .sparkle:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+
+        @keyframes sparkle-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+            opacity: 0.6;
+          }
+          50% {
+            transform: scale(1.5);
+            opacity: 1;
+          }
         }
       `}</style>
     </div>

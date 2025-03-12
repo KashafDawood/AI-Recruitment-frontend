@@ -7,6 +7,7 @@ import { updateBio } from "@/api/candidate/updateBio";
 import { toast } from "sonner";
 import UpdateButton from "../../custom/updateButton";
 import { useUserStore } from "@/store/userStore";
+import { generateBio } from "@/api/ai/generateBio";
 
 type BioProps = {
   bio?: string;
@@ -14,12 +15,14 @@ type BioProps = {
 };
 
 export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
+  //   const [generatedBio, setGeneratedBio] = useState("");
   const [content, setContent] = useState(bio || "");
   const [originalContent, setOriginalContent] = useState(bio || "");
   const [isDirty, setIsDirty] = useState(false);
   const [updateState, setUpdateState] = useState<
     "initial" | "loading" | "success"
   >("initial");
+  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const { refreshUser } = useUserStore();
 
   // Add a key state to force re-render of RichTextEditor when reset
@@ -44,10 +47,36 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
     setContent(newContent);
   };
 
+  const handleBioGeneration = async () => {
+    try {
+      setIsGeneratingBio(true);
+      toast.info("Generating your bio with AI...");
+
+      const { bio } = await generateBio();
+      setContent(bio);
+      setEditorKey(Date.now());
+      setUpdateState("initial");
+      setIsDirty(true);
+
+      toast.success("Bio generated successfully!");
+    } catch (error: any) {
+      console.error("Error generating bio:", error);
+      toast.error(
+        error?.message || "Failed to generate bio. Please try again."
+      );
+    } finally {
+      setIsGeneratingBio(false);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       setUpdateState("loading");
-      await updateBio(content);
+
+      // Ensure we're sending a valid string by sanitizing HTML if needed
+      const bioToSend = typeof content === "string" ? content : "";
+      await updateBio(bioToSend);
+
       await refreshUser();
 
       setOriginalContent(content);
@@ -104,9 +133,11 @@ export default function EditProfileBio({ bio, onEditCencel }: BioProps) {
         <RichTextEditor
           key={editorKey}
           showToolbar={false}
-          content={originalContent}
-          placeholder="Type your Bio Here"
+          content={content} // Change from originalContent to content to reflect current state
+          placeholder="Type your Bio Here..."
           onChange={handleContentChange}
+          onAiGenerate={handleBioGeneration}
+          isGenerating={isGeneratingBio}
         />
       </div>
 
