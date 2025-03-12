@@ -2,17 +2,23 @@
 
 import { useState, useEffect } from "react";
 import BlogCard from "./blog-card";
-import { blogPosts } from "./blog-post";
+import { blogList } from "@/api/blogs/blogList";
 import { useMobile } from "@/hooks/use-mobile-bento";
+import { BlogPost } from "@/types/blog";
 
 export default function BentoGrid() {
-  const [shuffledPosts, setShuffledPosts] = useState(blogPosts);
+  const [shuffledPosts, setShuffledPosts] = useState<BlogPost[]>([]);
   const isMobile = useMobile();
 
-  // Shuffle posts on initial load
+  // Fetch and shuffle posts on initial load
   useEffect(() => {
-    const shuffled = [...blogPosts].sort(() => Math.random() - 0.5);
-    setShuffledPosts(shuffled);
+    const fetchAndShufflePosts = async () => {
+      const posts = await blogList();
+      const shuffled = [...posts].sort(() => Math.random() - 0.5);
+      setShuffledPosts(shuffled);
+    };
+
+    fetchAndShufflePosts();
   }, []);
 
   return (
