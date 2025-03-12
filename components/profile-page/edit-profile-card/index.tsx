@@ -160,14 +160,31 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   const handleReset = () => {
-    // Reset all form fields to original values without canceling edit mode
-    setFormData({ ...originalData.formData });
-    setSocials({ ...originalData.socials });
-    setSkills([...originalData.skills]);
-    setPreview(originalData.preview);
-    setFile(originalData.file);
+    // Reset all form fields to original user values
+    setFormData({
+      experience: user?.experience || "",
+      interest: user?.interests || "",
+      name: user?.name || "",
+    });
+    setSocials(user?.socials || {});
+    setSkills(Array.isArray(user?.skills) ? [...user?.skills] : []);
+    setPreview(null);
+    setFile(null);
 
-    // Don't call onEditComplete here so we stay in edit mode
+    // Update original data to match reset values
+    setOriginalData({
+      formData: {
+        experience: user?.experience || "",
+        interest: user?.interests || "",
+        name: user?.name || "",
+      },
+      socials: user?.socials || {},
+      skills: Array.isArray(user?.skills) ? [...user?.skills] : [],
+      preview: null,
+      file: null,
+    });
+
+    toast.info("Form has been reset to original values");
   };
 
   const handleCancel = () => {
