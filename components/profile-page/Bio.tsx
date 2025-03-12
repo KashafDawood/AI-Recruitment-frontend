@@ -16,11 +16,19 @@ export default function ProfileBio({ bio, onEditClick }: BioProps) {
   const bioRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Sanitize content and add spacing between paragraphs
   const processedBio = bio ? bio.replace(/<\/p>/g, "</p><br/>") : "";
-  const sanitizedBio = DOMPurify.sanitize(processedBio || "");
+
+  const sanitizedBio =
+    typeof window !== "undefined"
+      ? DOMPurify.sanitize(processedBio || "")
+      : processedBio || "";
 
   useEffect(() => {
+    // Initialize DOMPurify if needed
+    if (typeof window !== "undefined" && !DOMPurify.isSupported) {
+      console.warn("DOMPurify is not supported in this environment");
+    }
+
     const updateHeight = () => {
       if (bioRef.current && contentRef.current) {
         const fullHeight = contentRef.current.scrollHeight;
