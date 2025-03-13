@@ -223,6 +223,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
                 name="interest"
                 value={formData.interest}
                 onChange={handleChange}
+                minWidth="180px"
               />
 
               <SocialMediaSection socials={socials} setSocials={setSocials} />
@@ -239,11 +240,10 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
               <input
                 name="name"
                 placeholder="Name"
-                className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none"
+                className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center"
                 style={{
-                  width: `${
-                    formData.name.length > 0 ? formData.name.length : 8
-                  }ch`,
+                  minWidth: "180px",
+                  width: `${Math.max(formData.name.length, 8)}ch`,
                 }}
                 type="text"
                 value={formData.name}
@@ -260,7 +260,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
                 onChange={handleChange}
                 type="number"
                 suffix=" years"
-                inputClassName="w-6"
+                inputClassName="text-right"
               />
 
               <SkillsSection skills={skills} setSkills={setSkills} />
