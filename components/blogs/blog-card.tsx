@@ -1,12 +1,19 @@
-import Image from "next/image";
+import OptimizeImage from "@/components/custom/optimizeImage";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BlogPost } from "@/types/blog";
+import DOMPurify from "dompurify";
 
 interface BlogCardProps {
   post: BlogPost;
   size: "small" | "wide" | "tall" | "large";
 }
+
+const truncateContent = (content: string, maxLength: number) => {
+  if (content.length <= maxLength) return content;
+  const truncated = content.substring(0, maxLength);
+  return truncated.substring(0, truncated.lastIndexOf(" ")) + "...";
+};
 
 export default function BlogCard({ post, size }: BlogCardProps) {
   // Define grid span classes based on size
@@ -24,19 +31,25 @@ export default function BlogCard({ post, size }: BlogCardProps) {
         sizeClasses[size]
       )}
     >
-      <Link href={`/blog/${post.slug}`} className="absolute inset-0 z-20">
+      <Link href={`/blogs/${post.slug}`} className="absolute inset-0 z-20">
         <span className="sr-only">View {post.title}</span>
       </Link>
 
       {/* Background Image or Color */}
-      {post.image ? (
+      {post.thumbnail ? (
         <div className="absolute inset-0 z-0">
-          <Image
-            src={post.image || "/placeholder.svg"}
-            alt={post.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          <OptimizeImage
+            src={post.thumbnail}
+            alt={post.title || "Blog thumbnail"}
+            width={900}
+            height={900}
+            showFallbackOnError={true}
+            fallback={
+              <div
+                className={cn("w-full h-full", post.bgColor || "bg-primary")}
+              ></div>
+            }
+            className="object-cover w-full h-full"
           />
           {/* Overlay for better text readability */}
           <div className="absolute inset-0 bg-black/30 z-10"></div>
@@ -58,9 +71,12 @@ export default function BlogCard({ post, size }: BlogCardProps) {
 
         <div className="flex flex-col h-full justify-end">
           <h3 className="text-xl md:text-2xl font-bold mb-2">{post.title}</h3>
-          {post.excerpt && (
-            <p className="text-sm text-white/80 mb-4">{post.excerpt}</p>
-          )}
+          <p
+            className="text-sm text-white/80 mb-4"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(truncateContent(post.content, 100)),
+            }}
+          ></p>
         </div>
       </div>
     </div>

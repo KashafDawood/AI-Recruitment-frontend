@@ -82,6 +82,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user, onEditClick }) => {
                   src={user.photo}
                   alt={user?.name || "profile image"}
                   width={500}
+                  className="object-cover w-full h-full"
                 />
               ) : (
                 <Image
