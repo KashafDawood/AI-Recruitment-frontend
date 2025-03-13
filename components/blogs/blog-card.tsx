@@ -24,9 +24,6 @@ export default function BlogCard({ post, size }: BlogCardProps) {
     large: "md:col-span-2 md:row-span-2",
   };
 
-  // Debugging: Log the thumbnail URL
-  console.log("Thumbnail URL:", post.thumbnail);
-
   return (
     <div
       className={cn(
