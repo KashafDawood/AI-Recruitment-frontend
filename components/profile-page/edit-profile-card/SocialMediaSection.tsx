@@ -186,15 +186,9 @@ const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
 
       {/* Social Input Form */}
       {showSocialInput && (
-        <div
-          ref={socialInputRef}
-          className="mt-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md w-full lg:w-64 border border-gray-200 dark:border-gray-700"
-        >
+        <div ref={socialInputRef} className="mt-4 w-full lg:w-64 ">
           <div className="space-y-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">
-                URL
-              </label>
               <input
                 type="text"
                 name="url"
