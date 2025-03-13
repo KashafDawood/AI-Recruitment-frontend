@@ -76,7 +76,6 @@ export const useUserStore = create<UserState>()(
       refreshUser: async () => {
         try {
           const userData = await getme();
-          console.log("updates", userData);
           set({ user: userData });
           return userData;
         } catch (error) {

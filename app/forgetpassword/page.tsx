@@ -21,11 +21,8 @@ export default function ForgetPasswordPage() {
     setState({ pending: true, error: undefined, message: undefined });
 
     const formData = new FormData(event.currentTarget);
-    console.log("Form data before sending:", { email: formData.get("email") });
-
     try {
       const result = await forgetPassword(formData);
-      console.log("Forget password result:", result);
 
       if (result.success) {
         setState({ message: result.message, pending: false });

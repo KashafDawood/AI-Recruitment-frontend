@@ -11,10 +11,8 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(login, undefined);
-  const { EmailVerificationModal, open, setOpen, setStoredUser } = useEmailVerification(
-    state?.user,
-    state?.verifyEmail
-  );
+  const { EmailVerificationModal, open, setOpen, setStoredUser } =
+    useEmailVerification(state?.user, state?.verifyEmail);
   const [modalOpened, setModalOpened] = useState(false);
 
   useEffect(() => {
@@ -26,16 +24,9 @@ export default function LoginPage() {
         setModalOpened(true);
       }
     }
-  }, [
-    setOpen,
-    modalOpened,
-    state?.verifyEmail,
-    setStoredUser,
-    state?.user,
-  ]);
+  }, [setOpen, modalOpened, state?.verifyEmail, setStoredUser, state?.user]);
 
   useEffect(() => {
-    console.log("State changed:", state);
     if (state?.message) {
       toast.success(state.message);
     }
@@ -46,7 +37,7 @@ export default function LoginPage() {
         setOpen(true);
       }
     }
-  }, [state?.message, state?.serverError, setOpen, setStoredUser, state?.user]);
+  }, [state, setOpen, setStoredUser, state?.user]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
