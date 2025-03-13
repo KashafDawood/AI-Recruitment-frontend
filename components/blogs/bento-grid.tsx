@@ -10,15 +10,14 @@ export default function BentoGrid() {
   const [shuffledPosts, setShuffledPosts] = useState<BlogPost[]>([]);
   const isMobile = useMobile();
 
-  // Fetch and shuffle posts on initial load
+  // Fetch posts on initial load
   useEffect(() => {
-    const fetchAndShufflePosts = async () => {
+    const fetchPosts = async () => {
       const posts = await blogList();
-      const shuffled = [...posts].sort(() => Math.random() - 0.5);
-      setShuffledPosts(shuffled);
+      setShuffledPosts(posts);
     };
 
-    fetchAndShufflePosts();
+    fetchPosts();
   }, []);
 
   return (
