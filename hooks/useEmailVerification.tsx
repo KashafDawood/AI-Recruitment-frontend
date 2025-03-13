@@ -1,36 +1,42 @@
 import { useState, useEffect } from "react";
 import EmailVerificationDrawer from "@/components/custom/verifyEmailModel";
-
 import { User } from "@/types/user";
 import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
 
-const useEmailVerification = (user: User | undefined) => {
+const useEmailVerification = (user: User | undefined, verifyEmail: boolean | undefined) => {
   const [isOpen, setIsOpen] = useState(false);
   const [storedUser, setStoredUser] = useState<User | null>(null);
 
   useEffect(() => {
     const userFromStorage = getUserFromLocalStorage();
-    setStoredUser(userFromStorage);
     if (userFromStorage && userFromStorage.verifyEmail) {
+      setStoredUser(userFromStorage);
       setIsOpen(true);
     }
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && user.verifyEmail) {
       setStoredUser(user);
-      if (user.verifyEmail) {
-        setIsOpen(true);
-      }
+      setIsOpen(true);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user && verifyEmail) {
+      setStoredUser(user);
+      setIsOpen(true);
+    }
+  }, [verifyEmail, user]);
 
   const EmailVerificationModal = () =>
     storedUser ? (
       <EmailVerificationDrawer
         user={storedUser}
         open={isOpen}
-        onOpenChange={setIsOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+        }}
       />
     ) : null;
 

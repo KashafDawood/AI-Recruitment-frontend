@@ -1,7 +1,8 @@
 "use client";
-
+import {toast} from "sonner";
 import Image from "next/image";
 import { useActionState, useEffect } from "react";
+
 import Alerts from "@/components/custom/Alerts";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
@@ -35,22 +36,18 @@ export default function SignupPage() {
     }
   }, [state?.user, state?.message, state?.serverError, setOpen]);
 
+  useEffect(() => {
+    if (state?.message) {
+      toast.success(state.message);
+    }
+    if (state?.serverError) {
+      toast.error(state.serverError);
+    }
+  }, [state?.message, state?.serverError]);
+
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
-      {state?.message && (
-        <Alerts
-          message={state?.message}
-          variant={"success"}
-          Icon={CheckCircle}
-        />
-      )}
-      {state?.serverError && (
-        <Alerts
-          message={state?.serverError}
-          variant={"destructive"}
-          Icon={XCircle}
-        />
-      )}
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Link
           href="/"
