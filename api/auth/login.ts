@@ -23,7 +23,9 @@ export const login = async (_: unknown, formData: FormData) => {
 
   try {
     const response = await axiosInstance.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/users/login/`, result.data);
+      `${process.env.NEXT_PUBLIC_URL}/api/users/login/`,
+      result.data
+    );
 
     if (response.status === 200) {
       const user: User = response.data.user;
@@ -35,10 +37,9 @@ export const login = async (_: unknown, formData: FormData) => {
       };
     }
   } catch (error) {
-
     // Error handling for axiosInstance errors
     if (axios.isAxiosError(error) && error.response) {
-
+      // Handle email verification error
       if (
         error.response.data?.error ===
         "Please verify your email before logging in."
@@ -46,13 +47,21 @@ export const login = async (_: unknown, formData: FormData) => {
         return {
           serverError: "Please verify your email before logging in.",
           verifyEmail: true,
-          user: error.response.data.user, 
+          user: error.response.data.user,
         };
       }
+
+      // Handle non_field_errors (like "Invalid credentials")
+      if (error.response.data?.non_field_errors) {
+        return {
+          serverError:
+            "Invalid email or password. Please check your credentials.",
+        };
+      }
+
       return {
         serverError:
-          error.response.data?.error ||
-          "An error occurred during login",
+          error.response.data?.error || "An error occurred during login",
       };
     }
     return {
