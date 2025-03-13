@@ -1,10 +1,7 @@
 "use client";
-import {toast} from "sonner";
+import { toast } from "sonner";
 import Image from "next/image";
 import { useActionState, useEffect } from "react";
-
-import Alerts from "@/components/custom/Alerts";
-import { CheckCircle, XCircle } from "lucide-react";
 import { SignupForm } from "./signup-form";
 import { signup } from "@/api/auth/signup";
 import useEmailVerification from "@/hooks/useEmailVerification";
@@ -14,7 +11,8 @@ import { getUserFromLocalStorage } from "@/app/_lib/localStorage";
 export default function SignupPage() {
   const [state, formAction] = useActionState(signup, undefined);
   const { EmailVerificationModal, open, setOpen } = useEmailVerification(
-    state?.user
+    state?.user,
+    state?.user?.verifyEmail
   );
 
   useEffect(() => {
@@ -44,7 +42,6 @@ export default function SignupPage() {
       toast.error(state.serverError);
     }
   }, [state?.message, state?.serverError]);
-
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-zinc-100 p-6 md:p-10 dark:bg-zinc-800">
