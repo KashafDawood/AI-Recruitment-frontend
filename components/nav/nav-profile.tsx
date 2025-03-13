@@ -24,8 +24,10 @@ export function Profile() {
 
   const handleLogout = async () => {
     await logout();
-    await clearUser();
     router.push("/");
+    setTimeout(async () => {
+      await clearUser();
+    }, 100);
   };
 
   useEffect(() => {

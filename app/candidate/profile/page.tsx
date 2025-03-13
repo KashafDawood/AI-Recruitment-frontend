@@ -9,6 +9,7 @@ import Certifications from "@/components/profile-page/certifications";
 import EditProfileCard from "@/components/profile-page/edit-profile-card";
 import { useState } from "react";
 import EditProfileBio from "@/components/profile-page/edit-bio";
+import EditEducationTimeline from "@/components/profile-page/edit-education";
 
 // Define edit section types
 type EditSection = "profile" | "bio" | "education" | "certifications" | null;
@@ -97,8 +98,16 @@ export default function CandidateProfile() {
           />
         )}
 
-        {user?.education && (
-          <EducationTimeline educationData={user.education} />
+        {editSection === "education" ? (
+          <EditEducationTimeline
+            educationData={user?.education}
+            onEditCencel={handleEditComplete}
+          />
+        ) : (
+          <EducationTimeline
+            educationData={user?.education}
+            onEditClick={() => handleEditClick("education")}
+          />
         )}
 
         {user?.certifications && (

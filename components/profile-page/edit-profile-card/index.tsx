@@ -27,6 +27,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
     experience: user?.experience || "",
     interest: user?.interests || "",
     name: user?.name || "",
+    address: user?.address || "",
   });
 
   // State for profile sections
@@ -118,6 +119,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
       // Add text fields
       formDataObj.append("name", formData.name);
       formDataObj.append("interests", formData.interest);
+      formDataObj.append("address", formData.address);
 
       // Add numeric fields
       const experienceNum = parseInt(formData.experience?.toString() || "0");
@@ -165,6 +167,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
       experience: user?.experience || "",
       interest: user?.interests || "",
       name: user?.name || "",
+      address: user?.address || "",
     });
     setSocials(user?.socials || {});
     setSkills(Array.isArray(user?.skills) ? [...user?.skills] : []);
@@ -177,6 +180,7 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
         experience: user?.experience || "",
         interest: user?.interests || "",
         name: user?.name || "",
+        address: user?.address || "",
       },
       socials: user?.socials || {},
       skills: Array.isArray(user?.skills) ? [...user?.skills] : [],
@@ -215,41 +219,63 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
 
       <div className="w-full flex py-10">
         <div className="py-12 w-full relative z-10">
+          {/* Name input above image */}
+          <div className="text-center mb-6">
+            <input
+              name="name"
+              placeholder="Name"
+              className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-4xl font-black"
+              style={{
+                minWidth: "180px",
+                width: `${Math.max(formData.name.length, 8)}ch`,
+              }}
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="flex flex-col lg:flex-row justify-around items-center px-6 lg:px-12">
             {/* Left Side: Role and Socials */}
-            <div className="lg:w-1/4 mb-6 lg:mb-0 text-center lg:text-end">
+            <div className="lg:w-1/4 mb-6 lg:mb-0 text-center lg:text-center">
               <ProfileInfoSection
                 label="Update Role"
                 name="interest"
                 value={formData.interest}
                 onChange={handleChange}
+                minWidth="180px"
               />
 
               <SocialMediaSection socials={socials} setSocials={setSocials} />
             </div>
 
             {/* Center: Profile Image */}
-            <ProfileImageSection
-              user={user}
-              preview={preview}
-              onChange={handleChangeFile}
-            />
-
-            <h1 className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center text-4xl font-black w-full">
-              <input
-                name="name"
-                placeholder="Name"
-                className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none"
-                style={{
-                  width: `${
-                    formData.name.length > 0 ? formData.name.length : 8
-                  }ch`,
-                }}
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
+            <div className="flex flex-col items-center">
+              <ProfileImageSection
+                user={user}
+                preview={preview}
+                onChange={handleChangeFile}
               />
-            </h1>
+
+              {/* Location field below image - centered like the name input */}
+              <div className="mt-6 text-center">
+                <p className="text-sm dark:text-gray-300 text-gray-700">
+                  Location
+                </p>
+                <input
+                  name="address"
+                  placeholder="Location"
+                  className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center font-semibold text-xl"
+                  style={{
+                    minWidth: "180px",
+                    width: `${Math.max(formData.address.length, 8)}ch`,
+                  }}
+                  type="text"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
 
             {/* Right Side: Experience and Skills */}
             <div className="lg:w-1/4 mt-6 lg:mt-0 text-center lg:text-start">
@@ -260,7 +286,6 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
                 onChange={handleChange}
                 type="number"
                 suffix=" years"
-                inputClassName="w-6"
               />
 
               <SkillsSection skills={skills} setSkills={setSkills} />

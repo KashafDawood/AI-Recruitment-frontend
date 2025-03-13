@@ -23,8 +23,16 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({ skills, setSkills }) => {
   };
 
   const handleSkillSave = () => {
-    if (newSkill && !skills.includes(newSkill)) {
-      setSkills((prev) => [...prev, newSkill]);
+    if (newSkill) {
+      const skillsArray = newSkill
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter((skill) => skill !== "");
+      const newSkills = skillsArray.filter((skill) => !skills.includes(skill));
+
+      if (newSkills.length > 0) {
+        setSkills((prev) => [...prev, ...newSkills]);
+      }
       resetSkillInput();
     }
   };
@@ -78,7 +86,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({ skills, setSkills }) => {
           onClick={handleAddSkillClick}
         >
           <Plus size={14} className="mr-1" />
-          Add Skill
+          Add Skills
         </Button>
       </div>
 
@@ -103,19 +111,16 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({ skills, setSkills }) => {
       {showSkillInput && (
         <div
           ref={skillInputRef}
-          className="mt-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+          className="mt-4 p-3 animate-in fade-in duration-300"
         >
           <div className="space-y-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">
-                New Skill
-              </label>
               <input
                 type="text"
                 value={newSkill}
                 onChange={handleSkillInputChange}
                 onKeyPress={handleSkillKeyPress}
-                placeholder="Enter skill"
+                placeholder="wordpress, figma, ..."
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 autoFocus
               />

@@ -16,6 +16,7 @@ export interface User {
   education?: Record<string, Education>;
   experience?: number;
   interests?: string;
+  address?: string;
   skills?: {
     skills: string[];
   };

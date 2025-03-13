@@ -8,6 +8,7 @@ type ProfileInfoSectionProps = {
   type?: string;
   suffix?: string;
   inputClassName?: string;
+  minWidth?: string;
 };
 
 const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
@@ -18,6 +19,7 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
   type = "text",
   suffix = "",
   inputClassName = "",
+  minWidth = "150px",
 }) => {
   return (
     <div>
@@ -25,10 +27,17 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
       <p className="font-semibold text-xl">
         <input
           name={name}
-          className={`bg-transparent inline-block border-b-2 border-black dark:border-white outline-none ${inputClassName}`}
+          className={`bg-transparent inline-block border-b-2 border-black dark:border-white text-center outline-none ${inputClassName}`}
           type={type}
           value={value}
           onChange={onChange}
+          style={{
+            minWidth: type === "number" ? "auto" : minWidth,
+            width:
+              type === "number"
+                ? "4ch"
+                : `${Math.max(String(value).length, 5)}ch`,
+          }}
         />
         {suffix}
       </p>
