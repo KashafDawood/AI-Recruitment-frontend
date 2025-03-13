@@ -39,10 +39,17 @@ export default function BlogCard({ post, size }: BlogCardProps) {
       {post.thumbnail ? (
         <div className="absolute inset-0 z-0">
           <OptimizeImage
-            src={post.thumbnail || "/default.png"}
-            alt="image"
+            src={post.thumbnail}
+            alt={post.title || "Blog thumbnail"}
             width={900}
             height={900}
+            showFallbackOnError={true}
+            fallback={
+              <div
+                className={cn("w-full h-full", post.bgColor || "bg-primary")}
+              ></div>
+            }
+            className="object-cover w-full h-full"
           />
           {/* Overlay for better text readability */}
           <div className="absolute inset-0 bg-black/30 z-10"></div>
