@@ -286,7 +286,6 @@ const EditProfileCard: React.FC<ProfileCardProps> = ({
                 onChange={handleChange}
                 type="number"
                 suffix=" years"
-                inputClassName="text-right"
               />
 
               <SkillsSection skills={skills} setSkills={setSkills} />

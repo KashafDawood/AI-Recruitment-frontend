@@ -27,7 +27,7 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
       <p className="font-semibold text-xl">
         <input
           name={name}
-          className={`bg-transparent inline-block border-b-2 border-black dark:border-white outline-none ${inputClassName}`}
+          className={`bg-transparent inline-block border-b-2 border-black dark:border-white text-center outline-none ${inputClassName}`}
           type={type}
           value={value}
           onChange={onChange}
