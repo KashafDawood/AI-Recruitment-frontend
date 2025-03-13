@@ -1,8 +1,13 @@
 "use client";
-import { Calendar, GraduationCapIcon as Graduation } from "lucide-react";
+import {
+  Calendar,
+  GraduationCapIcon as Graduation,
+  Pencil,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { GlowCard, vibrantColors } from "../custom/GlowCard";
+import { Button } from "../ui/button";
 
 // Redefining the type to match exactly what's expected
 export type Education = {
@@ -31,8 +36,10 @@ const formatDate = (dateString?: string | null) => {
 
 export default function EducationTimeline({
   educationData,
+  onEditClick,
 }: {
   educationData?: EducationData | null | undefined;
+  onEditClick?: () => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -65,11 +72,20 @@ export default function EducationTimeline({
   }));
 
   return (
-    <div className="w-full overflow-x-hidden">
-      <div className="pt-8">
-        <h1 className="text-6xl font-bold font-aclonica text-center mb-6">
+    <div className="relative w-full overflow-x-hidden">
+      <div className="pt-8 flex justify-between">
+        <h1 className="text-6xl font-bold font-aclonica text-start mb-6">
           My Education Journey
         </h1>
+        <Button
+          onClick={onEditClick}
+          variant="outline"
+          size="icon"
+          className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          title="Edit Profile"
+        >
+          <Pencil size={18} />
+        </Button>
       </div>
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
         {/* Center line for large screens, left line for small screens */}
