@@ -35,8 +35,10 @@ export const login = async (_: unknown, formData: FormData) => {
       };
     }
   } catch (error) {
+
     // Error handling for axiosInstance errors
     if (axios.isAxiosError(error) && error.response) {
+
       if (
         error.response.data?.error ===
         "Please verify your email before logging in."
@@ -44,11 +46,12 @@ export const login = async (_: unknown, formData: FormData) => {
         return {
           serverError: "Please verify your email before logging in.",
           verifyEmail: true,
+          user: error.response.data.user, 
         };
       }
       return {
         serverError:
-          error.response.data?.non_field_errors?.[0] ||
+          error.response.data?.error ||
           "An error occurred during login",
       };
     }

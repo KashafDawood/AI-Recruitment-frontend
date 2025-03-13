@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DOMPurify from "dompurify";
 import { getLatestBlogs } from "@/api/blogs/getLatestBlogs";
+import { BlogPost } from "@/types/blog";
 
 export default function Blogs() {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const router = useRouter();
 
   useEffect(() => {
