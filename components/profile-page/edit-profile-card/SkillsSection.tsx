@@ -109,7 +109,10 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({ skills, setSkills }) => {
 
       {/* Skill Input Form */}
       {showSkillInput && (
-        <div ref={skillInputRef} className="mt-4 p-3">
+        <div
+          ref={skillInputRef}
+          className="mt-4 p-3 animate-in fade-in duration-300"
+        >
           <div className="space-y-2">
             <div>
               <input

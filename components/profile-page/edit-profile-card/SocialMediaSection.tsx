@@ -186,20 +186,31 @@ const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
 
       {/* Social Input Form */}
       {showSocialInput && (
-        <div ref={socialInputRef} className="mt-4 w-full lg:w-64 ">
-          <div className="space-y-2">
-            <div>
+        <div
+          ref={socialInputRef}
+          className="mt-4 w-full lg:w-72 animate-in fade-in duration-300"
+        >
+          <div className="space-y-3">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <SocialIcon
+                  platform={newSocialData.platform || "website"}
+                  size={18}
+                  className="text-gray-500 dark:text-gray-400"
+                />
+              </div>
               <input
                 type="text"
                 name="url"
-                placeholder="https://"
+                placeholder="Enter social media URL"
                 value={newSocialData.url}
                 onChange={handleSocialInputChange}
-                className={`mt-1 block w-full px-3 py-2 border ${
+                autoFocus
+                className={`block w-full pl-10 pr-3 py-2 border ${
                   error
                     ? "border-red-500"
                     : "border-gray-300 dark:border-gray-600"
-                } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white`}
+                } rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white transition-colors`}
               />
               {error && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400 text-left">
@@ -207,13 +218,13 @@ const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
                 </p>
               )}
             </div>
-            <div className="flex justify-between pt-2">
+            <div className="flex justify-end space-x-2 pt-1">
               <Button
                 type="button"
                 variant="default"
                 size="sm"
                 onClick={handleSocialSave}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700 transition-colors"
               >
                 <Check size={16} className="mr-1" />
                 Save
