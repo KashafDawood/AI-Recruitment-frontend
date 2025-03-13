@@ -37,6 +37,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user, onEditClick }) => {
       )}
 
       <div className="py-12 w-full relative z-10">
+        {/* Name at the top */}
+        <h1 className="text-center text-4xl font-black mb-8">{user?.name}</h1>
+
         <div className="flex flex-col lg:flex-row justify-around items-center px-6 lg:px-12">
           {/* Left Side: Role and Socials */}
           <div className="lg:w-1/4 mb-6 lg:mb-0 text-center lg:text-end">
@@ -74,8 +77,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user, onEditClick }) => {
             </div>
           </div>
 
-          {/* Center: Profile Image */}
-          <div className="mx-4 my-6 lg:my-0">
+          {/* Center: Profile Image and Location */}
+          <div className="mx-4 my-6 lg:my-0 flex flex-col items-center">
             <div className="relative w-[18rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-full overflow-hidden">
               {user?.photo ? (
                 <OptimizeImage
@@ -94,9 +97,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user, onEditClick }) => {
                 />
               )}
             </div>
-            {/* <h1 className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center text-4xl font-vertigo w-full">
-              {user?.name}
-            </h1> */}
+
+            {/* Display Location under profile picture */}
+            {user?.address && (
+              <div className="mt-4 text-center">
+                <p className="text-sm dark:text-gray-300 text-gray-700">
+                  Location
+                </p>
+                <p className="font-semibold text-xl">{user.address}</p>
+              </div>
+            )}
           </div>
 
           {/* Right Side: Experience and Skills */}
