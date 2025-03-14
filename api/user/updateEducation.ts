@@ -16,7 +16,7 @@ export const updateEducation = async (educationData: EducationData) => {
       educationData.original_degree_name || educationData.degree_name;
 
     // Remove the original_degree_name field before sending to API
-    const { original_degree_name, ...dataToSend } = educationData;
+    const { ...dataToSend } = educationData;
 
     const response = await axiosInstance.put(
       `/api/users/education/${encodeURIComponent(degreeToUpdate)}`,
