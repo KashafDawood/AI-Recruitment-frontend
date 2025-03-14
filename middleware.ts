@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "./app/_lib/session";
 
 const protectedRoutes = {
-  candidate: ["/candidate", "/candidate/profile"],
+  candidate: ["/candidate", "/candidate/profile", "/candidate/jobs"],
   employer: ["/employer"],
 };
 const publicRoutes = ["/login", "/signup"]; // signup is already included here
