@@ -50,9 +50,9 @@ export default function ProfileBio({ bio, onEditClick }: BioProps) {
   }, [bio]);
 
   return (
-    <div className="relative py-10 px-6 md:px-10">
+    <div className="relative py-10">
       <div className="flex justify-between">
-        <h1 className="text-6xl font-bold font-aclonica text-start">
+        <h1 className="text-4xl md:text-6xl font-bold font-aclonica text-start">
           My Story
         </h1>
         <Button
@@ -67,7 +67,7 @@ export default function ProfileBio({ bio, onEditClick }: BioProps) {
       </div>
       <div
         ref={bioRef}
-        className="relative prose prose-sm sm:prose-base max-w-none dark:prose-invert overflow-hidden transition-all duration-500 ease-in-out"
+        className="relative prose prose-sm sm:prose-base max-w-none dark:prose-invert overflow-hidden transition-all duration-500 ease-in-out px-6 md:px-10"
         style={{ maxHeight: expanded ? `${bioHeight}px` : "200px" }}
         aria-expanded={expanded}
       >

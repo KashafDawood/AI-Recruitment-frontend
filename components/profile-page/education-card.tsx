@@ -155,7 +155,7 @@ export default function EducationTimeline({
   return (
     <div className="relative w-full">
       <div className="pt-8 flex justify-between">
-        <h1 className="text-6xl font-bold font-aclonica text-start mb-6">
+        <h1 className="text-4xl md:text-6xl font-bold font-aclonica text-start mb-6">
           My Education Journey
         </h1>
         {isEditing ? (
