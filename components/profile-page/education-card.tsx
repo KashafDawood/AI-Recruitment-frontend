@@ -5,6 +5,8 @@ import {
   Pencil,
   Plus,
   X,
+  Trash2,
+  Edit,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -12,6 +14,19 @@ import { GlowCard, vibrantColors } from "../custom/GlowCard";
 import { Button } from "../ui/button";
 import AddEducationForm from "./edit-education/addEducation-form";
 import { useUserStore } from "@/store/userStore";
+import { deleteEducation } from "@/api/user/deleteEducation";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import EditEducationForm from "./edit-education/editEducation-form";
 
 // Redefining the type to match exactly what's expected
 export type Education = {
@@ -48,6 +63,13 @@ export default function EducationTimeline({
   const [isMounted, setIsMounted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingEducation, setIsAddingEducation] = useState(false);
+  const [editingEducation, setEditingEducation] = useState<Education | null>(
+    null
+  );
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [educationToDelete, setEducationToDelete] = useState<string | null>(
+    null
+  );
   const { refreshUser } = useUserStore();
 
   useEffect(() => {
@@ -101,6 +123,35 @@ export default function EducationTimeline({
     refreshUser();
   };
 
+  const handleEditEducation = (education: Education) => {
+    setEditingEducation(education);
+  };
+
+  const handleCancelEditEducation = () => {
+    setEditingEducation(null);
+  };
+
+  const handleDeleteEducation = (degreeName: string) => {
+    setEducationToDelete(degreeName);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!educationToDelete) return;
+
+    try {
+      await deleteEducation(educationToDelete);
+      await refreshUser();
+      toast.success("Education deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete education");
+      console.error(error);
+    } finally {
+      setDeleteConfirmOpen(false);
+      setEducationToDelete(null);
+    }
+  };
+
   return (
     <div className="relative w-full">
       <div className="pt-8 flex justify-between">
@@ -136,6 +187,38 @@ export default function EducationTimeline({
           onSuccess={handleAddSuccess}
         />
       )}
+
+      {editingEducation && (
+        <EditEducationForm
+          education={editingEducation}
+          onCancel={handleCancelEditEducation}
+          onSuccess={() => {
+            refreshUser();
+            setEditingEducation(null);
+          }}
+        />
+      )}
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this education entry from your
+              profile.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
         {/* Add education button when in editing mode */}
@@ -189,7 +272,31 @@ export default function EducationTimeline({
 
               {/* Education card */}
               <GlowCard color={education.color} isAlternate={isAlternate}>
-                <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg">
+                <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg relative">
+                  {/* Edit/Delete buttons when in edit mode */}
+                  {isEditing && (
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-gray-500 hover:text-blue-500"
+                        onClick={() => handleEditEducation(education)}
+                      >
+                        <Edit size={16} />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-gray-500 hover:text-red-500"
+                        onClick={() =>
+                          handleDeleteEducation(education.degree_name)
+                        }
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
+                  )}
+
                   <h3 className="text-xl font-bold text-black dark:text-white">
                     {education.degree_name}
                   </h3>
