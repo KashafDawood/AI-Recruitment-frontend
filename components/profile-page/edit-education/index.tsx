@@ -10,13 +10,6 @@ import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { GlowCard, vibrantColors } from "../../custom/GlowCard";
 import { Button } from "../../ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -158,106 +151,104 @@ export default function EditEducationTimeline({
 
       {isClicked && (
         <div className="flex justify-center items-center my-8">
-          <Card className="w-full max-w-lg shadow-lg border-t-4 border-t-blue-500">
-            <CardHeader>
-              <CardTitle className="text-2xl">Add Education</CardTitle>
-              <CardDescription>
+          <GlowCard color={vibrantColors[0]} isAlternate={false}>
+            <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg">
+              <h2 className="text-2xl font-bold mb-1">Add Education</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                 Add your academic qualifications to your profile
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form action={handleSubmit} className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="degree_name">Degree Name</Label>
+              </p>
+
+              <form action={handleSubmit} className="space-y-6">
+                <div>
                   <Input
                     id="degree_name"
                     name="degree_name"
-                    placeholder="i.e. Bachelor of Computer Science"
+                    placeholder="Degree Name"
+                    className="border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 text-center bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600"
                   />
                   {state?.errors?.degree_name && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-center mt-1">
                       {state.errors.degree_name}
                     </p>
                   )}
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="institute_name">Institute Name</Label>
+                <div>
                   <Input
                     id="institute_name"
                     name="institute_name"
-                    placeholder="i.e. Howard University"
+                    placeholder="Institute Name"
+                    className="border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 text-center bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600"
                   />
                   {state?.errors?.institute_name && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-center mt-1">
                       {state.errors.institute_name}
                     </p>
                   )}
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="start_date">Start Date</Label>
+                <div>
                   <DatePicker
                     date={startDate}
                     onDateChange={(date) => setStartDate(date)}
+                    placeholder="Start Date"
                     className="w-full"
                   />
                   {state?.errors?.start_date && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-center mt-1">
                       {state.errors.start_date}
                     </p>
                   )}
                 </div>
 
-                <div className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                <div className="flex flex-row items-center justify-center space-x-3 space-y-0 py-2">
                   <Checkbox
                     id="is_studying"
                     name="is_studying"
                     checked={isCurrentlyStudying}
                     onCheckedChange={handleStudyingChange}
+                    className="data-[state=checked]:bg-blue-600"
                   />
-                  <div className="space-y-1 leading-none">
+                  <div className="leading-none">
                     <Label htmlFor="is_studying">Currently Studying</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Check this if you&apos;re still studying here
-                    </p>
                   </div>
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="end_date">End Date</Label>
+                <div>
                   <DatePicker
                     date={endDate}
                     onDateChange={(date) => setEndDate(date)}
+                    placeholder="End Date"
                     className="w-full"
                     disabled={isCurrentlyStudying}
                   />
                   {isCurrentlyStudying && (
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-muted-foreground text-sm text-center mt-1">
                       End date is set to &quot;Present&quot; while currently
                       studying
                     </p>
                   )}
                   {state?.errors?.end_date && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-red-500 text-sm text-center mt-1">
                       {state.errors.end_date}
                     </p>
                   )}
                 </div>
 
-                <div className="flex justify-end space-x-2 pt-4">
+                <div className="flex justify-center space-x-4 pt-6">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setIsClicked(false)}
+                    className="rounded-full px-6"
                   >
                     Cancel
                   </Button>
                   <SubmitButton />
                 </div>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </GlowCard>
         </div>
       )}
 
@@ -373,7 +364,7 @@ function SubmitButton() {
     <Button
       disabled={pending}
       type="submit"
-      className="bg-blue-600 hover:bg-blue-700"
+      className="bg-blue-600 hover:bg-blue-700 rounded-full px-6"
     >
       {pending ? "Adding..." : "Add Education"}
     </Button>
