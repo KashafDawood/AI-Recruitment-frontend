@@ -6,9 +6,23 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { GlowCard, vibrantColors } from "../../custom/GlowCard";
 import { Button } from "../../ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { addEducation } from "@/api/user/addEducation";
+import { toast } from "sonner";
+import { DatePicker } from "@/components/custom/datePicker";
 
 // Redefining the type to match exactly what's expected
 export type Education = {
@@ -38,17 +52,37 @@ const formatDate = (dateString?: string | null) => {
 export default function EditEducationTimeline({
   educationData,
   onEditCencel,
-  onAdd,
 }: {
   educationData?: EducationData | null | undefined;
   onEditCencel?: () => void;
-  onAdd?: () => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const [isCurrentlyStudying, setIsCurrentlyStudying] = useState(false);
+  const [state, formAction] = useActionState(addEducation, undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+  // Handle form submission success and errors
+  useEffect(() => {
+    if (state?.message) {
+      toast.success(state.message);
+      setIsClicked(false);
+      // Here you would update the education data locally or refetch
+    }
+    if (state?.serverError) {
+      toast.error(state.serverError);
+    }
+  }, [state]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Handle checkbox change
+  const handleStudyingChange = (checked: boolean) => {
+    setIsCurrentlyStudying(checked);
+  };
 
   if (!educationData) return null;
 
@@ -57,6 +91,7 @@ export default function EditEducationTimeline({
     .map(([, education]) => education)
     .filter((edu) => edu && typeof edu === "object")
     .sort((a, b) => {
+      // ...existing code...
       try {
         const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
         const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
@@ -81,9 +116,27 @@ export default function EditEducationTimeline({
   };
 
   const handleAddEducation = () => {
-    if (onAdd) {
-      onAdd();
+    setIsClicked(true);
+  };
+
+  // Handle form submission before it's sent to the server
+  const handleSubmit = async (formData: FormData) => {
+    // Convert dates to string format expected by the API
+    if (startDate) {
+      formData.set("start_date", startDate.toISOString().split("T")[0]);
     }
+
+    if (endDate && !isCurrentlyStudying) {
+      formData.set("end_date", endDate.toISOString().split("T")[0]);
+    } else {
+      formData.delete("end_date");
+    }
+
+    // Explicitly set is_studying field regardless of checkbox state
+    formData.set("is_studying", isCurrentlyStudying ? "true" : "false");
+
+    // Call the original form action
+    formAction(formData);
   };
 
   return (
@@ -102,6 +155,112 @@ export default function EditEducationTimeline({
           <X size={18} />
         </Button>
       </div>
+
+      {isClicked && (
+        <div className="flex justify-center items-center my-8">
+          <Card className="w-full max-w-lg shadow-lg border-t-4 border-t-blue-500">
+            <CardHeader>
+              <CardTitle className="text-2xl">Add Education</CardTitle>
+              <CardDescription>
+                Add your academic qualifications to your profile
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form action={handleSubmit} className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="degree_name">Degree Name</Label>
+                  <Input
+                    id="degree_name"
+                    name="degree_name"
+                    placeholder="i.e. Bachelor of Computer Science"
+                  />
+                  {state?.errors?.degree_name && (
+                    <p className="text-red-500 text-sm">
+                      {state.errors.degree_name}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="institute_name">Institute Name</Label>
+                  <Input
+                    id="institute_name"
+                    name="institute_name"
+                    placeholder="i.e. Howard University"
+                  />
+                  {state?.errors?.institute_name && (
+                    <p className="text-red-500 text-sm">
+                      {state.errors.institute_name}
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="start_date">Start Date</Label>
+                  <DatePicker
+                    date={startDate}
+                    onDateChange={(date) => setStartDate(date)}
+                    className="w-full"
+                  />
+                  {state?.errors?.start_date && (
+                    <p className="text-red-500 text-sm">
+                      {state.errors.start_date}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                  <Checkbox
+                    id="is_studying"
+                    name="is_studying"
+                    checked={isCurrentlyStudying}
+                    onCheckedChange={handleStudyingChange}
+                  />
+                  <div className="space-y-1 leading-none">
+                    <Label htmlFor="is_studying">Currently Studying</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Check this if you&apos;re still studying here
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="end_date">End Date</Label>
+                  <DatePicker
+                    date={endDate}
+                    onDateChange={(date) => setEndDate(date)}
+                    className="w-full"
+                    disabled={isCurrentlyStudying}
+                  />
+                  {isCurrentlyStudying && (
+                    <p className="text-muted-foreground text-sm">
+                      End date is set to &quot;Present&quot; while currently
+                      studying
+                    </p>
+                  )}
+                  {state?.errors?.end_date && (
+                    <p className="text-red-500 text-sm">
+                      {state.errors.end_date}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsClicked(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <SubmitButton />
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
         {/* Timeline container with proper positioning */}
         <div className="relative pb-10">
@@ -203,5 +362,20 @@ export default function EditEducationTimeline({
         </div>
       </div>
     </div>
+  );
+}
+
+// Submit button component with loading state
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      disabled={pending}
+      type="submit"
+      className="bg-blue-600 hover:bg-blue-700"
+    >
+      {pending ? "Adding..." : "Add Education"}
+    </Button>
   );
 }

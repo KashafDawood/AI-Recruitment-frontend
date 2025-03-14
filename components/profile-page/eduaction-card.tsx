@@ -90,8 +90,8 @@ export default function EducationTimeline({
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
         {/* Center line for large screens, left line for small screens */}
         <div
-          className="hidden md:block absolute md:left-1/2 left-0 md:transform md:-translate-x-1/2 h-full w-0.5 bg-gray-300 ml-5 md:ml-0"
-          style={{ maxHeight: "calc(100% - 2rem)" }}
+          className="hidden md:block absolute md:left-1/2 transform -translate-x-1/2 w-1 bg-gray-400 dark:bg-gray-600 z-0"
+          style={{ height: "calc(100% - 35px)" }}
         ></div>
 
         {/* Education items */}
