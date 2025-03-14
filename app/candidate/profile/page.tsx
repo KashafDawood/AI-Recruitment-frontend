@@ -3,13 +3,12 @@
 import { useUserWithLoading } from "@/hooks/useUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProfileCard from "@/components/profile-page/profile-card";
-import EducationTimeline from "@/components/profile-page/eduaction-card";
+import EducationTimeline from "@/components/profile-page/education-card";
 import ProfileBio from "@/components/profile-page/Bio";
 import Certifications from "@/components/profile-page/certifications";
 import EditProfileCard from "@/components/profile-page/edit-profile-card";
 import { useState } from "react";
 import EditProfileBio from "@/components/profile-page/edit-bio";
-import EditEducationTimeline from "@/components/profile-page/edit-education";
 
 // Define edit section types
 type EditSection = "profile" | "bio" | "education" | "certifications" | null;
@@ -76,7 +75,7 @@ export default function CandidateProfile() {
   }
 
   return (
-    <>
+    <div className="flex flex-col overflow-hidden">
       {editSection === "profile" ? (
         <EditProfileCard user={user} onEditComplete={handleEditComplete} />
       ) : (
@@ -98,22 +97,15 @@ export default function CandidateProfile() {
           />
         )}
 
-        {editSection === "education" ? (
-          <EditEducationTimeline
-            educationData={user?.education}
-            onEditCencel={handleEditComplete}
-          />
-        ) : (
-          <EducationTimeline
-            educationData={user?.education}
-            onEditClick={() => handleEditClick("education")}
-          />
-        )}
+        <EducationTimeline
+          educationData={user?.education}
+          onEditClick={() => handleEditClick("education")}
+        />
 
         {user?.certifications && (
           <Certifications certifications={user.certifications} />
         )}
       </div>
-    </>
+    </div>
   );
 }

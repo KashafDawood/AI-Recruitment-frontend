@@ -3,11 +3,15 @@ import {
   Calendar,
   GraduationCapIcon as Graduation,
   Pencil,
+  Plus,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { GlowCard, vibrantColors } from "../custom/GlowCard";
 import { Button } from "../ui/button";
+import AddEducationForm from "./edit-education/addEducation-form";
+import { useUserStore } from "@/store/userStore";
 
 // Redefining the type to match exactly what's expected
 export type Education = {
@@ -23,7 +27,7 @@ export type EducationData = {
 };
 
 // Format date from YYYY-MM-DD to Month YYYY
-const formatDate = (dateString?: string | null) => {
+export const formatDate = (dateString?: string | null) => {
   if (!dateString) return "Present";
   try {
     const date = new Date(dateString);
@@ -42,6 +46,9 @@ export default function EducationTimeline({
   onEditClick?: () => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAddingEducation, setIsAddingEducation] = useState(false);
+  const { refreshUser } = useUserStore();
 
   useEffect(() => {
     setIsMounted(true);
@@ -71,24 +78,80 @@ export default function EducationTimeline({
     color: vibrantColors[index % vibrantColors.length],
   }));
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+    if (onEditClick) onEditClick();
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setIsAddingEducation(false);
+  };
+
+  const handleAddClick = () => {
+    setIsAddingEducation(true);
+  };
+
+  const handleAddCancel = () => {
+    setIsAddingEducation(false);
+  };
+
+  const handleAddSuccess = () => {
+    setIsAddingEducation(false);
+    refreshUser();
+  };
+
   return (
-    <div className="relative w-full overflow-x-hidden">
+    <div className="relative w-full">
       <div className="pt-8 flex justify-between">
         <h1 className="text-6xl font-bold font-aclonica text-start mb-6">
           My Education Journey
         </h1>
-        <Button
-          onClick={onEditClick}
-          variant="outline"
-          size="icon"
-          className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
-          title="Edit Profile"
-        >
-          <Pencil size={18} />
-        </Button>
+        {isEditing ? (
+          <Button
+            onClick={handleEditCancel}
+            variant="outline"
+            size="icon"
+            className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+            title="Cancel"
+          >
+            <X size={18} />
+          </Button>
+        ) : (
+          <Button
+            onClick={handleEditClick}
+            variant="outline"
+            size="icon"
+            className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+            title="Edit Education"
+          >
+            <Pencil size={18} />
+          </Button>
+        )}
       </div>
+
+      {isAddingEducation && (
+        <AddEducationForm
+          onCancel={handleAddCancel}
+          onSuccess={handleAddSuccess}
+        />
+      )}
+
       <div className="relative container max-w-5xl mx-auto py-8 px-4">
-        {/* Center line for large screens, left line for small screens */}
+        {/* Add education button when in editing mode */}
+        {isEditing && !isAddingEducation && (
+          <div className="flex justify-center mb-6">
+            <Button
+              onClick={handleAddClick}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full z-10 shadow-md flex items-center gap-2"
+              title="Add Education"
+            >
+              <Plus size={16} /> Add Education
+            </Button>
+          </div>
+        )}
+
+        {/* Center line for large screens */}
         <div
           className="hidden md:block absolute md:left-1/2 transform -translate-x-1/2 w-1 bg-gray-400 dark:bg-gray-600 z-0"
           style={{ height: "calc(100% - 35px)" }}
