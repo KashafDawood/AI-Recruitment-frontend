@@ -13,13 +13,13 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Divide } from "lucide-react";
+} from "@/components/ui/pagination";
 
 export default function BentoGrid() {
   const [shuffledPosts, setShuffledPosts] = useState<BlogPost[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [totalPosts, setTotalPosts] = useState(0);
   const isMobile = useMobile();
   const postsPerPage = 10;
 
@@ -27,18 +27,17 @@ export default function BentoGrid() {
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
-      const posts = await blogList(currentPage, postsPerPage);
+      const { posts, total } = await blogList(currentPage, postsPerPage);
       setShuffledPosts(posts);
+      setTotalPosts(total);
       setLoading(false);
     };
 
     fetchPosts();
   }, [currentPage]);
 
-  // Effect to run when shuffledPosts changes
-  useEffect(() => {
-    // This effect ensures the component re-renders when shuffledPosts changes
-  }, [shuffledPosts]);
+  // Calculate total number of pages
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -48,8 +47,6 @@ export default function BentoGrid() {
     <div>
       {loading ? (
         <div>Loading...</div>
-      ) : shuffledPosts.length === 0 ? (
-        <div>No more blogs available</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
           {shuffledPosts.map((post, index) => {
@@ -77,22 +74,26 @@ export default function BentoGrid() {
       <Pagination>
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} />
+            <PaginationPrevious
+              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+              disabled={currentPage === 1}
+            />
           </PaginationItem>
+          {[...Array(totalPages)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                isActive={currentPage === index + 1}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
           <PaginationItem>
-            <PaginationLink isActive={currentPage === 1} onClick={() => handlePageChange(1)}>1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink isActive={currentPage === 2} onClick={() => handlePageChange(2)}>2</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink isActive={currentPage === 3} onClick={() => handlePageChange(3)}>3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
+            <PaginationNext
+              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
