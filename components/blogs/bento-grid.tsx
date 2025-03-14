@@ -38,7 +38,16 @@ export default function BentoGrid() {
         if (response && Array.isArray(response)) {
           // If blogList returns just an array of posts
           setShuffledPosts(response);
-          setTotalPosts(response.length * totalPages || 10); // Estimate total
+
+          // If we got exactly postsPerPage items, there are likely more posts
+          // If we got fewer, we're probably on the last page
+          if (response.length === postsPerPage) {
+            // Estimate at least one more page worth of posts
+            setTotalPosts(currentPage * postsPerPage + postsPerPage);
+          } else {
+            // We're likely on the last page
+            setTotalPosts((currentPage - 1) * postsPerPage + response.length);
+          }
         } else if (response && typeof response === "object") {
           // If blogList returns an object with posts and total
           const { posts = [], total = 0 } = response as {
@@ -63,7 +72,7 @@ export default function BentoGrid() {
     };
 
     fetchPosts();
-  }, [currentPage, totalPages]);
+  }, [currentPage, postsPerPage]); // Remove totalPages dependency to avoid circular updates
 
   const handlePageChange = (page: number) => {
     // Ensure page is within valid range
