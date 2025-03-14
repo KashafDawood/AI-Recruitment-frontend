@@ -23,32 +23,136 @@ export default function BentoGrid() {
   const isMobile = useMobile();
   const postsPerPage = 10;
 
-  // Fetch posts on initial load and when currentPage changes
+  // Calculate total pages
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+  // Fetch posts and total count on initial load and when currentPage changes
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
-      const { posts, total } = await blogList(currentPage, postsPerPage);
-      setShuffledPosts(posts);
-      setTotalPosts(total);
-      setLoading(false);
+      try {
+        // Handle the response from blogList properly
+        const response = await blogList(currentPage, postsPerPage);
+
+        // Check if response has expected structure
+        if (response && Array.isArray(response)) {
+          // If blogList returns just an array of posts
+          setShuffledPosts(response);
+          setTotalPosts(response.length * totalPages || 10); // Estimate total
+        } else if (response && typeof response === "object") {
+          // If blogList returns an object with posts and total
+          const { posts = [], total = 0 } = response as {
+            posts: BlogPost[];
+            total: number;
+          };
+          setShuffledPosts(posts);
+          setTotalPosts(total);
+        } else {
+          // Fallback for unexpected response format
+          console.error("Unexpected response format from blogList:", response);
+          setShuffledPosts([]);
+          setTotalPosts(0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch blog posts:", error);
+        setShuffledPosts([]);
+        setTotalPosts(0);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchPosts();
-  }, [currentPage]);
-
-  // Calculate total number of pages
-  const totalPages = Math.ceil(totalPosts / postsPerPage);
+  }, [currentPage, totalPages]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    // Ensure page is within valid range
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // Generate pagination items
+  const renderPaginationItems = () => {
+    const items = [];
+
+    // Always show first page
+    items.push(
+      <PaginationItem key="first">
+        <PaginationLink
+          isActive={currentPage === 1}
+          onClick={() => handlePageChange(1)}
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
+    );
+
+    // Add ellipsis if needed
+    if (currentPage > 3) {
+      items.push(
+        <PaginationItem key="ellipsis-start">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+
+    // Add pages around current page
+    for (
+      let i = Math.max(2, currentPage - 1);
+      i <= Math.min(totalPages - 1, currentPage + 1);
+      i++
+    ) {
+      if (i <= totalPages && i > 1) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              isActive={currentPage === i}
+              onClick={() => handlePageChange(i)}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    }
+
+    // Add ellipsis if needed
+    if (currentPage < totalPages - 2) {
+      items.push(
+        <PaginationItem key="ellipsis-end">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+
+    // Always show last page if it's not the first page
+    if (totalPages > 1) {
+      items.push(
+        <PaginationItem key="last">
+          <PaginationLink
+            isActive={currentPage === totalPages}
+            onClick={() => handlePageChange(totalPages)}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
   };
 
   return (
     <div>
+      {/* ...existing code for showing blog posts... */}
       {loading ? (
         <div>Loading...</div>
+      ) : shuffledPosts.length === 0 ? (
+        <div>No more blogs available</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
+          {/* ...existing code for blog cards... */}
           {shuffledPosts.map((post, index) => {
             // On mobile, all cards are small
             if (isMobile) {
@@ -71,32 +175,35 @@ export default function BentoGrid() {
           })}
         </div>
       )}
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
-              disabled={currentPage === 1}
-            />
-          </PaginationItem>
-          {[...Array(totalPages)].map((_, index) => (
-            <PaginationItem key={index}>
-              <PaginationLink
-                isActive={currentPage === index + 1}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </PaginationLink>
+
+      {/* Only show pagination if there are posts */}
+      {totalPages > 0 && (
+        <Pagination className="mt-8">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={
+                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                }
+              />
             </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationNext
-              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+
+            {renderPaginationItems()}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
