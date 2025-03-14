@@ -121,7 +121,7 @@ export function DatePicker({
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {selectedDate
-              ? `${placeholder || ""} : ${format(selectedDate, "PPP")}`
+              ? format(selectedDate, "PPP")
               : placeholder || "Pick a date"}
           </Button>
         </PopoverTrigger>

@@ -179,102 +179,127 @@ export default function EditEducationTimeline({
       {isClicked && (
         <div className="flex justify-center items-center my-8">
           <GlowCard color={vibrantColors[0]} isAlternate={false}>
-            <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg">
-              <h2 className="text-2xl font-bold mb-1">Add Education</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <div className="dark:bg-gray-900 bg-gray-100 p-8 rounded-2xl transition-all shadow-lg">
+              <h2 className="text-2xl font-bold mb-1 text-center">
+                Add Education
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 text-center">
                 Add your academic qualifications to your profile
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="relative">
+                  <div className="absolute left-0 top-2 text-gray-500 dark:text-gray-400"></div>
                   <Input
                     id="degree_name"
                     name="degree_name"
                     placeholder="Degree Name"
-                    className="border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 text-center bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600"
+                    className="pl-7 border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600 transition-all"
                   />
                   {formErrors.degree_name && (
-                    <p className="text-red-500 text-sm text-center mt-1">
+                    <p className="text-red-500 text-sm mt-1">
                       {formErrors.degree_name}
                     </p>
                   )}
                 </div>
 
-                <div>
+                <div className="relative">
                   <Input
                     id="institute_name"
                     name="institute_name"
                     placeholder="Institute Name"
-                    className="border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 text-center bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600"
+                    className="pl-7 border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600 transition-all"
                   />
                   {formErrors.institute_name && (
-                    <p className="text-red-500 text-sm text-center mt-1">
+                    <p className="text-red-500 text-sm mt-1">
                       {formErrors.institute_name}
                     </p>
                   )}
                 </div>
 
-                <div>
-                  <DatePicker
-                    date={startDate}
-                    onDateChange={(date) => setStartDate(date)}
-                    placeholder="Start Date"
-                    className="w-full"
-                  />
-                  {formErrors.start_date && (
-                    <p className="text-red-500 text-sm text-center mt-1">
-                      {formErrors.start_date}
-                    </p>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="start_date"
+                      className="text-sm font-medium text-gray-600 dark:text-gray-400"
+                    >
+                      Start Date
+                    </Label>
+                    <div className="relative">
+                      <DatePicker
+                        date={startDate}
+                        onDateChange={(date) => setStartDate(date)}
+                        placeholder="Select start date"
+                        className="w-full border rounded-md"
+                      />
+                      {formErrors.start_date && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {formErrors.start_date}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="end_date"
+                      className="text-sm font-medium text-gray-600 dark:text-gray-400"
+                    >
+                      End Date
+                    </Label>
+                    <div className="relative">
+                      <DatePicker
+                        date={endDate}
+                        onDateChange={(date) => setEndDate(date)}
+                        placeholder="Select end date"
+                        className="w-full border rounded-md"
+                        disabled={isCurrentlyStudying}
+                      />
+                      {isCurrentlyStudying && (
+                        <p className="text-blue-500 text-xs mt-1">
+                          Set to &quot;Present&quot; while studying
+                        </p>
+                      )}
+                      {formErrors.end_date && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {formErrors.end_date}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex flex-row items-center justify-center space-x-3 space-y-0 py-2">
+                <div className="flex items-center justify-start space-x-3 py-1 mt-2">
                   <Checkbox
                     id="is_studying"
                     name="is_studying"
                     checked={isCurrentlyStudying}
                     onCheckedChange={handleStudyingChange}
-                    className="data-[state=checked]:bg-blue-600"
+                    className="data-[state=checked]:bg-blue-600 h-4 w-4"
                   />
                   <div className="leading-none">
-                    <Label htmlFor="is_studying">Currently Studying</Label>
+                    <Label
+                      htmlFor="is_studying"
+                      className="text-sm font-medium cursor-pointer"
+                    >
+                      I am currently studying here
+                    </Label>
                   </div>
                 </div>
 
-                <div>
-                  <DatePicker
-                    date={endDate}
-                    onDateChange={(date) => setEndDate(date)}
-                    placeholder="End Date"
-                    className="w-full"
-                    disabled={isCurrentlyStudying}
-                  />
-                  {isCurrentlyStudying && (
-                    <p className="text-muted-foreground text-sm text-center mt-1">
-                      End date is set to &quot;Present&quot; while currently
-                      studying
-                    </p>
-                  )}
-                  {formErrors.end_date && (
-                    <p className="text-red-500 text-sm text-center mt-1">
-                      {formErrors.end_date}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex justify-center space-x-4 pt-6">
+                <div className="flex justify-end space-x-4 pt-6">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setIsClicked(false)}
-                    className="rounded-full px-6"
+                    className="rounded-lg px-6"
                   >
                     Cancel
                   </Button>
                   <Button
                     disabled={isSubmitting}
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 rounded-full px-6"
+                    className="bg-blue-600 hover:bg-blue-700 rounded-lg px-6"
                   >
                     {isSubmitting ? "Adding..." : "Add Education"}
                   </Button>
