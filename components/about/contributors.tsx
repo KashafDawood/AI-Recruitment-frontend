@@ -17,9 +17,9 @@ const contributors = [
     role: "Software Engineer",
     avatar:
       "https://res.cloudinary.com/druaycgob/image/upload/v1742049288/hijabi_placeholder_lsmoet.png",
-    github: "#",
-    linkedin: "#",
-    email: "mailto:contributor2@example.com",
+    github: "https://github.com/sana-developer",
+    linkedin: "https://www.linkedin.com/in/sana-saghir-83bb24249/",
+    email: "sanasaghir979@gmail.com",
   },
 ];
 
