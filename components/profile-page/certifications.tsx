@@ -142,7 +142,7 @@ export default function Certifications({
 
   return (
     <div className="py-16 px-4 relative">
-      <h2 className="text-foreground font-aclonica text-5xl font-bold mb-10 text-center">
+      <h2 className="text-foreground font-aclonica text-4xl md:text-6xl font-bold mb-10 text-start">
         My Certifications
       </h2>
 
