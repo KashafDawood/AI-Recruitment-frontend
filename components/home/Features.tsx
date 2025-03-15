@@ -3,7 +3,17 @@ import { FileText, FileEdit, Users, Mail, FileSignature } from "lucide-react";
 
 export default function FeaturesSection() {
   return (
-    <section className="bg-gray-50 py-16 md:py-32 dark:bg-transparent">
+    <section className="bg-gray-50 py-10 md:py-14 dark:bg-transparent">
+      <div className="flex justify-center flex-col text-center max-w-3xl mx-auto mb-16">
+        <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+          Features
+        </h2>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+          Discover our AI-powered recruitment tools designed to streamline your
+          hiring process and connect the right talent with the right
+          opportunities.
+        </p>
+      </div>
       <div className="mx-auto max-w-5xl px-6">
         <div className="relative">
           <div className="relative z-10 grid grid-cols-6 gap-3">
