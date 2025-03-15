@@ -75,7 +75,7 @@ export default function HowItWorks() {
                 </div>
 
                 {/* Card */}
-                <div className="bg-white dark:bg-black rounded-xl p-6 pt-10 shadow-lg border border-zinc-200 dark:border-zinc-700/50 mt-7 relative transform transition-all hover:-translate-y-1 hover:shadow-xl duration-300">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 pt-10 shadow-lg border border-zinc-200 dark:border-zinc-700/50 mt-7 relative transform transition-all hover:-translate-y-1 hover:shadow-xl duration-300">
                   <h3 className="text-xl font-semibold mb-5 text-center">
                     {step.title}
                   </h3>
@@ -113,7 +113,7 @@ export default function HowItWorks() {
 
                 {/* Arrow to next step (except last step) */}
                 {index < steps.length - 1 && (
-                  <div className="absolute top-1/2 -right-5 -translate-y-1/2 z-10">
+                  <div className="absolute top-1/2 -right-8 -translate-y-1/2 z-10">
                     <ArrowRight className="h-8 w-8 text-zinc-400 dark:text-zinc-600" />
                   </div>
                 )}
