@@ -1,5 +1,5 @@
-import Footer from "@/components/home/Contact";
-import { NavMenu } from "@/components/home/navbar";
+import Footer from "@/components/home/Footer";
+import { HeroHeader } from "@/components/home/header";
 
 export default function BlogsLayout({
   children,
@@ -8,8 +8,8 @@ export default function BlogsLayout({
 }) {
   return (
     <>
-      <header>
-        <NavMenu />
+      <header className="pb-20">
+        <HeroHeader />
       </header>
       <main>{children}</main>
       <Footer />
