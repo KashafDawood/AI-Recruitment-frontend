@@ -271,7 +271,11 @@ export default function EducationTimeline({
               </div>
 
               {/* Education card */}
-              <GlowCard color={education.color} isAlternate={isAlternate}>
+              <GlowCard
+                className="md:w-1/2 w-full"
+                color={education.color}
+                isAlternate={isAlternate}
+              >
                 <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg relative">
                   {/* Edit/Delete buttons when in edit mode */}
                   {isEditing && (

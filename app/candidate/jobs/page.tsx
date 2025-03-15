@@ -42,16 +42,23 @@ export default function FindJobs() {
   return (
     <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
       {jobs.map((job, index) => {
-        const sanitizedDescription = DOMPurify.sanitize(truncateText(job.description, 100));
+        const sanitizedDescription = DOMPurify.sanitize(
+          truncateText(job.description, 100)
+        );
         return (
           <div key={index} className="p-4">
-            <GlowCard color={vibrantColors[index % vibrantColors.length]}>
+            <GlowCard
+              isAlternate={true}
+              color={vibrantColors[index % vibrantColors.length]}
+            >
               <div className="w-full p-6 rounded-lg shadow-lg relative">
                 <h1 className="text-2xl font-bold mb-2">{job.title}</h1>
                 <p className="text-lg font-semibold mb-1">{job.company}</p>
                 <p className="text-md text-gray-700 mb-2">{job.location}</p>
                 {job.salary ? (
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">{job.salary}</span>
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                    {job.salary}
+                  </span>
                 ) : null}
                 <div className="absolute top-4 right-4 flex space-x-2">
                   <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
@@ -68,5 +75,5 @@ export default function FindJobs() {
         );
       })}
     </div>
-  )
+  );
 }

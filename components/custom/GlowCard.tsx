@@ -18,20 +18,17 @@ interface GlowCardProps {
   children: ReactNode;
   color: string;
   isAlternate?: boolean;
+  className?: string;
 }
 
 export function GlowCard({
   children,
   color,
   isAlternate = false,
+  className,
 }: GlowCardProps) {
   return (
-    <div
-      className={cn(
-        "md:w-1/2 w-full",
-        isAlternate ? "md:pr-8 md:pl-0" : "md:pl-8"
-      )}
-    >
+    <div className={cn(className, isAlternate ? "md:pr-8 md:pl-0" : "md:pl-8")}>
       <div className="relative overflow-hidden rounded-lg">
         {/* Color strip on left side */}
         <div
