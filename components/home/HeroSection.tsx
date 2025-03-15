@@ -38,14 +38,33 @@ export default function HeroSection() {
                   AI-Powered Recruitment
                 </span>
 
-                <TextEffect
-                  preset="fade-in-blur"
-                  speedSegment={0.3}
-                  as="h1"
-                  className="mt-8 text-balance text-6xl md:text-8xl lg:mt-16 xl:text-[5.25rem] font-black"
-                >
-                  Smart Hiring, Simplified
-                </TextEffect>
+                <div className="mt-8 text-balance text-6xl md:text-8xl lg:mt-16 xl:text-[5.25rem] font-black">
+                  <TextEffect
+                    preset="fade-in-blur"
+                    speedSegment={0.3}
+                    as="h1"
+                    className="inline"
+                  >
+                    Smart
+                  </TextEffect>{" "}
+                  <TextEffect
+                    preset="fade-in-blur"
+                    speedSegment={0.3}
+                    as="span"
+                    className="inline gradient-text"
+                  >
+                    Hiring
+                  </TextEffect>
+                  <TextEffect
+                    preset="fade-in-blur"
+                    speedSegment={0.3}
+                    as="span"
+                    className="inline"
+                  >
+                    , Simplified
+                  </TextEffect>
+                </div>
+
                 <TextEffect
                   per="line"
                   preset="fade-in-blur"
@@ -62,7 +81,7 @@ export default function HeroSection() {
             </div>
 
             <div className="flex justify-center pt-10">
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="gradient-button">
                 <Link href="/signup">
                   <span>Get Started</span>
                 </Link>
