@@ -6,5 +6,6 @@ export interface BlogPost {
   image?: string;
   bgColor?: string;
   category?: string;
-  thumbnail?: string; 
+  thumbnail?: string;
+  created_at?: Date;
 }
