@@ -28,7 +28,7 @@ export function GlowCard({
   return (
     <div
       className={cn(
-        "w-full",
+        "md:w-1/2 w-full",
         isAlternate ? "md:pr-8 md:pl-0" : "md:pl-8"
       )}
     >
