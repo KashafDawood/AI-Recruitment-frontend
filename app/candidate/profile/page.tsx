@@ -9,6 +9,16 @@ import Certifications from "@/components/profile-page/certifications";
 import EditProfileCard from "@/components/profile-page/edit-profile-card";
 import { useState } from "react";
 import EditProfileBio from "@/components/profile-page/edit-bio";
+import AddCertificationForm from "@/components/profile-page/edit-certifications/addCertification-form";
+import EditCertificationForm from "@/components/profile-page/edit-certifications/editCertification-form";
+import { useUserStore } from "@/store/userStore";
+
+interface Certification {
+  source?: string;
+  source_url?: string;
+  date_obtained?: string;
+  certification_name?: string;
+}
 
 // Define edit section types
 type EditSection = "profile" | "bio" | "education" | "certifications" | null;
@@ -16,6 +26,10 @@ type EditSection = "profile" | "bio" | "education" | "certifications" | null;
 export default function CandidateProfile() {
   const { user, isLoading } = useUserWithLoading();
   const [editSection, setEditSection] = useState<EditSection>(null);
+  const [isAddingCertification, setIsAddingCertification] = useState(false);
+  const [editingCertification, setEditingCertification] =
+    useState<Certification | null>(null);
+  const { refreshUser } = useUserStore();
 
   const handleEditClick = (section: EditSection) => {
     setEditSection(section);
@@ -23,6 +37,22 @@ export default function CandidateProfile() {
 
   const handleEditComplete = () => {
     setEditSection(null);
+  };
+
+  const handleAddCertificationClick = () => {
+    setIsAddingCertification(true);
+  };
+
+  const handleCancelAddCertification = () => {
+    setIsAddingCertification(false);
+  };
+
+  const handleEditCertification = (cert: Certification) => {
+    setEditingCertification(cert);
+  };
+
+  const handleCancelEditCertification = () => {
+    setEditingCertification(null);
   };
 
   if (isLoading) {
@@ -102,8 +132,38 @@ export default function CandidateProfile() {
           onEditClick={() => handleEditClick("education")}
         />
 
-        {user?.certifications && (
-          <Certifications certifications={user.certifications} />
+        {isAddingCertification ? (
+          <AddCertificationForm
+            onCancel={handleCancelAddCertification}
+            onSuccess={() => {
+              refreshUser();
+              setIsAddingCertification(false);
+            }}
+          />
+        ) : editingCertification ? (
+          <EditCertificationForm
+            certification={editingCertification}
+            onCancel={handleCancelEditCertification}
+            onSuccess={() => {
+              refreshUser();
+              setEditingCertification(null);
+            }}
+          />
+        ) : (
+          user?.certifications && (
+            <Certifications
+              certifications={user.certifications}
+              isEditing={editSection === "certifications"}
+              onEditClick={() =>
+                handleEditClick(
+                  editSection === "certifications" ? null : "certifications"
+                )
+              }
+              onAddClick={handleAddCertificationClick}
+              onEditCertificate={handleEditCertification}
+              onDeleteCertificate={() => refreshUser()}
+            />
+          )
         )}
       </div>
     </div>
