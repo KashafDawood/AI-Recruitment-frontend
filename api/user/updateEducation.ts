@@ -1,15 +1,11 @@
+import { Education } from "@/store/userStore";
 import axiosInstance from "../axiosConfig";
 
-type EducationData = {
-  degree_name: string;
-  original_degree_name?: string; // Added for identifying which education to update
-  institute_name: string;
-  start_date: string;
-  end_date?: string | null;
-  is_studying: boolean;
+type ExtendEducation = Education & {
+  original_degree_name?: string;
 };
 
-export const updateEducation = async (educationData: EducationData) => {
+export const updateEducation = async (educationData: ExtendEducation) => {
   try {
     // Use the original degree name if provided, otherwise use the current one
     const degreeToUpdate =

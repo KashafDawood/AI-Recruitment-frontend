@@ -1,14 +1,7 @@
+import { Education } from "@/store/userStore";
 import axiosInstance from "../axiosConfig";
 
-type EducationData = {
-  degree_name: string;
-  institute_name: string;
-  start_date: string;
-  end_date?: string | null;
-  is_studying: boolean;
-};
-
-export const addEducation = async (educationData: EducationData) => {
+export const addEducation = async (educationData: Education) => {
   try {
     const response = await axiosInstance.post(
       "/api/users/education/",
