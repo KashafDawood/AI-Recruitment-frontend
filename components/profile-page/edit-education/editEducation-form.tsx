@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useMemo } from "react";
 import { GlowCard, vibrantColors } from "../../custom/GlowCard";
 import { Button } from "../../ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { DatePicker } from "@/components/custom/datePicker";
 import { updateEducation } from "@/api/user/updateEducation";
 import { useUserStore } from "@/store/userStore";
 import { Education } from "../education-card";
+import { Calendar } from "lucide-react";
 
 export default function EditEducationForm({
   education,
@@ -35,9 +37,34 @@ export default function EditEducationForm({
   const [instituteName, setInstituteName] = useState(education.institute_name);
   const { refreshUser } = useUserStore();
 
+  // Use useMemo to keep the color constant during re-renders
+  const cardColor = useMemo(
+    () => vibrantColors[Math.floor(Math.random() * vibrantColors.length)],
+    []
+  );
+
   // Handle checkbox change
   const handleStudyingChange = (checked: boolean) => {
     setIsCurrentlyStudying(checked);
+  };
+
+  // Format date for display
+  const formatDate = (date: Date | undefined): string => {
+    if (!date) return "";
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    });
+  };
+
+  // Format date range for display
+  const formatDateRange = (): string => {
+    const start = formatDate(startDate);
+    if (isCurrentlyStudying) {
+      return start ? `${start} - Present` : "";
+    }
+    const end = formatDate(endDate);
+    return start && end ? `${start} - ${end}` : start || end || "";
   };
 
   // Store original degree name for API call
@@ -102,26 +129,22 @@ export default function EditEducationForm({
   };
 
   return (
-    <div className="flex justify-center items-center my-8 w-full">
-      <GlowCard color={vibrantColors[0]} isAlternate={false}>
-        <div className="dark:bg-gray-900 bg-gray-100 p-8 transition-all shadow-lg w-full">
-          <h2 className="text-2xl font-bold mb-1 text-center">
-            Edit Education
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 text-center">
-            Update your academic information
-          </p>
+    <div className="py-8 px-4 max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Edit Education</h2>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="relative">
-              <div className="absolute left-0 top-2 text-gray-500 dark:text-gray-400"></div>
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Form section */}
+        <div className="w-full md:w-1/2 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="degree_name">Degree Name</Label>
               <Input
                 id="degree_name"
                 name="degree_name"
                 placeholder="Degree Name"
                 value={degreeName}
                 onChange={(e) => setDegreeName(e.target.value)}
-                className="pl-7 border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600 transition-all"
+                className="border-gray-300 dark:border-gray-700"
               />
               {formErrors.degree_name && (
                 <p className="text-red-500 text-sm mt-1">
@@ -130,14 +153,15 @@ export default function EditEducationForm({
               )}
             </div>
 
-            <div className="relative">
+            <div className="space-y-2">
+              <Label htmlFor="institute_name">Institute Name</Label>
               <Input
                 id="institute_name"
                 name="institute_name"
                 placeholder="Institute Name"
                 value={instituteName}
                 onChange={(e) => setInstituteName(e.target.value)}
-                className="pl-7 border-0 border-b-2 border-gray-300 dark:border-gray-700 rounded-none px-0 bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-b-blue-600 transition-all"
+                className="border-gray-300 dark:border-gray-700"
               />
               {formErrors.institute_name && (
                 <p className="text-red-500 text-sm mt-1">
@@ -146,56 +170,40 @@ export default function EditEducationForm({
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="start_date"
-                  className="text-sm font-medium text-gray-600 dark:text-gray-400"
-                >
-                  Start Date
-                </Label>
-                <div className="relative">
-                  <DatePicker
-                    date={startDate}
-                    onDateChange={(date) => setStartDate(date)}
-                    placeholder="Select start date"
-                    className="w-full border rounded-md"
-                  />
-                  {formErrors.start_date && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formErrors.start_date}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="start_date">Start Date</Label>
+              <DatePicker
+                date={startDate}
+                onDateChange={(date) => setStartDate(date)}
+                placeholder="Select start date"
+                className="w-full border rounded-md"
+              />
+              {formErrors.start_date && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formErrors.start_date}
+                </p>
+              )}
+            </div>
 
-              <div className="space-y-2">
-                <Label
-                  htmlFor="end_date"
-                  className="text-sm font-medium text-gray-600 dark:text-gray-400"
-                >
-                  End Date
-                </Label>
-                <div className="relative">
-                  <DatePicker
-                    date={endDate}
-                    onDateChange={(date) => setEndDate(date)}
-                    placeholder="Select end date"
-                    className="w-full border rounded-md"
-                    disabled={isCurrentlyStudying}
-                  />
-                  {isCurrentlyStudying && (
-                    <p className="text-blue-500 text-xs mt-1">
-                      Set to &quot;Present&quot; while studying
-                    </p>
-                  )}
-                  {formErrors.end_date && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formErrors.end_date}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="end_date">End Date</Label>
+              <DatePicker
+                date={endDate}
+                onDateChange={(date) => setEndDate(date)}
+                placeholder="Select end date"
+                className="w-full border rounded-md"
+                disabled={isCurrentlyStudying}
+              />
+              {isCurrentlyStudying && (
+                <p className="text-blue-500 text-xs mt-1">
+                  Set to &quot;Present&quot; while studying
+                </p>
+              )}
+              {formErrors.end_date && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formErrors.end_date}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-start space-x-3 py-1 mt-2">
@@ -235,7 +243,45 @@ export default function EditEducationForm({
             </div>
           </form>
         </div>
-      </GlowCard>
+
+        {/* Preview card section */}
+        <div className="w-full md:w-1/2">
+          <h3 className="text-lg font-medium mb-4">Preview</h3>
+          <GlowCard color={cardColor} isAlternate={false} className="w-full">
+            <div className="dark:bg-gray-900 bg-gray-100 p-6 rounded-lg transition-all shadow-lg relative">
+              <h3 className="text-xl font-bold text-black dark:text-white">
+                {degreeName || "Degree Name"}
+              </h3>
+              <h4
+                className="text-lg font-black mt-1"
+                style={{ color: cardColor }}
+              >
+                {instituteName || "Institute Name"}
+              </h4>
+
+              <div className="flex items-center mt-3 text-sm dark:text-gray-200 text-gray-600">
+                <Calendar className="w-4 h-4 mr-2" />
+                <span>{formatDateRange() || "Start Date - End Date"}</span>
+              </div>
+
+              {isCurrentlyStudying && (
+                <div
+                  className="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  style={{
+                    backgroundColor: `${cardColor}20`,
+                    color: cardColor,
+                  }}
+                >
+                  Currently Studying
+                </div>
+              )}
+            </div>
+          </GlowCard>
+          <p className="text-sm text-gray-500 mt-4 text-center">
+            This is how your education will appear on your profile
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

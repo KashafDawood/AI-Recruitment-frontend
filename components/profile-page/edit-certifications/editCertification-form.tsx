@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,8 +41,10 @@ export default function EditCertificationForm({
   const { refreshUser } = useUserStore();
 
   // Choose a random color for the preview card
-  const cardColor =
-    vibrantColors[Math.floor(Math.random() * vibrantColors.length)];
+  const cardColor = useMemo(
+    () => vibrantColors[Math.floor(Math.random() * vibrantColors.length)],
+    []
+  );
 
   // Format date for display
   const formatDate = (date: Date | undefined): string => {
