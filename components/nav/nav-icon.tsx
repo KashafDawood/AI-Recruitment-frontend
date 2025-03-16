@@ -25,9 +25,7 @@ export function ProfileIcon() {
   const handleLogout = async () => {
     await logout();
     router.push("/");
-    setTimeout(async () => {
-      await clearUser();
-    }, 100);
+    await clearUser();
   };
 
   useEffect(() => {
