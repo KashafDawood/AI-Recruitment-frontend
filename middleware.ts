@@ -4,7 +4,7 @@ import { decrypt } from "./app/_lib/session";
 
 const protectedRoutes = {
   candidate: ["/candidate", "/candidate/profile", "/candidate/jobs"],
-  employer: ["/employer"],
+  employer: ["/employer", "/employer/profile"],
 };
 const publicRoutes = ["/login", "/signup"]; // signup is already included here
 
