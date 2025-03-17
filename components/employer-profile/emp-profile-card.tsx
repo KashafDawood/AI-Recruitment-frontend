@@ -5,19 +5,31 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import OptimizeImage from "@/components/custom/optimizeImage";
 import { User } from "@/store/userStore";
 import React from "react";
+import Image from "next/image";
 
 export const EmpProfileCard: React.FC<{ user: User | null }> = ({ user }) => {
   return (
     <Card>
       <CardContent className="pt-6">
         <div className="flex flex-col items-center text-center">
-          <OptimizeImage
-            className="rounded-full shadow-md"
-            src={user?.photo || "/default.png"}
-            width={300}
-            alt={user?.name || "employer"}
-          />
-          <h1 className="text-2xl font-bold">{user?.name}</h1>
+          {user?.photo ? (
+            <OptimizeImage
+              src={user.photo}
+              alt={user?.name || "profile image"}
+              width={300}
+              height={300}
+              className="object-cover rounded-full shadow-md w-32 h-32"
+            />
+          ) : (
+            <Image
+              src={"/default-avatar.png"}
+              width={300}
+              height={300}
+              alt="default profile image"
+              className="object-cover rounded-full shadow-md w-32 h-32 bg-white dark:bg-gray-800"
+            />
+          )}
+          <h1 className="text-2xl font-bold mt-3">{user?.name}</h1>
           <p className="text-muted-foreground">@{user?.username}</p>
         </div>
       </CardContent>

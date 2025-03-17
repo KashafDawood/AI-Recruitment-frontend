@@ -19,7 +19,7 @@ export const CompanyProfileCard: React.FC<{ user: User | null }> = ({
           <div className="relative h-16 w-16 overflow-hidden rounded-md">
             <OptimizeImage
               className="rounded-full shadow-md"
-              src={user?.logo || "/default.png"}
+              src={user?.logo}
               width={100}
               alt={user?.company_name || "company"}
             />

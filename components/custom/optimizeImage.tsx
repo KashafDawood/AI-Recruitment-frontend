@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { CldImage } from "next-cloudinary";
 import Image from "next/image";
-import { AvatarFallback } from "@/components/ui/avatar";
 
 interface OptimizedImageProps {
   src: string | null | undefined;
@@ -39,7 +38,7 @@ export default function OptimizeImage({
   src,
   alt,
   width,
-  height,
+  height = width,
   className = "",
   fallback,
   showFallbackOnError = true,
@@ -59,9 +58,11 @@ export default function OptimizeImage({
       className={`flex items-center justify-center w-full h-full ${className}`}
       style={{ backgroundColor: bgColor }}
     >
-      <AvatarFallback className="w-full h-full flex items-center justify-center">
+      <div
+        className={`w-[${width}px] h-[${height}px] h-auto  flex items-center justify-center text-white font-medium text-lg`}
+      >
         {alt?.charAt(0)?.toUpperCase() || "U"}
-      </AvatarFallback>
+      </div>
     </div>
   );
 
