@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Globe, Mail, Pencil, Phone } from "lucide-react";
+import { Globe, Mail, Phone, X } from "lucide-react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import OptimizeImage from "@/components/custom/optimizeImage";
@@ -8,26 +8,26 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 
-type ProfileCardProps = {
+type EditProfileCardProps = {
   user: User | null;
-  onEditClick?: () => void;
+  onEditCancel?: () => void;
 };
 
-export const EmpProfileCard: React.FC<ProfileCardProps> = ({
+export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
   user,
-  onEditClick,
+  onEditCancel,
 }) => {
   return (
     <Card className="relative">
-      {onEditClick && (
+      {onEditCancel && (
         <Button
-          onClick={onEditClick}
+          onClick={onEditCancel}
           variant="outline"
           size="icon"
           className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
           title="Edit Profile"
         >
-          <Pencil size={18} />
+          <X size={18} />
         </Button>
       )}
       <CardContent className="pt-6">

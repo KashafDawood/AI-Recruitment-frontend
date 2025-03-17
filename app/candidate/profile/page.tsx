@@ -20,7 +20,6 @@ interface Certification {
   certification_name?: string;
 }
 
-// Define edit section types
 type EditSection = "profile" | "bio" | "education" | "certifications" | null;
 
 export default function CandidateProfile() {
