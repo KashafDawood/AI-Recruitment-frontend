@@ -30,6 +30,8 @@ export interface User {
     }
   >;
   company_name?: string;
+  company_size?: string;
+  about_company?: string;
   logo?: string;
   industry?: string;
 }
