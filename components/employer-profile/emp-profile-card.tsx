@@ -32,23 +32,23 @@ export const EmpProfileCard: React.FC<ProfileCardProps> = ({
       )}
       <CardContent className="pt-6">
         <div className="flex flex-col items-center text-center">
-          {user?.photo ? (
-            <OptimizeImage
-              src={user.photo}
-              alt={user?.name || "profile image"}
-              width={300}
-              height={300}
-              className="object-cover rounded-full shadow-md w-32 h-32"
-            />
-          ) : (
-            <Image
-              src={"/default-avatar.png"}
-              width={300}
-              height={300}
-              alt="default profile image"
-              className="object-cover rounded-full shadow-md w-32 h-32 bg-white dark:bg-gray-800"
-            />
-          )}
+          <div className="w-[18rem] h-[18rem] border-6 border-gray-300 shadow-md rounded-full overflow-hidden">
+            {user?.photo ? (
+              <OptimizeImage
+                src={user.photo}
+                alt={user?.name || "profile image"}
+                width={500}
+              />
+            ) : (
+              <Image
+                src={"/default-avatar.png"}
+                width={500}
+                height={500}
+                alt="default profile image"
+                className="object-cover w-full h-full bg-white dark:bg-gray-800"
+              />
+            )}
+          </div>
           <h1 className="text-2xl font-bold mt-3">{user?.name}</h1>
           <p className="text-muted-foreground">@{user?.username}</p>
         </div>

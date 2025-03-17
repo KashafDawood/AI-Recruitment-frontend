@@ -1,22 +1,41 @@
 import Link from "next/link";
 import { Globe, Mail, Phone, X } from "lucide-react";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import OptimizeImage from "@/components/custom/optimizeImage";
 import { User } from "@/store/userStore";
-import React from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
+import ProfileImageSection from "../profile-page/edit-profile-card/ProfileImageSection";
 
 type EditProfileCardProps = {
   user: User | null;
   onEditCancel?: () => void;
+  onChange?: (file: File | null) => void;
 };
 
 export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
   user,
   onEditCancel,
+  onChange,
 }) => {
+  const [preview, setPreview] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
+
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => setPreview(reader.result as string);
+      reader.readAsDataURL(selectedFile);
+      setFile(selectedFile);
+    } else {
+      setPreview(null);
+      setFile(null);
+    }
+
+    if (onChange) onChange(selectedFile);
+  };
+
   return (
     <Card className="relative">
       {onEditCancel && (
@@ -32,23 +51,11 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
       )}
       <CardContent className="pt-6">
         <div className="flex flex-col items-center text-center">
-          {user?.photo ? (
-            <OptimizeImage
-              src={user.photo}
-              alt={user?.name || "profile image"}
-              width={300}
-              height={300}
-              className="object-cover rounded-full shadow-md w-32 h-32"
-            />
-          ) : (
-            <Image
-              src={"/default-avatar.png"}
-              width={300}
-              height={300}
-              alt="default profile image"
-              className="object-cover rounded-full shadow-md w-32 h-32 bg-white dark:bg-gray-800"
-            />
-          )}
+          <ProfileImageSection
+            user={user}
+            preview={preview}
+            onChange={handleChangeFile}
+          />
           <h1 className="text-2xl font-bold mt-3">{user?.name}</h1>
           <p className="text-muted-foreground">@{user?.username}</p>
         </div>
