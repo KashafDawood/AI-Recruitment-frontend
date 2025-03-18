@@ -1,12 +1,22 @@
-"use client"
+"use client";
 
-import { getAllJobs } from "@/api/candidate/getAllJobs"
-import { useEffect, useState } from "react"
-import { FilterIcon, X, ChevronDown, BookmarkIcon, Share2Icon, Briefcase, MapPin, User, Clock } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import "./scrollbar.css"
+import { getAllJobs } from "@/api/candidate/getAllJobs";
+import { useEffect, useState } from "react";
+import {
+  FilterIcon,
+  X,
+  ChevronDown,
+  BookmarkIcon,
+  Share2Icon,
+  Briefcase,
+  MapPin,
+  User,
+  Clock,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import "./scrollbar.css";
 import {
   Pagination,
   PaginationContent,
@@ -17,31 +27,30 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-
 interface Job {
-  title: string
-  job_status: string
-  salary: string
-  location: string
-  company: string
-  description: string
-  job_location_type: string
-  job_type: string
-  experience_required: string
-  required_qualifications: string[]
-  preferred_qualifications: string[]
-  responsibilities: string[]
-  benefits: string[]
-  created_at: string
+  title: string;
+  job_status: string;
+  salary: string;
+  location: string;
+  company: string;
+  description: string;
+  job_location_type: string;
+  job_type: string;
+  experience_required: string;
+  required_qualifications: string[];
+  preferred_qualifications: string[];
+  responsibilities: string[];
+  benefits: string[];
+  created_at: string;
 }
 
 const calculateDaysAgo = (dateString: string) => {
-  const createdDate = new Date(dateString)
-  const currentDate = new Date()
-  const diffTime = Math.abs(currentDate.getTime() - createdDate.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays
-}
+  const createdDate = new Date(dateString);
+  const currentDate = new Date();
+  const diffTime = Math.abs(currentDate.getTime() - createdDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
 
 export default function FindJobs() {
   const [jobs, setJobs] = useState<Job[]>([])
@@ -55,9 +64,9 @@ export default function FindJobs() {
   const JobsPerPage = 10;
 
   useEffect(() => {
-    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overflow = "hidden";
     return () => {
-      document.documentElement.style.overflow = '';
+      document.documentElement.style.overflow = "";
     };
   }, []);
 
@@ -259,7 +268,10 @@ export default function FindJobs() {
                   <X className="w-3 h-3 ml-1 cursor-pointer" onClick={() => removeFilter(key)} />
                 </Badge>
               ))}
-              <button onClick={clearAllFilters} className="text-blue-600 text-sm font-medium ml-2">
+              <button
+                onClick={clearAllFilters}
+                className="text-blue-600 text-sm font-medium ml-2"
+              >
                 Clear All
               </button>
             </div>
@@ -359,7 +371,6 @@ export default function FindJobs() {
             </div>
           </div>
 
-              
           {/* Only show pagination if there are posts */}
           {totalPages > 0 && (
             <Pagination className="my-2">
@@ -388,7 +399,6 @@ export default function FindJobs() {
               </PaginationContent>
             </Pagination>
           )}
-
         </div>
 
         {/* Right column - Job details with independent scrolling and sticky Apply button */}
@@ -398,7 +408,9 @@ export default function FindJobs() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">{selectedJob.title}</h2>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {selectedJob.title}
+                    </h2>
                     <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
                       <span>{selectedJob.company}</span>
                       <span>•</span>
@@ -406,10 +418,18 @@ export default function FindJobs() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="icon" className="rounded-lg h-10 w-10">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="rounded-lg h-10 w-10"
+                    >
                       <BookmarkIcon className="h-5 w-5 text-blue-600" />
                     </Button>
-                    <Button variant="outline" size="icon" className="rounded-lg h-10 w-10">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="rounded-lg h-10 w-10"
+                    >
                       <Share2Icon className="h-5 w-5 text-blue-600" />
                     </Button>
                   </div>
@@ -418,7 +438,9 @@ export default function FindJobs() {
                 <div className="bg-gray-50 rounded-lg p-4 mb-6">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-medium">Applicants Summary</h3>
-                    <Badge className="bg-green-100 text-green-800 font-medium">{selectedJob.job_status}</Badge>
+                    <Badge className="bg-green-100 text-green-800 font-medium">
+                      {selectedJob.job_status}
+                    </Badge>
                   </div>
 
                   <div className="flex items-center gap-6">
@@ -428,8 +450,18 @@ export default function FindJobs() {
                         <span className="text-sm text-gray-500">/100</span>
                       </div>
                       {/* This would be a pie chart in a real implementation */}
-                      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#e0e0e0" strokeWidth="12" />
+                      <svg
+                        viewBox="0 0 100 100"
+                        className="w-full h-full -rotate-90"
+                      >
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          fill="transparent"
+                          stroke="#e0e0e0"
+                          strokeWidth="12"
+                        />
                         <circle
                           cx="50"
                           cy="50"
@@ -448,7 +480,6 @@ export default function FindJobs() {
                           stroke="#3b82f6"
                           strokeWidth="12"
                           strokeDasharray="251.2"
-                          strokeDashoffset="200"
                           strokeDashoffset="175"
                         />
                         <circle
@@ -487,7 +518,9 @@ export default function FindJobs() {
                   </div>
                   <div className="border rounded-lg p-3">
                     <div className="text-sm text-gray-500 mb-1">Experience</div>
-                    <div className="font-medium">{selectedJob.experience_required}</div>
+                    <div className="font-medium">
+                      {selectedJob.experience_required}
+                    </div>
                   </div>
                   <div className="border rounded-lg p-3">
                     <div className="text-sm text-gray-500 mb-1">Salary</div>
@@ -506,27 +539,33 @@ export default function FindJobs() {
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Requirements</h3>
                   <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
-                    {selectedJob.required_qualifications.map((requirement, index) => (
-                      <li key={index}>{requirement}</li>
-                    ))}
+                    {selectedJob.required_qualifications.map(
+                      (requirement, index) => (
+                        <li key={index}>{requirement}</li>
+                      )
+                    )}
                   </ul>
                 </div>
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Preferred Qualifications</h3>
                   <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
-                    {selectedJob.preferred_qualifications.map((qualification, index) => (
-                      <li key={index}>{qualification}</li>
-                    ))}
+                    {selectedJob.preferred_qualifications.map(
+                      (qualification, index) => (
+                        <li key={index}>{qualification}</li>
+                      )
+                    )}
                   </ul>
                 </div>
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Responsibilities</h3>
                   <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
-                    {selectedJob.responsibilities.map((responsibility, index) => (
-                      <li key={index}>{responsibility}</li>
-                    ))}
+                    {selectedJob.responsibilities.map(
+                      (responsibility, index) => (
+                        <li key={index}>{responsibility}</li>
+                      )
+                    )}
                   </ul>
                 </div>
 
@@ -538,13 +577,14 @@ export default function FindJobs() {
                     ))}
                   </ul>
                 </div>
-
               </div>
             </div>
 
             {/* Sticky Apply Job button */}
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">Apply Job</Button>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
+                Apply Job
+              </Button>
             </div>
           </div>
         )}
@@ -552,4 +592,3 @@ export default function FindJobs() {
   </div>
   )
 }
-

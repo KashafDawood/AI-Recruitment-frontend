@@ -6,7 +6,7 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Bold,
   Italic,
@@ -55,10 +55,18 @@ export function RichTextEditor({
   onAiGenerate,
 }: RichTextEditorProps) {
   const [linkUrl, setLinkUrl] = useState("");
+  const [editorContent, setEditorContent] = useState(content);
+  const editorRef = useRef<HTMLDivElement>(null);
 
+  // Create the editor instance with improved paste handling
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        history: {
+          depth: 10,
+          newGroupDelay: 300,
+        },
+      }),
       Underline,
       Link.configure({
         openOnClick: false,
@@ -74,17 +82,40 @@ export function RichTextEditor({
         emptyEditorClass: "is-editor-empty",
       }),
     ],
-    content,
+    content: editorContent,
+    autofocus: "end",
+    injectCSS: false,
     editorProps: {
       attributes: {
         class:
           "min-h-[150px] w-full rounded-md border-none bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        spellcheck: "true",
       },
     },
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML());
+      const html = editor.getHTML();
+      setEditorContent(html);
+      onChange?.(html);
     },
   });
+
+  // Ensure focus can be obtained
+  useEffect(() => {
+    if (editorRef.current) {
+      const editorElement = editorRef.current.querySelector(".ProseMirror");
+      if (editorElement) {
+        editorElement.setAttribute("contenteditable", "true");
+      }
+    }
+  }, [editor]);
+
+  // Update editor content when the prop changes
+  useEffect(() => {
+    if (editor && content !== editorContent && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+      setEditorContent(content);
+    }
+  }, [content, editor, editorContent]);
 
   if (!editor) {
     return null;
@@ -105,7 +136,7 @@ export function RichTextEditor({
   };
 
   return (
-    <div className="rich-text-editor relative">
+    <div className="rich-text-editor relative" ref={editorRef}>
       {showToolbar && (
         <div className="toolbar bg-muted/40 rounded-t-md border border-b-0 border-border p-1 flex flex-wrap gap-1 items-center">
           <Toggle
@@ -375,31 +406,39 @@ export function RichTextEditor({
         <div className="pb-12">
           {" "}
           {/* Add padding at the bottom to prevent text overlay */}
-          <EditorContent editor={editor} />
+          <EditorContent
+            editor={editor}
+            spellCheck={true}
+            autoCapitalize="on"
+            autoCorrect="on"
+            data-gramm="false" // Disable Grammarly which can interfere
+            className="prose-paste-enabled"
+          />
         </div>
 
-        {isGenerating ? (
-          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
-            <div className="dark:text-white text-gray-800 p-4">
-              <AILoadingAnimation />
+        {onAiGenerate &&
+          (isGenerating ? (
+            <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
+              <div className="dark:text-white text-gray-800 p-4">
+                <AILoadingAnimation />
+              </div>
             </div>
-          </div>
-        ) : (
-          <Button
-            onClick={onAiGenerate}
-            className="absolute bottom-2 right-2 text-transparent bg-clip-text 
+          ) : (
+            <Button
+              onClick={onAiGenerate}
+              className="absolute bottom-2 right-2 text-transparent bg-clip-text 
             bg-gradient-to-r from-pink-600 to-purple-700
             hover:from-purple-600 hover:to-pink-500 
             dark:text-pink-600
             dark:hover:text-purple-600
             p-0 shadow-none"
-            size="sm"
-            disabled={isGenerating}
-            variant="link"
-          >
-            Generate using AI
-          </Button>
-        )}
+              size="sm"
+              disabled={isGenerating}
+              variant="link"
+            >
+              Generate using AI
+            </Button>
+          ))}
       </div>
 
       <style jsx global>{`
@@ -407,6 +446,11 @@ export function RichTextEditor({
           min-height: 150px;
           padding: 0.5rem;
           outline: none;
+          white-space: pre-wrap;
+          overflow-wrap: break-word;
+          -webkit-user-modify: read-write-plaintext-only;
+          -webkit-user-select: text;
+          user-select: text;
         }
 
         /* Add placeholder styling */
@@ -571,6 +615,47 @@ export function RichTextEditor({
 
         .animate-fade-in {
           animation: fade-in 2s ease-in-out;
+        }
+
+        /* Add styles for pasted content */
+        .ProseMirror .ProseMirror-selectednode {
+          outline: 2px solid #68cef8;
+        }
+
+        /* Ensure paste functionality works */
+        .ProseMirror {
+          -webkit-user-modify: read-write;
+          -moz-user-modify: read-write;
+          user-modify: read-write;
+          -webkit-user-select: text;
+          user-select: text;
+        }
+
+        /* Add specific support for clipboard operations */
+        .ProseMirror-focused {
+          caret-color: currentColor;
+        }
+
+        /* Fix for editing behavior */
+        .prose-paste-enabled .ProseMirror {
+          position: relative;
+          word-wrap: break-word;
+          white-space: pre-wrap;
+          white-space: break-spaces;
+          -webkit-font-variant-ligatures: none;
+          font-variant-ligatures: none;
+          font-feature-settings: "liga" 0; /* the above doesn't work in Edge */
+        }
+
+        /* Enhanced clipboard support */
+        .ProseMirror-focused {
+          caret-color: currentColor;
+          outline: none !important;
+        }
+
+        /* Ensure content is selectable and editable */
+        .ProseMirror[contenteditable="true"] {
+          cursor: text;
         }
       `}</style>
     </div>

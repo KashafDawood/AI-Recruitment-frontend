@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Building2, MapPin, Users } from "lucide-react";
-
+import { Building2, MapPin, Pencil, Users } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -8,18 +7,44 @@ import OptimizeImage from "@/components/custom/optimizeImage";
 import SocialIcon from "@/components/social-icon/social-icon";
 import React from "react";
 import { User } from "@/store/userStore";
+import DOMPurify from "dompurify";
 
-export const CompanyProfileCard: React.FC<{ user: User | null }> = ({
+interface CompanyProfileCardProps {
+  user: User | null;
+  onEditClick?: () => void;
+}
+
+export const CompanyProfileCard: React.FC<CompanyProfileCardProps> = ({
   user,
+  onEditClick,
 }) => {
+  // Function to safely render HTML content using DOMPurify
+  const renderSanitizedHTML = (htmlContent: string) => {
+    const sanitized = DOMPurify.sanitize(htmlContent, {
+      USE_PROFILES: { html: true },
+    });
+    return { __html: sanitized };
+  };
+
   return (
-    <Card>
+    <Card className="relative dark:bg-gray-900">
+      {onEditClick && (
+        <Button
+          onClick={onEditClick}
+          variant="outline"
+          size="icon"
+          className="absolute top-4 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+          title="Edit Company Profile"
+        >
+          <Pencil size={18} />
+        </Button>
+      )}
       <CardHeader className="flex flex-row justify-between items-center">
         <div className="flex flex-row items-center gap-4">
           <div className="relative h-16 w-16 overflow-hidden rounded-md">
             <OptimizeImage
               className="rounded-full shadow-md"
-              src={user?.logo || "/default.png"}
+              src={user?.logo}
               width={100}
               alt={user?.company_name || "company"}
             />
@@ -29,7 +54,7 @@ export const CompanyProfileCard: React.FC<{ user: User | null }> = ({
             <p className="text-muted-foreground">{user?.industry}</p>
           </div>
         </div>
-        <div className="flex justify-center lg:justify-end space-x-2 mt-4">
+        <div className="flex justify-center lg:justify-end space-x-2 mt-4 pr-16">
           {user?.socials && typeof user.socials === "object"
             ? Object.entries(user.socials)
                 .filter(([platform, url]) => platform && url)
@@ -62,9 +87,16 @@ export const CompanyProfileCard: React.FC<{ user: User | null }> = ({
       <CardContent className="space-y-4">
         <div>
           <h3 className="font-medium mb-2">About the Company</h3>
-          <p className="text-sm text-muted-foreground">
-            {user?.about_company || "No company description available."}
-          </p>
+          {user?.about_company ? (
+            <div
+              className="text-sm text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={renderSanitizedHTML(user.about_company)}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No company description available.
+            </p>
+          )}
         </div>
 
         <Separator />
