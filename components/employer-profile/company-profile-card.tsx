@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Building2, MapPin, Pencil, Users } from "lucide-react";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -8,6 +7,7 @@ import OptimizeImage from "@/components/custom/optimizeImage";
 import SocialIcon from "@/components/social-icon/social-icon";
 import React from "react";
 import { User } from "@/store/userStore";
+import DOMPurify from "dompurify";
 
 interface CompanyProfileCardProps {
   user: User | null;
@@ -18,6 +18,14 @@ export const CompanyProfileCard: React.FC<CompanyProfileCardProps> = ({
   user,
   onEditClick,
 }) => {
+  // Function to safely render HTML content using DOMPurify
+  const renderSanitizedHTML = (htmlContent: string) => {
+    const sanitized = DOMPurify.sanitize(htmlContent, {
+      USE_PROFILES: { html: true },
+    });
+    return { __html: sanitized };
+  };
+
   return (
     <Card className="relative dark:bg-gray-900">
       {onEditClick && (
@@ -79,9 +87,16 @@ export const CompanyProfileCard: React.FC<CompanyProfileCardProps> = ({
       <CardContent className="space-y-4">
         <div>
           <h3 className="font-medium mb-2">About the Company</h3>
-          <p className="text-sm text-muted-foreground">
-            {user?.about_company || "No company description available."}
-          </p>
+          {user?.about_company ? (
+            <div
+              className="text-sm text-muted-foreground prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={renderSanitizedHTML(user.about_company)}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No company description available.
+            </p>
+          )}
         </div>
 
         <Separator />
