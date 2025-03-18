@@ -6,11 +6,12 @@ import { CompanyProfileCard } from "@/components/employer-profile/company-profil
 import { OpeningsCard } from "@/components/employer-profile/openings-card";
 import { useState } from "react";
 import { EditEmpProfileCard } from "@/components/employer-profile/edit-emp-profile";
+import Spinner from "@/components/ui/spinner";
 
 type EditSection = "profile" | "about" | null;
 
 export default function EmployerProfile() {
-  const { user } = useUserWithLoading();
+  const { user, isLoading } = useUserWithLoading();
   const [editSection, setEditSection] = useState<EditSection>(null);
 
   const handleEditClick = (section: EditSection) => {
@@ -20,6 +21,10 @@ export default function EmployerProfile() {
   const handleEditComplete = () => {
     setEditSection(null);
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
