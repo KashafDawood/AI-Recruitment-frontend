@@ -81,7 +81,7 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
   };
 
   return (
-    <Card className="relative">
+    <Card className="relative dark:bg-gray-900">
       {onEditCancel && (
         <Button
           onClick={onEditCancel}

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
   return (
-    <Card>
+    <Card className="dark:bg-gray-900">
       <CardHeader>
         <h2 className="text-xl font-semibold">Current Openings</h2>
       </CardHeader>

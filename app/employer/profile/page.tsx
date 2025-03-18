@@ -6,9 +6,10 @@ import { CompanyProfileCard } from "@/components/employer-profile/company-profil
 import { OpeningsCard } from "@/components/employer-profile/openings-card";
 import { useState } from "react";
 import { EditEmpProfileCard } from "@/components/employer-profile/edit-emp-profile";
+import { EditCompanyProfileCard } from "@/components/employer-profile/edit-company-profile";
 import Spinner from "@/components/ui/spinner";
 
-type EditSection = "profile" | "about" | null;
+type EditSection = "profile" | "company" | null;
 
 export default function EmployerProfile() {
   const { user, isLoading } = useUserWithLoading();
@@ -28,7 +29,7 @@ export default function EmployerProfile() {
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
-      {editSection ? (
+      {editSection === "profile" ? (
         <EditEmpProfileCard user={user} onEditCancel={handleEditComplete} />
       ) : (
         <EmpProfileCard
@@ -37,7 +38,17 @@ export default function EmployerProfile() {
         />
       )}
       <div className="md:col-span-2 space-y-6">
-        <CompanyProfileCard user={user} />
+        {editSection === "company" ? (
+          <EditCompanyProfileCard
+            user={user}
+            onEditCancel={handleEditComplete}
+          />
+        ) : (
+          <CompanyProfileCard
+            user={user}
+            onEditClick={() => handleEditClick("company")}
+          />
+        )}
         <OpeningsCard user={user} />
       </div>
     </div>
