@@ -1,10 +1,16 @@
-import Link from "next/link";
 import { Globe, Mail, Phone, X } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { User } from "@/store/userStore";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { User, useUserStore } from "@/store/userStore";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import ProfileImageSection from "../profile-page/edit-profile-card/ProfileImageSection";
+import { updateMe } from "@/api/user/upadateuser";
+import { toast } from "sonner";
 
 type EditProfileCardProps = {
   user: User | null;
@@ -19,6 +25,12 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
 }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    phone: user?.phone || "",
+    website: user?.website || "",
+  });
+  const { refreshUser } = useUserStore();
 
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -34,6 +46,38 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
     }
 
     if (onChange) onChange(selectedFile);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formDataObj = new FormData();
+
+      formDataObj.append("name", formData.name);
+      formDataObj.append("phone", formData.phone);
+      formDataObj.append("website", formData.website);
+
+      if (file) formDataObj.append("photo", file);
+
+      await updateMe(formDataObj);
+      await refreshUser();
+      toast.success("Profile updated successfully!");
+
+      setTimeout(() => {
+        if (onEditCancel) {
+          onEditCancel();
+        }
+      }, 1500);
+    } catch {
+      toast.error("Failed to update profile. Please try again.");
+    }
   };
 
   return (
@@ -56,7 +100,18 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
             preview={preview}
             onChange={handleChangeFile}
           />
-          <h1 className="text-2xl font-bold mt-3">{user?.name}</h1>
+          <input
+            name="name"
+            placeholder="Name"
+            className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-2xl font-bold mt-3"
+            style={{
+              minWidth: "180px",
+              width: `${Math.max((formData.name || "").length, 12) * 0.8}em`,
+            }}
+            type="text"
+            value={formData.name || ""}
+            onChange={handleInputChange}
+          />
           <p className="text-muted-foreground">@{user?.username}</p>
         </div>
       </CardContent>
@@ -68,37 +123,55 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
           <Mail className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium">Email</p>
-            <Link
-              href={`mailto:${user?.email}`}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              {user?.email}
-            </Link>
+            <div>
+              <p className="text-sm text-blue-600 hover:underline">
+                {user?.email}
+              </p>
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap items-start gap-3">
           <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium">Phone</p>
-            <Link href={`tel:${user?.phone}`} className="text-sm">
-              {user?.phone}
-            </Link>
+            <input
+              name="phone"
+              className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-sm"
+              style={{
+                minWidth: "180px",
+                width: `${Math.max((formData.phone || "").length, 12) * 0.6}em`,
+              }}
+              type="text"
+              value={formData.phone || ""}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
         <div className="flex flex-wrap items-start gap-3">
           <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium">Website</p>
-            <Link
-              href={user?.website || "#"}
-              target="_blank"
-              className="text-sm"
-            >
-              {user?.website}
-            </Link>
+            <input
+              name="website"
+              className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-sm"
+              style={{
+                minWidth: "180px",
+                width: `${
+                  Math.max((formData.website || "").length, 12) * 0.6
+                }em`,
+              }}
+              type="url"
+              value={formData.website || ""}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
       </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button onClick={handleSubmit} size="lg" variant={"default"}>
+          Update
+        </Button>
+      </CardFooter>
     </Card>
   );
 };
