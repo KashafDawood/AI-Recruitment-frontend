@@ -81,7 +81,7 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
   };
 
   return (
-    <Card className="relative dark:bg-gray-900 flex flex-col justify-between">
+    <Card className="relative dark:bg-gray-900">
       {onEditCancel && (
         <Button
           onClick={onEditCancel}
@@ -115,67 +115,63 @@ export const EditEmpProfileCard: React.FC<EditProfileCardProps> = ({
           <p className="text-muted-foreground">@{user?.username}</p>
         </div>
       </CardContent>
-      <div>
-        <CardHeader>
-          <h2 className="text-xl font-semibold">Contact Information</h2>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-start gap-3">
-            <Mail className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+      <CardHeader>
+        <h2 className="text-xl font-semibold">Contact Information</h2>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-wrap items-start gap-3">
+          <Mail className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Email</p>
             <div>
-              <p className="text-sm font-medium">Email</p>
-              <div>
-                <p className="text-sm text-blue-600 hover:underline">
-                  {user?.email}
-                </p>
-              </div>
+              <p className="text-sm text-blue-600 hover:underline">
+                {user?.email}
+              </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-start gap-3">
-            <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">Phone</p>
-              <input
-                name="phone"
-                className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-sm"
-                style={{
-                  minWidth: "180px",
-                  width: `${
-                    Math.max((formData.phone || "").length, 12) * 0.6
-                  }em`,
-                }}
-                type="text"
-                value={formData.phone || ""}
-                onChange={handleInputChange}
-              />
-            </div>
+        </div>
+        <div className="flex flex-wrap items-start gap-3">
+          <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Phone</p>
+            <input
+              name="phone"
+              className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-sm"
+              style={{
+                minWidth: "180px",
+                width: `${Math.max((formData.phone || "").length, 12) * 0.6}em`,
+              }}
+              type="text"
+              value={formData.phone || ""}
+              onChange={handleInputChange}
+            />
           </div>
-          <div className="flex flex-wrap items-start gap-3">
-            <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">Website</p>
-              <input
-                name="website"
-                className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-sm"
-                style={{
-                  minWidth: "180px",
-                  width: `${
-                    Math.max((formData.website || "").length, 12) * 0.6
-                  }em`,
-                }}
-                type="url"
-                value={formData.website || ""}
-                onChange={handleInputChange}
-              />
-            </div>
+        </div>
+        <div className="flex flex-wrap items-start gap-3">
+          <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Website</p>
+            <input
+              name="website"
+              className="bg-transparent inline-block border-b-2 border-black dark:border-white outline-none text-center text-sm"
+              style={{
+                minWidth: "180px",
+                width: `${
+                  Math.max((formData.website || "").length, 12) * 0.6
+                }em`,
+              }}
+              type="url"
+              value={formData.website || ""}
+              onChange={handleInputChange}
+            />
           </div>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button onClick={handleSubmit} size="lg" variant={"default"}>
-            Update
-          </Button>
-        </CardFooter>
-      </div>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button onClick={handleSubmit} size="lg" variant={"default"}>
+          Update
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

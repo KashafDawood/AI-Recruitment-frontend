@@ -18,7 +18,7 @@ export const EmpProfileCard: React.FC<ProfileCardProps> = ({
   onEditClick,
 }) => {
   return (
-    <Card className="relative dark:bg-gray-900 flex flex-col justify-between">
+    <Card className="relative dark:bg-gray-900">
       {onEditClick && (
         <Button
           onClick={onEditClick}
@@ -53,47 +53,45 @@ export const EmpProfileCard: React.FC<ProfileCardProps> = ({
           <p className="text-muted-foreground">@{user?.username}</p>
         </div>
       </CardContent>
-      <div>
-        <CardHeader>
-          <h2 className="text-xl font-semibold">Contact Information</h2>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-start gap-3">
-            <Mail className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">Email</p>
-              <Link
-                href={`mailto:${user?.email}`}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                {user?.email}
-              </Link>
-            </div>
+      <CardHeader>
+        <h2 className="text-xl font-semibold">Contact Information</h2>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-wrap items-start gap-3">
+          <Mail className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Email</p>
+            <Link
+              href={`mailto:${user?.email}`}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              {user?.email}
+            </Link>
           </div>
-          <div className="flex flex-wrap items-start gap-3">
-            <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">Phone</p>
-              <Link href={`tel:${user?.phone}`} className="text-sm">
-                {user?.phone}
-              </Link>
-            </div>
+        </div>
+        <div className="flex flex-wrap items-start gap-3">
+          <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Phone</p>
+            <Link href={`tel:${user?.phone}`} className="text-sm">
+              {user?.phone}
+            </Link>
           </div>
-          <div className="flex flex-wrap items-start gap-3">
-            <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">Website</p>
-              <Link
-                href={user?.website || "#"}
-                target="_blank"
-                className="text-sm"
-              >
-                {user?.website}
-              </Link>
-            </div>
+        </div>
+        <div className="flex flex-wrap items-start gap-3">
+          <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium">Website</p>
+            <Link
+              href={user?.website || "#"}
+              target="_blank"
+              className="text-sm"
+            >
+              {user?.website}
+            </Link>
           </div>
-        </CardContent>
-      </div>
+        </div>
+      </CardContent>
     </Card>
   );
 };
