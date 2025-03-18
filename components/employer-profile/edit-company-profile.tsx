@@ -14,8 +14,8 @@ import OptimizeImage from "@/components/custom/optimizeImage";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import SocialLinks from "./social-links";
 import { RichTextEditor } from "../custom/richTextEditor";
+import SocialMediaSection from "../profile-page/edit-profile-card/SocialMediaSection";
 
 type EditCompanyProfileCardProps = {
   user: User | null;
@@ -34,8 +34,11 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
     company_size: user?.company_size || "",
     address: user?.address || "",
     about_company: user?.about_company || "",
-    socials: user?.socials || {},
   });
+  // Separate state for socials, managed by SocialMediaSection
+  const [socials, setSocials] = useState<Record<string, string>>(
+    user?.socials || {}
+  );
   const { refreshUser } = useUserStore();
 
   const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,16 +72,6 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
     }));
   };
 
-  const handleSocialsChange = (platform: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      socials: {
-        ...prev.socials,
-        [platform]: value,
-      },
-    }));
-  };
-
   const handleSubmit = async () => {
     try {
       const formDataObj = new FormData();
@@ -89,9 +82,8 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
       formDataObj.append("address", formData.address);
       formDataObj.append("about_company", formData.about_company);
 
-      if (formData.socials) {
-        formDataObj.append("socials", JSON.stringify(formData.socials));
-      }
+      // Add socials from SocialMediaSection
+      formDataObj.append("socials", JSON.stringify(socials));
 
       if (file) formDataObj.append("logo", file);
 
@@ -122,7 +114,7 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
           <X size={18} />
         </Button>
       )}
-      <CardHeader className="flex flex-row justify-between items-center">
+      <CardHeader className="flex flex-row justify-between items-center pt-16 md:pt-10">
         <div className="flex flex-row items-center gap-4">
           <div className="relative h-16 w-16 overflow-hidden rounded-md">
             <label
@@ -157,7 +149,7 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
               onChange={handleChangeFile}
             />
           </div>
-          <div>
+          <div className="flex-1">
             <Input
               name="company_name"
               placeholder="Company Name"
@@ -174,12 +166,21 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
             />
           </div>
         </div>
+        {/* Add SocialMediaSection at the top right */}
+        <div className="hidden md:block">
+          <SocialMediaSection socials={socials} setSocials={setSocials} />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Show SocialMediaSection on mobile */}
+        <div className="md:hidden">
+          <SocialMediaSection socials={socials} setSocials={setSocials} />
+        </div>
+
         <div>
           <h3 className="font-medium mb-2">About the Company</h3>
           <RichTextEditor
-            showToolbar={false}
+            showToolbar={true}
             content={formData.about_company}
             onChange={handleRichTextChange}
             placeholder="Describe your company..."
@@ -228,16 +229,6 @@ export const EditCompanyProfileCard: React.FC<EditCompanyProfileCardProps> = ({
               />
             </div>
           </div>
-        </div>
-
-        <Separator />
-
-        <div>
-          <h3 className="font-medium mb-2">Social Links</h3>
-          <SocialLinks
-            socials={formData.socials}
-            onChange={handleSocialsChange}
-          />
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
