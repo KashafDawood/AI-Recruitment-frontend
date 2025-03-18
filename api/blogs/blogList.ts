@@ -10,7 +10,7 @@ export const blogList = async (page: number, limit: number) => {
         }
       }
     );
-    return response.data;
+    return response.data.results;
   } catch (error) {
     throw error;
   }
