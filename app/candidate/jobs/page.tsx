@@ -133,10 +133,14 @@ export default function FindJobs() {
     };
 
     const applyFilter = () => {
+      if (!searchTerm) return;
+
+
       setActiveFilters(prevFilters => ({
         ...prevFilters,   
-        [`search_${Date.now()}`]: searchTerm, // Generate a unique key for each search
+        [`search_${Date.now()}`]: searchTerm.toLowerCase(), // Generate a unique key for each search
       }));
+      setSearchTerm(""); // Clear the input field
       setCurrentPage(1); // Reset pagination when applying filters
     };
     
