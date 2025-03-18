@@ -378,28 +378,29 @@ export function RichTextEditor({
           <EditorContent editor={editor} />
         </div>
 
-        {isGenerating ? (
-          <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
-            <div className="dark:text-white text-gray-800 p-4">
-              <AILoadingAnimation />
+        {onAiGenerate &&
+          (isGenerating ? (
+            <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px]">
+              <div className="dark:text-white text-gray-800 p-4">
+                <AILoadingAnimation />
+              </div>
             </div>
-          </div>
-        ) : (
-          <Button
-            onClick={onAiGenerate}
-            className="absolute bottom-2 right-2 text-transparent bg-clip-text 
+          ) : (
+            <Button
+              onClick={onAiGenerate}
+              className="absolute bottom-2 right-2 text-transparent bg-clip-text 
             bg-gradient-to-r from-pink-600 to-purple-700
             hover:from-purple-600 hover:to-pink-500 
             dark:text-pink-600
             dark:hover:text-purple-600
             p-0 shadow-none"
-            size="sm"
-            disabled={isGenerating}
-            variant="link"
-          >
-            Generate using AI
-          </Button>
-        )}
+              size="sm"
+              disabled={isGenerating}
+              variant="link"
+            >
+              Generate using AI
+            </Button>
+          ))}
       </div>
 
       <style jsx global>{`
