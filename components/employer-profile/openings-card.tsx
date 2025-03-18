@@ -3,12 +3,8 @@ import React, { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getAllEmployerJobs } from "@/api/jobs/getAllEmployerjobs";
-
-interface Job {
-  title?: string;
-  description?: string;
-  [key: string]: any;
-}
+import { Job } from "@/types/job";
+import JobCard from "../custom/JobCard";
 
 export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
   const [jobs, setJobs] = useState<Job[] | null>(null);
@@ -44,17 +40,7 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
         ) : jobs && Array.isArray(jobs) && jobs.length > 0 ? (
           <div className="space-y-4">
             {jobs.map((job, index) => (
-              <div
-                key={index}
-                className="p-4 border rounded-lg bg-gray-100 dark:bg-gray-800"
-              >
-                <h3 className="font-medium">
-                  {job.title || "Untitled Position"}
-                </h3>
-                {job.description && (
-                  <p className="text-sm mt-2">{job.description}</p>
-                )}
-              </div>
+              <JobCard job={job} index={index} key={index} />
             ))}
           </div>
         ) : (
