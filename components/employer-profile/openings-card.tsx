@@ -10,8 +10,8 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
         <h2 className="text-xl font-semibold">Current Openings</h2>
       </CardHeader>
       <CardContent>
-        <div className="rounded-lg bg-muted p-8 text-center">
-          <h3 className="text-lg font-medium mb-2">No open positions</h3>
+        <div className="rounded-lg bg-muted p-8 text-center bg-gray-200 dark:bg-gray-800">
+          <h3 className="text-lg font-bold mb-2">No open positions</h3>
           <p className="text-sm text-muted-foreground mb-4">
             There are currently no job openings at {user?.company_name}.
           </p>
