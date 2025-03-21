@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getAllEmployerJobs } from "@/api/jobs/getAllEmployerjobs";
 import { Job } from "@/types/job";
 import JobCard from "../custom/JobCard";
+import { toast } from "sonner";
 
 export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
   const [jobs, setJobs] = useState<Job[] | null>(null);
@@ -17,9 +18,8 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
         try {
           const res = await getAllEmployerJobs(user.username);
           setJobs(res);
-          console.log("Jobs fetched:", res);
-        } catch (error) {
-          console.error("Error fetching jobs:", error);
+        } catch {
+          toast.error("Failed to fetch job openings. Please try again later.");
         } finally {
           setLoading(false);
         }
@@ -40,7 +40,7 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
         ) : jobs && Array.isArray(jobs) && jobs.length > 0 ? (
           <div className="space-y-4">
             {jobs.map((job, index) => (
-              <JobCard job={job} index={index} key={index} />
+              <JobCard job={job} index={index} key={index} isSelected={false} />
             ))}
           </div>
         ) : (

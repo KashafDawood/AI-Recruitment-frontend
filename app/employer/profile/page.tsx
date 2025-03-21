@@ -28,7 +28,7 @@ export default function EmployerProfile() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3 h-full">
+    <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-3 h-full">
       {editSection === "profile" ? (
         <EditEmpProfileCard user={user} onEditCancel={handleEditComplete} />
       ) : (

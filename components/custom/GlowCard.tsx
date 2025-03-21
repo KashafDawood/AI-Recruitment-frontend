@@ -42,7 +42,7 @@ export function GlowCard({
           style={{
             background: `radial-gradient(circle at top right, ${color}30, transparent 100%)`,
             filter: "blur(10px)",
-            transform: "translate(10%, -25%)",
+            transform: "translate(0%, 0%)",
           }}
         ></div>
         {children}

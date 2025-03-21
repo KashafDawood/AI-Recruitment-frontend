@@ -12,11 +12,9 @@ export default function CandidateLayout({
     <SidebarProvider>
       <AppSidebar data={navItems} />
       <div className="flex flex-col flex-1">
-        {/* Navbar - Full Width */}
         <DashboardNav />
         <SidebarTrigger className="absolute top-0 " />
 
-        {/* Page Content */}
         <main className="flex-1 overflow-auto p-4">{children}</main>
       </div>
     </SidebarProvider>
