@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { sendContactEmail } from "@/api/user/contactus-sendemail";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import GlowBackground from "@/components/custom/glowBackground";
 import { TextEffect } from "@/components/motion-primitives/text-effect";
 import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 
 export default function ContactPage() {
   const initialState = { success: false, error: null, errors: {} };
@@ -16,6 +17,17 @@ export default function ContactPage() {
 
   // Use server validation errors if available
   const errors = state.errors || {};
+
+  useEffect(() => {
+    if (state.success) {
+      toast.success(
+        "Your message has been sent successfully! We'll get back to you soon."
+      );
+    }
+    if (state.error) {
+      toast.error(state.error);
+    }
+  }, [state.success, state.error]);
 
   return (
     <main className="overflow-hidden">
@@ -59,18 +71,14 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form Card */}
-          <div className="max-w-[40%] mx-auto">
+          <div className="w-full sm:w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] mx-auto">
             <Card className="backdrop-blur border-border/40 shadow-lg overflow-hidden">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6">Send Us A Message</h2>
+              <CardContent className="p-4 sm:p-6 md:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
+                  Send Us A Message
+                </h2>
 
-                <form action={formAction} className="space-y-6">
-                  {state.error && (
-                    <div className="bg-red-50 dark:bg-red-950/30 p-4 rounded-md text-red-600 dark:text-red-400 text-sm border border-red-100 dark:border-red-900/50">
-                      {state.error}
-                    </div>
-                  )}
-
+                <form action={formAction} className="space-y-4 sm:space-y-6">
                   {state.success && (
                     <div className="bg-green-50 dark:bg-green-950/30 p-4 rounded-md text-green-600 dark:text-green-400 text-sm border border-green-100 dark:border-green-900/50">
                       Your message has been sent successfully! We&apos;ll get
