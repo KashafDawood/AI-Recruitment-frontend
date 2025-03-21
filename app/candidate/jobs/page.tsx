@@ -37,13 +37,11 @@ const calculateDaysAgo = (dateString: string) => {
 };
 
 export default function FindJobs() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [activeFilters, setActiveFilters] = useState<string[]>([
-    "Designer",
-    "Full Time",
-    "Samsung",
-  ]);
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  // const [activeFilters, setActiveFilters] = useState<string[]>(["Designer", "Full Time", "Samsung"])
   const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -57,148 +55,170 @@ export default function FindJobs() {
   }, []);
 
   // Calculate total pages
-  const totalPages = Math.ceil(totalJobs / JobsPerPage);
+    const totalPages = Math.ceil(totalJobs / JobsPerPage);
+  
+    // Fetch jobs and total count on initial load and when currentPage changes
+    useEffect(() => {
+      const fetchJobs = async () => {
+        setLoading(true);
+        try {
+          console.log("Active filters:", activeFilters);
 
-  // Fetch jobs and total count on initial load and when currentPage changes
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      try {
-        const fetchedJobs = await getAllJobs(currentPage, JobsPerPage);
-
-        // Check if fetchedJobs has expected structure
-        if (fetchedJobs && Array.isArray(fetchedJobs)) {
-          setJobs(fetchedJobs);
-          if (fetchedJobs.length > 0) {
-            setSelectedJob(fetchedJobs[0]);
-          }
-
-          // If we got exactly JobsPerPage items, there are likely more posts
-          // If we got fewer, we're probably on the last page
-          if (fetchedJobs.length === JobsPerPage) {
-            // Estimate at least one more page worth of jobs
-            setTotalJobs(currentPage * JobsPerPage + JobsPerPage);
+          const fetchedJobs = await getAllJobs(currentPage, JobsPerPage, activeFilters);
+          console.log(fetchedJobs);
+          // Check if fetchedJobs has expected structure
+          if (fetchedJobs && Array.isArray(fetchedJobs)) {
+            setJobs(fetchedJobs)
+            if (fetchedJobs.length > 0) {
+              setSelectedJob(fetchedJobs[0]) 
+            }
+  
+            // If we got exactly JobsPerPage items, there are likely more posts
+            // If we got fewer, we're probably on the last page
+            if (fetchedJobs.length === JobsPerPage) {
+              // Estimate at least one more page worth of jobs
+              setTotalJobs(currentPage * JobsPerPage + JobsPerPage);
+            } else {
+              // We're likely on the last page
+              setTotalJobs((currentPage - 1) * JobsPerPage + fetchedJobs.length);
+            }
+          } else if (fetchedJobs && typeof fetchedJobs === "object") {
+            // If getAllJobs returns an object with jobs and total
+            const { jobs = [], total = 0 } = fetchedJobs as {
+              jobs: Job[];
+              total: number;
+            };
+            setJobs(jobs)
+            if (jobs.length > 0) {
+              setSelectedJob(jobs[0]) 
+            }
+            setTotalJobs(total);
           } else {
-            // We're likely on the last page
-            setTotalJobs((currentPage - 1) * JobsPerPage + fetchedJobs.length);
+            // Fallback for unexpected fetchedJobs format
+            console.error("Unexpected fetchedJobs format from getAllJobs:", fetchedJobs);
+            setJobs([]);
+            setTotalJobs(0);
           }
-        } else if (fetchedJobs && typeof fetchedJobs === "object") {
-          // If getAllJobs returns an object with jobs and total
-          const { jobs: jobsList = [], total = 0 } = fetchedJobs as {
-            jobs: Job[];
-            total: number;
-          };
-          setJobs(jobsList);
-          if (jobsList.length > 0) {
-            setSelectedJob(jobsList[0]);
-          }
-          setTotalJobs(total);
-        } else {
-          // Fallback for unexpected fetchedJobs format
-          console.error(
-            "Unexpected fetchedJobs format from getAllJobs:",
-            fetchedJobs
-          );
+        } catch (error) {
+          console.error("Failed to fetch blog posts:", error);
           setJobs([]);
           setTotalJobs(0);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to fetch blog posts:", error);
-        setJobs([]);
-        setTotalJobs(0);
-      } finally {
-        setLoading(false);
-      }
+      };
+  
+      fetchJobs();
+    }, [currentPage, JobsPerPage, activeFilters]); // Remove totalPages dependency to avoid circular updates
+  
+    // Function to handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
     };
 
-    fetchJobs();
-  }, [currentPage, JobsPerPage]); // Remove totalPages dependency to avoid circular updates
+    const applyFilter = () => {
+      if (!searchTerm) return;
 
-  const handlePageChange = (page: number) => {
-    // Ensure page is within valid range
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
 
-  // Generate pagination items
-  const renderPaginationItems = () => {
-    const items = [];
+      setActiveFilters(prevFilters => ({
+        ...prevFilters,   
+        [`search_${Date.now()}`]: searchTerm.toLowerCase(), // Generate a unique key for each search
+      }));
+      setSearchTerm(""); // Clear the input field
+      setCurrentPage(1); // Reset pagination when applying filters
+    };
+    
+    
 
-    // Always show first page
-    items.push(
-      <PaginationItem key="first">
-        <PaginationLink
-          isActive={currentPage === 1}
-          onClick={() => handlePageChange(1)}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-
-    // Add ellipsis if needed
-    if (currentPage > 3) {
+    const handlePageChange = (page: number) => {
+      // Ensure page is within valid range
+      if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+      }
+    };
+  
+    // Generate pagination items
+    const renderPaginationItems = () => {
+      const items = [];
+  
+      // Always show first page
       items.push(
-        <PaginationItem key="ellipsis-start">
-          <PaginationEllipsis />
+        <PaginationItem key="first">
+          <PaginationLink
+            isActive={currentPage === 1}
+            onClick={() => handlePageChange(1)}
+          >
+            1
+          </PaginationLink>
         </PaginationItem>
       );
-    }
-
-    // Add pages around current page
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      if (i <= totalPages && i > 1) {
+  
+      // Add ellipsis if needed
+      if (currentPage > 3) {
         items.push(
-          <PaginationItem key={i}>
+          <PaginationItem key="ellipsis-start">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+  
+      // Add pages around current page
+      for (
+        let i = Math.max(2, currentPage - 1);
+        i <= Math.min(totalPages - 1, currentPage + 1);
+        i++
+      ) {
+        if (i <= totalPages && i > 1) {
+          items.push(
+            <PaginationItem key={i}>
+              <PaginationLink
+                isActive={currentPage === i}
+                onClick={() => handlePageChange(i)}
+              >
+                {i}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        }
+      }
+  
+      // Add ellipsis if needed
+      if (currentPage < totalPages - 2) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+  
+      // Always show last page if it's not the first page
+      if (totalPages > 1) {
+        items.push(
+          <PaginationItem key="last">
             <PaginationLink
-              isActive={currentPage === i}
-              onClick={() => handlePageChange(i)}
+              isActive={currentPage === totalPages}
+              onClick={() => handlePageChange(totalPages)}
             >
-              {i}
+              {totalPages}
             </PaginationLink>
           </PaginationItem>
         );
       }
-    }
+  
+      return items;
+    };
 
-    // Add ellipsis if needed
-    if (currentPage < totalPages - 2) {
-      items.push(
-        <PaginationItem key="ellipsis-end">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    // Always show last page if it's not the first page
-    if (totalPages > 1) {
-      items.push(
-        <PaginationItem key="last">
-          <PaginationLink
-            isActive={currentPage === totalPages}
-            onClick={() => handlePageChange(totalPages)}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-
-    return items;
-  };
-
-  const removeFilter = (filter: string) => {
-    setActiveFilters(activeFilters.filter((f) => f !== filter));
-  };
-
-  const clearAllFilters = () => {
-    setActiveFilters([]);
-  };
+    const removeFilter = (filterKey: string) => {
+      setActiveFilters(prevFilters => {
+        const updatedFilters = { ...prevFilters };
+        delete updatedFilters[filterKey]; // Remove filter properly
+        return updatedFilters;
+      });
+    };
+    
+    const clearAllFilters = () => {
+      setActiveFilters({}); // Reset filters to an empty object
+    };
 
   return (
     <div className="container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
@@ -207,31 +227,33 @@ export default function FindJobs() {
         <div className="w-full lg:w-3/5 flex flex-col h-full overflow-y-auto custom-scrollbar">
           <div className="flex gap-4 mb-4">
             <div className="relative flex-grow">
-              <Input
-                type="text"
-                placeholder="Search job"
+              <Input 
+                type="text"   
+                placeholder="Search job" 
+                value={searchTerm}
+                onChange={handleSearchChange}
                 className="w-full pl-4 pr-10 py-2 rounded-lg border"
               />
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2">
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+              onClick={applyFilter}  
+            >
               <FilterIcon className="w-4 h-4" />
               Filter
             </Button>
           </div>
 
-          {activeFilters.length > 0 && (
+          {Object.keys(activeFilters).length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4 items-center">
-              {activeFilters.map((filter, index) => (
+              {Object.entries(activeFilters).map(([key, value], index) => (
                 <Badge
                   key={index}
                   variant="outline"
                   className="flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100"
                 >
-                  {filter}
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => removeFilter(filter)}
-                  />
+                  {value}
+                  <X className="w-3 h-3 ml-1 cursor-pointer" onClick={() => removeFilter(key)} />
                 </Badge>
               ))}
               <button
@@ -255,110 +277,91 @@ export default function FindJobs() {
               {loading ? (
                 <div>Loading...</div>
               ) : (
-                jobs.map((job, index) => (
-                  <div
-                    key={index}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      selectedJob?.title === job.title
-                        ? "border-purple-500 shadow-md"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                    onClick={() => setSelectedJob(job)}
-                  >
-                    <div className="flex gap-3">
-                      <div className="flex-grow">
-                        <div className="flex justify-between gap-2">
-                          <div className="flex gap-2">
-                            <div
-                              className={`w-12 h-12 rounded-full flex items-center justify-center text-white ${
-                                index % 3 === 0
-                                  ? "bg-green-500"
-                                  : index % 3 === 1
-                                  ? "bg-purple-600"
-                                  : "bg-orange-500"
-                              }`}
-                            >
-                              {job.title.substring(0, 1)}
-                            </div>
-                            <div>
-                              <h3 className="font-semibold">{job.title}</h3>
-                              <div className="flex flex-wrap gap-2 my-2">
-                                <Badge
-                                  variant="secondary"
-                                  className="bg-gray-100 text-gray-700 rounded-full text-xs px-2"
-                                >
-                                  {job.job_status}
-                                </Badge>
-                                <Badge
-                                  variant="secondary"
-                                  className="bg-gray-100 text-gray-700 rounded-full text-xs px-2"
-                                >
-                                  {job.job_location_type}
-                                </Badge>
-                                <Badge
-                                  variant="secondary"
-                                  className="bg-gray-100 text-gray-700 rounded-full text-xs px-2"
-                                >
-                                  {job.salary}
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="rounded-lg h-10 w-10"
+              jobs.map((job, index) => (
+                <div
+                  key={index}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${selectedJob?.title === job.title ? "border-purple-500 shadow-md" : "border-gray-200 hover:border-gray-300"}`}
+                  onClick={() => setSelectedJob(job)}
+                >
+                  <div className="flex gap-3">
+                    <div className="flex-grow">
+                      <div className="flex justify-between gap-2">
+                        <div className="flex gap-2">
+                          <div
+                            className={`w-12 h-12 rounded-full flex items-center justify-center text-white ${index % 3 === 0 ? "bg-green-500" : index % 3 === 1 ? "bg-purple-600" : "bg-orange-500"}`}
                           >
-                            <BookmarkIcon className="h-5 w-5 text-blue-600" />
-                          </Button>
+                            {job.title.substring(0, 1)}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{job.title}</h3>
+                            <div className="flex flex-wrap gap-2 my-2">
+                              <Badge
+                                variant="secondary"
+                                 className="bg-gray-100 text-gray-700 rounded-full text-xs px-2"
+                              >
+                                {job.job_status}
+                              </Badge>
+                              <Badge
+                                variant="secondary"
+                                 className="bg-gray-100 text-gray-700 rounded-full text-xs px-2"
+                              >
+                                {job.job_location_type}
+                              </Badge>
+                              <Badge
+                                variant="secondary"
+                                className="bg-gray-100 text-gray-700 rounded-full text-xs px-2"
+                              >
+                                {job.salary}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-6 mt-3">
-                          {job.description}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-1">
-                            <Badge
-                              variant="outline"
-                              className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center"
-                            >
-                              <Briefcase className="h-4 w-4 text-gray-500 mr-1" />
-                              {job.job_type}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Badge
-                              variant="outline"
-                              className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center"
-                            >
-                              <MapPin className="h-4 w-4 text-gray-500 mr-1" />
-                              {job.location}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <User className="h-4 w-4 text-gray-500" />
-                            <span className="text-xs">
-                              {index === 0 ? "74" : index === 1 ? "50" : "48"}{" "}
-                              applied
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1 ml-auto">
-                            <Clock className="h-4 w-4 text-gray-500" />
-                            <span className="text-xs">
-                              {calculateDaysAgo(job.created_at)} days ago
-                            </span>
-                          </div>
+                        <Button variant="outline" size="icon" className="rounded-lg h-10 w-10">
+                          <BookmarkIcon className="h-5 w-5 text-blue-600" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-6 mt-3">
+                        {job.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center"
+                          >
+                            <Briefcase className="h-4 w-4 text-gray-500 mr-1" />
+                            {job.job_type}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center"
+                          >
+                            <MapPin className="h-4 w-4 text-gray-500 mr-1" />
+                            {job.location}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <User className="h-4 w-4 text-gray-500" />
+                          <span className="text-xs">{index === 0 ? "74" : index === 1 ? "50" : "48"} applied</span>
+                        </div>
+                        <div className="flex items-center gap-1 ml-auto">
+                          <Clock className="h-4 w-4 text-gray-500" />
+                          <span className="text-xs">{calculateDaysAgo(selectedJob.created_at)} days ago</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                ))
+                </div>
+              ))
               )}
             </div>
           </div>
 
           {/* Only show pagination if there are posts */}
           {totalPages > 0 && (
-            <Pagination className="mt-8">
+            <Pagination className="my-2">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
@@ -574,6 +577,6 @@ export default function FindJobs() {
           </div>
         )}
       </div>
-    </div>
-  );
+  </div>
+  )
 }
