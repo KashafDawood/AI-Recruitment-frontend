@@ -4,6 +4,7 @@ import HowItWorks from "../components/home/HowItWorks";
 import Blogs from "../components/home/Blogs";
 import { JSX } from "react";
 import FooterSection from "@/components/home/Footer";
+import GlowBackground from "@/components/custom/glowBackground";
 
 export default function Home(): JSX.Element {
   return (
@@ -13,6 +14,7 @@ export default function Home(): JSX.Element {
       <HowItWorks />
       <Blogs />
       <FooterSection />
+      <GlowBackground />
     </div>
   );
 }

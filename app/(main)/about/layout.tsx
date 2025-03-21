@@ -1,7 +1,7 @@
 import FooterSection from "@/components/home/Footer";
 import { HeroHeader } from "@/components/home/header";
 
-export default function BlogsLayout({
+export default function AboutLayout({
   children,
 }: {
   children: React.ReactNode;
