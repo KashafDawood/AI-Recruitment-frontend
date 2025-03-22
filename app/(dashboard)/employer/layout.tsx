@@ -6,7 +6,7 @@ import { navItems } from "./nav";
 import { DashboardNav } from "@/components/nav/dashboard-nav";
 import { useEffect, useState } from "react";
 
-export default function CandidateLayout({
+export default function EmployerLayout({
   children,
 }: {
   children: React.ReactNode;
