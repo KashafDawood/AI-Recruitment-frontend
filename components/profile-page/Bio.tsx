@@ -55,15 +55,17 @@ export default function ProfileBio({ bio, onEditClick }: BioProps) {
         <h1 className="text-4xl md:text-6xl font-bold font-aclonica text-start">
           My Story
         </h1>
-        <Button
-          onClick={onEditClick}
-          variant="outline"
-          size="icon"
-          className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
-          title="Edit Profile"
-        >
-          <Pencil size={18} />
-        </Button>
+        {onEditClick && (
+          <Button
+            onClick={onEditClick}
+            variant="outline"
+            size="icon"
+            className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+            title="Edit Profile"
+          >
+            <Pencil size={18} />
+          </Button>
+        )}
       </div>
       <div
         ref={bioRef}

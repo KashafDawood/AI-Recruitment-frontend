@@ -146,27 +146,28 @@ export default function Certifications({
         My Certifications
       </h2>
 
-      {isEditing ? (
-        <Button
-          onClick={onEditClick}
-          variant="outline"
-          size="icon"
-          className="absolute top-16 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
-          title="Cancel Editing"
-        >
-          <X size={18} />
-        </Button>
-      ) : (
-        <Button
-          onClick={onEditClick}
-          variant="outline"
-          size="icon"
-          className="absolute top-16 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
-          title="Edit Certifications"
-        >
-          <Pencil size={18} />
-        </Button>
-      )}
+      {onEditClick &&
+        (isEditing ? (
+          <Button
+            onClick={onEditClick}
+            variant="outline"
+            size="icon"
+            className="absolute top-16 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+            title="Cancel Editing"
+          >
+            <X size={18} />
+          </Button>
+        ) : (
+          <Button
+            onClick={onEditClick}
+            variant="outline"
+            size="icon"
+            className="absolute top-16 right-4 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+            title="Edit Certifications"
+          >
+            <Pencil size={18} />
+          </Button>
+        ))}
 
       {isEditing && (
         <div className="flex justify-center mb-6">

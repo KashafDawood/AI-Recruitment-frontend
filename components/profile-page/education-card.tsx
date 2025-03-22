@@ -158,27 +158,28 @@ export default function EducationTimeline({
         <h1 className="text-4xl md:text-6xl font-bold font-aclonica text-start mb-6">
           My Education Journey
         </h1>
-        {isEditing ? (
-          <Button
-            onClick={handleEditCancel}
-            variant="outline"
-            size="icon"
-            className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
-            title="Cancel"
-          >
-            <X size={18} />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleEditClick}
-            variant="outline"
-            size="icon"
-            className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
-            title="Edit Education"
-          >
-            <Pencil size={18} />
-          </Button>
-        )}
+        {onEditClick &&
+          (isEditing ? (
+            <Button
+              onClick={handleEditCancel}
+              variant="outline"
+              size="icon"
+              className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+              title="Cancel"
+            >
+              <X size={18} />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleEditClick}
+              variant="outline"
+              size="icon"
+              className="absolute top-4 right-0 z-20 rounded-full bg-white dark:bg-slate-800 shadow-md hover:bg-gray-100 dark:hover:bg-slate-700"
+              title="Edit Education"
+            >
+              <Pencil size={18} />
+            </Button>
+          ))}
       </div>
 
       {isAddingEducation && (
