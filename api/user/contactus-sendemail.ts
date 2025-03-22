@@ -75,7 +75,7 @@ export async function sendContactEmail(
     // Email content
     const mailOptions = {
       from: process.env.GMAIL_USER || "your-gmail@gmail.com",
-      to: process.env.MAIL_TO || "support@airecruitment.com",
+      to: process.env.GMAIL_USER || "support@airecruitment.com",
       replyTo: email,
       subject: `Contact Form: ${subject}`,
       text: `
