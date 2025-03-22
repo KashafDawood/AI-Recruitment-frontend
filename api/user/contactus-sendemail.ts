@@ -60,21 +60,21 @@ export async function sendContactEmail(
       };
     }
 
-    // Setup nodemailer transporter
-    // For production, use your actual SMTP configuration
+    // Setup nodemailer transporter using Gmail
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.example.com",
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_SECURE === "true",
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: process.env.SMTP_USER || "your-email@example.com",
-        pass: process.env.SMTP_PASSWORD || "your-password",
+        user: process.env.GMAIL_USER || "your-gmail@gmail.com",
+        pass: process.env.GMAIL_APP_PASSWORD || "your-app-password",
       },
     });
 
     // Email content
     const mailOptions = {
-      from: process.env.MAIL_FROM || "contact@airecruitment.com",
+      from: process.env.GMAIL_USER || "your-gmail@gmail.com",
       to: process.env.MAIL_TO || "support@airecruitment.com",
       replyTo: email,
       subject: `Contact Form: ${subject}`,
