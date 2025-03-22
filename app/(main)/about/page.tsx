@@ -6,7 +6,7 @@ import { TextEffect } from "@/components/motion-primitives/text-effect";
 export default function Home() {
   return (
     <main>
-      <div className="text-center sm:mx-auto mt-12 md:mt-16">
+      <div className="text-center sm:mx-auto pt-12 md:pt-16">
         <span className="text-foreground text-sm border rounded-full px-3 py-1">
           Our Mission
         </span>

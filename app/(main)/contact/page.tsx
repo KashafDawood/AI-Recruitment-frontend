@@ -31,9 +31,9 @@ export default function ContactPage() {
 
   return (
     <main className="overflow-hidden">
-      <section className="relative pt-24 md:pt-36 pb-16 md:pb-24">
+      <section className="relative pt-12 md:pt-16 pb-16 md:pb-24">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="text-center sm:mx-auto mb-12 md:mb-16">
+          <div className="text-center sm:mx-auto mb-16 md:mb-20">
             <span className="text-foreground text-sm border rounded-full px-3 py-1">
               Get In Touch
             </span>
