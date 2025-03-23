@@ -7,9 +7,7 @@ import { useEffect, useState } from "react";
 import { useUserWithLoading } from "@/hooks/useUser";
 import { navItems as candidateNav } from "@/app/(dashboard)/candidate/nav";
 import { navItems as employerNav } from "@/app/(dashboard)/employer/nav";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { HeroHeader } from "@/components/home/header";
 
 export default function UserLayout({
   children,
@@ -32,29 +30,30 @@ export default function UserLayout({
 
   return (
     <>
-      {!user && (
-        <div className="absolute top-4 left-4 z-50">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-          </Button>
-        </div>
-      )}
-      <SidebarProvider open={isOpen} onOpenChange={setIsOpen}>
-        <AppSidebar
-          data={user?.role === "candidate" ? candidateNav : employerNav}
-        />
-        <div className="flex flex-col flex-1">
-          {/* Navbar - Full Width */}
-          <DashboardNav />
-          <SidebarTrigger className="absolute top-0 " />
-
-          {/* Page Content */}
+      {!user ? (
+        // Not logged in view - only back button and children
+        <div className="flex flex-col min-h-screen">
+          <div className="mb-20">
+            <HeroHeader />
+          </div>
           <main className="flex-1 overflow-auto p-4">{children}</main>
         </div>
-      </SidebarProvider>
+      ) : (
+        // Logged in view - with sidebar and nav
+        <SidebarProvider open={isOpen} onOpenChange={setIsOpen}>
+          <AppSidebar
+            data={user.role === "candidate" ? candidateNav : employerNav}
+          />
+          <div className="flex flex-col flex-1">
+            {/* Navbar - Full Width */}
+            <DashboardNav />
+            <SidebarTrigger className="absolute top-0 " />
+
+            {/* Page Content */}
+            <main className="flex-1 overflow-auto p-4">{children}</main>
+          </div>
+        </SidebarProvider>
+      )}
     </>
   );
 }

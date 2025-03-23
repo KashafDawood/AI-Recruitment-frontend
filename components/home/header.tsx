@@ -9,6 +9,7 @@ import ThemeToggle from "../custom/dark-mode";
 import { ProfileIcon } from "../nav/nav-icon";
 
 export const menuItems = [
+  { name: "Home", href: "/" },
   { name: "Blogs", href: "/blogs" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
@@ -100,7 +101,7 @@ export const HeroHeader = () => {
 
             <div
               className={cn(
-                "bg-background mb-6 w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent",
+                "bg-background/80 backdrop-blur-md mb-6 w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent",
                 menuState ? "block" : "hidden",
                 "lg:flex"
               )}
@@ -118,6 +119,9 @@ export const HeroHeader = () => {
                     </li>
                   ))}
                 </ul>
+                <div className="mt-6 flex justify-start">
+                  <ThemeToggle />
+                </div>
               </div>
               {!isScrolled && <ThemeToggle className="hidden md:flex" />}
               {isLoggedIn ? (
