@@ -5,7 +5,7 @@ import { menuItems } from "./header";
 
 export default function FooterSection() {
   return (
-    <footer className="py-16 md:py-32">
+    <footer className="py-12 md:py-16 border-t-2 border-gray-400">
       <div className="mx-auto max-w-5xl px-6">
         <Link href="/" aria-label="go home" className="mx-auto block size-fit">
           <Image src="/StaffeeLogo.svg" alt="Logo" width={25} height={25} />
