@@ -7,6 +7,7 @@ import DOMPurify from "dompurify";
 import { getLatestBlogs } from "@/api/blogs/getLatestBlogs";
 import { BlogPost } from "@/types/blog";
 import OptimizeImage from "../custom/optimizeImage";
+import { motion } from "framer-motion";
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -31,15 +32,79 @@ export default function Blogs() {
     });
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const headerVariants = {
+    hidden: { opacity: 0, y: -30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+      },
+    },
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.5,
+        duration: 0.5,
+      },
+    },
+    hover: {
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+      },
+    },
+  };
+
   return (
     <div className="py-16 px-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-3 dark:text-white text-black tracking-tight">
-          Latest Blogs
-        </h2>
-        <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-          Stay updated with our latest insights and industry trends
-        </p>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={headerVariants}
+        >
+          <h2 className="text-4xl font-bold text-center mb-3 dark:text-white text-black tracking-tight">
+            Latest Blogs
+          </h2>
+          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+            Stay updated with our latest insights and industry trends
+          </p>
+        </motion.div>
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -51,16 +116,25 @@ export default function Blogs() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {blogs.map((blog, index) => {
               const sanitizedContent = DOMPurify.sanitize(
                 blog.content.substring(0, 100) + "..."
               );
               return (
-                <div
+                <motion.div
                   key={index}
                   className="group cursor-pointer"
                   onClick={() => handleReadMore(blog.slug)}
+                  variants={itemVariants}
+                  whileHover={{ y: -10 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
                   <div className="overflow-hidden rounded-lg mb-4">
                     {blog.thumbnail ? (
@@ -97,7 +171,7 @@ export default function Blogs() {
                     </span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 ml-1 text-green-600 dark:text-green-400"
+                      className="h-4 w-4 ml-1 text-green-600 dark:text-green-400 transition-transform duration-300 group-hover:translate-x-1"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -110,21 +184,28 @@ export default function Blogs() {
                       />
                     </svg>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
 
         {blogs.length > 0 && (
-          <div className="mt-14 text-center">
+          <motion.div
+            className="mt-14 text-center"
+            variants={buttonVariants}
+            initial="hidden"
+            whileInView="visible"
+            whileHover="hover"
+            viewport={{ once: true }}
+          >
             <button
               onClick={() => router.push("/blogs")}
               className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-700 text-white hover:from-green-600 hover:to-green-800 dark:from-green-400 dark:to-green-600 dark:hover:from-green-500 dark:hover:to-green-700 font-light rounded-full transition-all duration-300"
             >
               View All Articles
             </button>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
