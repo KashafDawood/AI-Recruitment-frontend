@@ -1,7 +1,7 @@
 "use client";
 
 import { getAllJobs } from "@/api/candidate/getAllJobs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, JSX } from "react";
 import {
   FilterIcon,
   X,
@@ -57,43 +57,14 @@ export default function FindJobs() {
         try {
           console.log("Active filters:", activeFilters);
 
-          const fetchedJobs = await getAllJobs(currentPage, JobsPerPage, activeFilters);
-          console.log(fetchedJobs);
-          // Check if fetchedJobs has expected structure
-          if (fetchedJobs && Array.isArray(fetchedJobs)) {
-            setJobs(fetchedJobs)
-            if (fetchedJobs.length > 0) {
-              setSelectedJob(fetchedJobs[0]) 
-            }
-  
-            // If we got exactly JobsPerPage items, there are likely more posts
-            // If we got fewer, we're probably on the last page
-            if (fetchedJobs.length === JobsPerPage) {
-              // Estimate at least one more page worth of jobs
-              setTotalJobs(currentPage * JobsPerPage + JobsPerPage);
-            } else {
-              // We're likely on the last page
-              setTotalJobs((currentPage - 1) * JobsPerPage + fetchedJobs.length);
-            }
-          } else if (fetchedJobs && typeof fetchedJobs === "object") {
-            // If getAllJobs returns an object with jobs and total
-            const { jobs = [], total = 0 } = fetchedJobs as {
-              jobs: Job[];
-              total: number;
-            };
-            setJobs(jobs)
-            if (jobs.length > 0) {
-              setSelectedJob(jobs[0]) 
-            }
-            setTotalJobs(total);
-          } else {
-            // Fallback for unexpected fetchedJobs format
-            console.error("Unexpected fetchedJobs format from getAllJobs:", fetchedJobs);
-            setJobs([]);
-            setTotalJobs(0);
+          const data = await getAllJobs(currentPage, JobsPerPage, activeFilters);
+          if(data && data.results) {
+            setJobs(data.results);
+            setSelectedJob(data.results[0]); 
+            setTotalJobs(data.count);
           }
         } catch (error) {
-          console.error("Failed to fetch blog posts:", error);
+          console.error("Failed to fetch jobs:", error);
           setJobs([]);
           setTotalJobs(0);
         } finally {
@@ -102,7 +73,7 @@ export default function FindJobs() {
       };
   
       fetchJobs();
-    }, [currentPage, JobsPerPage, activeFilters]); // Remove totalPages dependency to avoid circular updates
+    }, [currentPage, activeFilters]);
   
     // Function to handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,82 +95,33 @@ export default function FindJobs() {
     
 
     const handlePageChange = (page: number) => {
-      // Ensure page is within valid range
       if (page >= 1 && page <= totalPages) {
         setCurrentPage(page);
       }
     };
   
     // Generate pagination items
-    const renderPaginationItems = () => {
-      const items = [];
-  
-      // Always show first page
-      items.push(
-        <PaginationItem key="first">
-          <PaginationLink
-            isActive={currentPage === 1}
-            onClick={() => handlePageChange(1)}
-          >
-            1
-          </PaginationLink>
-        </PaginationItem>
-      );
-  
-      // Add ellipsis if needed
-      if (currentPage > 3) {
+    const renderPaginationItems = (): JSX.Element[] => {
+      const items: JSX.Element[] = [];
+    
+      if (totalPages <= 1) return items; // No need for pagination if only one page
+    
+      for (let i = 1; i <= totalPages; i++) {
         items.push(
-          <PaginationItem key="ellipsis-start">
-            <PaginationEllipsis />
-          </PaginationItem>
-        );
-      }
-  
-      // Add pages around current page
-      for (
-        let i = Math.max(2, currentPage - 1);
-        i <= Math.min(totalPages - 1, currentPage + 1);
-        i++
-      ) {
-        if (i <= totalPages && i > 1) {
-          items.push(
-            <PaginationItem key={i}>
-              <PaginationLink
-                isActive={currentPage === i}
-                onClick={() => handlePageChange(i)}
-              >
-                {i}
-              </PaginationLink>
-            </PaginationItem>
-          );
-        }
-      }
-  
-      // Add ellipsis if needed
-      if (currentPage < totalPages - 2) {
-        items.push(
-          <PaginationItem key="ellipsis-end">
-            <PaginationEllipsis />
-          </PaginationItem>
-        );
-      }
-  
-      // Always show last page if it's not the first page
-      if (totalPages > 1) {
-        items.push(
-          <PaginationItem key="last">
+          <PaginationItem key={i}>
             <PaginationLink
-              isActive={currentPage === totalPages}
-              onClick={() => handlePageChange(totalPages)}
+              isActive={currentPage === i}
+              onClick={() => handlePageChange(i)}
             >
-              {totalPages}
+              {i}
             </PaginationLink>
           </PaginationItem>
         );
       }
-  
+    
       return items;
     };
+    
 
     const removeFilter = (filterKey: string) => {
       setActiveFilters(prevFilters => {

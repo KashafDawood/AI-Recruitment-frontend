@@ -21,7 +21,7 @@ export const getAllJobs = async (page: number, limit: number, filters: Record<st
         );
         
         console.log("API Response:", response.data);
-        return response.data.results;
+        return response.data;
     } catch (error) {
         console.error("Error fetching jobs:", error);
         throw error;
