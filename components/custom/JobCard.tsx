@@ -114,7 +114,7 @@ const JobCard: React.FC<JobCardProps> = ({
               >
                 <User className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-1" />
                 <span>
-                  {index === 0 ? "74" : index === 1 ? "50" : "48"} applied
+                  {job.applicants} applied
                 </span>
               </Badge>
 

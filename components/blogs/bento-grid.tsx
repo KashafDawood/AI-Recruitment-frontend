@@ -1,19 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import BlogCard from "./blog-card";
 import { blogList } from "@/api/blogs/blogList";
 import { useMobile } from "@/hooks/use-mobile-bento";
 import { BlogPost } from "@/types/blog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import PaginationUI from "@/components/custom/PaginationUI";
 
 export default function BentoGrid() {
   const [shuffledPosts, setShuffledPosts] = useState<BlogPost[]>([]);
@@ -31,36 +23,10 @@ export default function BentoGrid() {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        // Handle the response from blogList properly
-        const response = await blogList(currentPage, postsPerPage);
-
-        // Check if response has expected structure
-        if (response && Array.isArray(response)) {
-          // If blogList returns just an array of posts
-          setShuffledPosts(response);
-
-          // If we got exactly postsPerPage items, there are likely more posts
-          // If we got fewer, we're probably on the last page
-          if (response.length === postsPerPage) {
-            // Estimate at least one more page worth of posts
-            setTotalPosts(currentPage * postsPerPage + postsPerPage);
-          } else {
-            // We're likely on the last page
-            setTotalPosts((currentPage - 1) * postsPerPage + response.length);
-          }
-        } else if (response && typeof response === "object") {
-          // If blogList returns an object with posts and total
-          const { posts = [], total = 0 } = response as {
-            posts: BlogPost[];
-            total: number;
-          };
-          setShuffledPosts(posts);
-          setTotalPosts(total);
-        } else {
-          // Fallback for unexpected response format
-          console.error("Unexpected response format from blogList:", response);
-          setShuffledPosts([]);
-          setTotalPosts(0);
+        const data = await blogList(currentPage, postsPerPage); // API call
+        if (data && data.results) {
+          setShuffledPosts(data.results);
+          setTotalPosts(data.count); // Use the actual count from the API
         }
       } catch (error) {
         console.error("Failed to fetch blog posts:", error);
@@ -70,87 +36,9 @@ export default function BentoGrid() {
         setLoading(false);
       }
     };
-
+  
     fetchPosts();
-  }, [currentPage, postsPerPage]); // Remove totalPages dependency to avoid circular updates
-
-  const handlePageChange = (page: number) => {
-    // Ensure page is within valid range
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
-  // Generate pagination items
-  const renderPaginationItems = () => {
-    const items = [];
-
-    // Always show first page
-    items.push(
-      <PaginationItem key="first">
-        <PaginationLink
-          isActive={currentPage === 1}
-          onClick={() => handlePageChange(1)}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-
-    // Add ellipsis if needed
-    if (currentPage > 3) {
-      items.push(
-        <PaginationItem key="ellipsis-start">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    // Add pages around current page
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      if (i <= totalPages && i > 1) {
-        items.push(
-          <PaginationItem key={i}>
-            <PaginationLink
-              isActive={currentPage === i}
-              onClick={() => handlePageChange(i)}
-            >
-              {i}
-            </PaginationLink>
-          </PaginationItem>
-        );
-      }
-    }
-
-    // Add ellipsis if needed
-    if (currentPage < totalPages - 2) {
-      items.push(
-        <PaginationItem key="ellipsis-end">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    // Always show last page if it's not the first page
-    if (totalPages > 1) {
-      items.push(
-        <PaginationItem key="last">
-          <PaginationLink
-            isActive={currentPage === totalPages}
-            onClick={() => handlePageChange(totalPages)}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-
-    return items;
-  };
+  }, [currentPage]);
 
   return (
     <div>
@@ -184,33 +72,13 @@ export default function BentoGrid() {
       )}
 
       {/* Only show pagination if there are posts */}
-      {totalPages > 0 && (
-        <Pagination className="mt-8">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => handlePageChange(currentPage - 1)}
-                className={
-                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                }
-              />
-            </PaginationItem>
-
-            {renderPaginationItems()}
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePageChange(currentPage + 1)}
-                className={
-                  currentPage === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      { totalPages > 0 && 
+        <PaginationUI
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      }
     </div>
   );
 }

@@ -5,12 +5,13 @@ export const blogList = async (page: number, limit: number) => {
     const response = await axiosInstance.get(
       `${process.env.NEXT_PUBLIC_URL}/api/blogs/`, {
         params: {
-          page: page,
-          limit: limit
+          page: page,   // Ensure we're using "page"
+          limit: limit, // Ensure it matches Django's "page_size_query_param"
         }
       }
     );
-    return response.data.results;
+    console.log("API response: ", response.data);
+    return response.data;
   } catch (error) {
     throw error;
   }
