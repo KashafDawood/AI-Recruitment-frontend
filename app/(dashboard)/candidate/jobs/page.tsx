@@ -29,6 +29,7 @@ import {
 import { Job } from "@/types/job";
 import JobDetails from "./jobDetails";
 import JobCard from "@/components/custom/JobCard";
+import PaginationUI from "@/components/custom/PaginationUI";
 
 export default function FindJobs() {
   const [jobs, setJobs] = useState<Job[]>([])
@@ -94,34 +95,6 @@ export default function FindJobs() {
     
     
 
-    const handlePageChange = (page: number) => {
-      if (page >= 1 && page <= totalPages) {
-        setCurrentPage(page);
-      }
-    };
-  
-    // Generate pagination items
-    const renderPaginationItems = (): JSX.Element[] => {
-      const items: JSX.Element[] = [];
-    
-      if (totalPages <= 1) return items; // No need for pagination if only one page
-    
-      for (let i = 1; i <= totalPages; i++) {
-        items.push(
-          <PaginationItem key={i}>
-            <PaginationLink
-              isActive={currentPage === i}
-              onClick={() => handlePageChange(i)}
-            >
-              {i}
-            </PaginationLink>
-          </PaginationItem>
-        );
-      }
-    
-      return items;
-    };
-    
 
     const removeFilter = (filterKey: string) => {
       setActiveFilters(prevFilters => {
@@ -206,33 +179,13 @@ export default function FindJobs() {
           </div>
 
           {/* Only show pagination if there are posts */}
-          {totalPages > 0 && (
-            <Pagination className="my-2">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-
-                {renderPaginationItems()}
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
+          {totalPages > 0 && 
+            <PaginationUI 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          }
         </div>
 
         {/* Right column - Job details with independent scrolling and sticky Apply button */}

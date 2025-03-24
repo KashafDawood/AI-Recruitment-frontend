@@ -11,15 +11,15 @@ interface JobDetailsProps {
   
 const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {  
     return (
-        <div className="hidden lg:flex lg:w-2/5 flex-col border rounded-lg relative overflow-y-auto custom-scrollbar">
-            <div className="overflow-y-auto h-full custom-scrollbar pb-20">
+        <div className="hidden lg:flex lg:w-2/5 flex-col border border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
+            <div className="overflow-y-auto h-full custom-scrollbar pb-40">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h2 className="text-xl font-bold dark:text-white">
                       {selectedJob.title}
                     </h2>
-                    <div className="flex items-center gap-2 text-sm text-gray-300 mt-1">
+                    <div className="flex items-center gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
                       <span>{selectedJob.company}</span>
                       <span>•</span>
                       <span>{selectedJob.location}</span>
@@ -121,31 +121,31 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
 
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="border rounded-lg p-3">
-                    <div className="text-sm text-gray-200 mb-1">Job Type</div>
+                    <div className="text-sm text-gray-800 dark:text-gray-200 mb-1">Job Type</div>
                     <div className="font-medium">{selectedJob.job_type}</div>
                   </div>
                   <div className="border rounded-lg p-3">
-                    <div className="text-sm text-gray-200 mb-1">Experience</div>
+                    <div className="text-sm text-gray-800 dark:text-gray-200 mb-1">Experience</div>
                     <div className="font-medium">
                       {selectedJob.experience_required}
                     </div>
                   </div>
                   <div className="border rounded-lg p-3">
-                    <div className="text-sm text-gray-200 mb-1">Salary</div>
+                    <div className="text-sm text-gray-800 dark:text-gray-200 mb-1">Salary</div>
                     <div className="font-medium">{selectedJob.salary}</div>
                   </div>
                 </div>
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">About Job Role</h3>
-                  <p className="text-sm text-gray-300 leading-relaxed">
+                  <p className="text-sm text-gray-800 dark:text-gray-300 leading-relaxed">
                     {selectedJob.description}
                   </p>
                 </div>
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Requirements</h3>
-                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-800 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.required_qualifications.map(
                       (requirement, index) => (
                         <li key={index}>{requirement}</li>
@@ -156,7 +156,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Preferred Qualifications</h3>
-                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-800 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.preferred_qualifications.map(
                       (qualification, index) => (
                         <li key={index}>{qualification}</li>
@@ -167,7 +167,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Responsibilities</h3>
-                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-800 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.responsibilities.map(
                       (responsibility, index) => (
                         <li key={index}>{responsibility}</li>
@@ -178,7 +178,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Benefits</h3>
-                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-800 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.benefits.map((benefit, index) => (
                       <li key={index}>{benefit}</li>
                     ))}
@@ -188,7 +188,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
             </div>
 
             {/* Sticky Apply Job button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212]">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212] dark:border-gray-800">
               <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg dark:bg-blue-500 dark:hover:bg-blue-600">
                 Apply Job
               </Button>

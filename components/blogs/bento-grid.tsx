@@ -5,15 +5,7 @@ import BlogCard from "./blog-card";
 import { blogList } from "@/api/blogs/blogList";
 import { useMobile } from "@/hooks/use-mobile-bento";
 import { BlogPost } from "@/types/blog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import PaginationUI from "@/components/custom/PaginationUI";
 
 export default function BentoGrid() {
   const [shuffledPosts, setShuffledPosts] = useState<BlogPost[]>([]);
@@ -48,36 +40,6 @@ export default function BentoGrid() {
     fetchPosts();
   }, [currentPage]);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
-  // Generate pagination items
-  const renderPaginationItems = (): JSX.Element[] => {
-    const items: JSX.Element[] = [];
-  
-    if (totalPages <= 1) return items; // No need for pagination if only one page
-  
-    for (let i = 1; i <= totalPages; i++) {
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            isActive={currentPage === i}
-            onClick={() => handlePageChange(i)}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-  
-    return items;
-  };
-  
-  
-
   return (
     <div>
       {/* ...existing code for showing blog posts... */}
@@ -110,33 +72,13 @@ export default function BentoGrid() {
       )}
 
       {/* Only show pagination if there are posts */}
-      {totalPages > 0 && (
-        <Pagination className="mt-8">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => handlePageChange(currentPage - 1)}
-                className={
-                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                }
-              />
-            </PaginationItem>
-
-            {renderPaginationItems()}
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePageChange(currentPage + 1)}
-                className={
-                  currentPage === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      { totalPages > 0 && 
+        <PaginationUI
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      }
     </div>
   );
 }
