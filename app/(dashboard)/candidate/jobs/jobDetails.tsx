@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { BookmarkIcon, Share2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
+import ProfileCard from "@/components/jobs/ProfileCard";
 
 
 interface JobDetailsProps {
@@ -12,7 +13,7 @@ interface JobDetailsProps {
 const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {  
     return (
         <div className="hidden lg:flex lg:w-2/5 flex-col border border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
-            <div className="overflow-y-auto h-full custom-scrollbar pb-40">
+            <div className="overflow-y-auto h-full custom-scrollbar pb-20">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
@@ -184,6 +185,9 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
                     ))}
                   </ul>
                 </div>
+
+                {/* employer profile card */}
+                {selectedJob.employer && <ProfileCard employer={selectedJob.employer} />}
               </div>
             </div>
 

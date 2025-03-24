@@ -1,3 +1,10 @@
+export interface Employer {
+  username: string;
+  name: string;
+  photo: string;
+  company_name: string;
+}
+
 export interface Job {
   title: string;
   job_status: string;
@@ -13,5 +20,6 @@ export interface Job {
   responsibilities: string[];
   benefits: string[];
   created_at: string;
-  applicants: BigInteger
+  applicants: BigInteger;
+  employer: Employer | null;
 }
