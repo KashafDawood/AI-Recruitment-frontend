@@ -13,4 +13,5 @@ export interface Job {
   responsibilities: string[];
   benefits: string[];
   created_at: string;
+  applicants: BigInteger
 }

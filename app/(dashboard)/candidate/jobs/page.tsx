@@ -236,7 +236,7 @@ export default function FindJobs() {
               />
             </div>
             <Button 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2  dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white"
               onClick={applyFilter}  
             >
               <FilterIcon className="w-4 h-4" />
@@ -250,7 +250,7 @@ export default function FindJobs() {
                 <Badge
                   key={index}
                   variant="outline"
-                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100"
+                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 dark:text-white"
                 >
                   {value}
                   <X className="w-3 h-3 ml-1 cursor-pointer" onClick={() => removeFilter(key)} />
@@ -266,8 +266,8 @@ export default function FindJobs() {
           )}
 
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-            <div className="sticky top-0 bg-white z-10 py-2 mb-2 flex justify-between items-center">
-              <span className="text-sm text-gray-600">Sort by:</span>
+            <div className="sticky top-0 bg-white z-10 py-2 mb-2 flex justify-between items-center dark:bg-[#121212]">
+              <span className="text-sm text-gray-300">Sort by:</span>
               <button className="text-sm font-medium flex items-center">
                 Popular Jobs <ChevronDown className="w-4 h-4 ml-1" />
               </button>
@@ -320,14 +320,14 @@ export default function FindJobs() {
                           <BookmarkIcon className="h-5 w-5 text-blue-600" />
                         </Button>
                       </div>
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-6 mt-3">
+                      <p className="text-sm text-gray-300 line-clamp-2 mb-6 mt-3">
                         {job.description}
                       </p>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-4 text-sm text-gray-300">
+                        <div className="flex items-center gap-1 ">
                           <Badge
                             variant="outline"
-                            className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center"
+                            className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center dark:bg-[#121212]"
                           >
                             <Briefcase className="h-4 w-4 text-gray-500 mr-1" />
                             {job.job_type}
@@ -336,7 +336,7 @@ export default function FindJobs() {
                         <div className="flex items-center gap-1">
                           <Badge
                             variant="outline"
-                            className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center"
+                            className="bg-gray-50 border-0 text-xs px-2 py-0 gap-1 flex items-center dark:bg-[#121212]"
                           >
                             <MapPin className="h-4 w-4 text-gray-500 mr-1" />
                             {job.location}
@@ -344,7 +344,7 @@ export default function FindJobs() {
                         </div>
                         <div className="flex items-center gap-1">
                           <User className="h-4 w-4 text-gray-500" />
-                          <span className="text-xs">{index === 0 ? "74" : index === 1 ? "50" : "48"} applied</span>
+                          <span className="text-xs">{job.applicants} applied</span>
                         </div>
                         <div className="flex items-center gap-1 ml-auto">
                           <Clock className="h-4 w-4 text-gray-500" />
@@ -396,10 +396,10 @@ export default function FindJobs() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-xl font-bold text-white">
                       {selectedJob.title}
                     </h2>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                    <div className="flex items-center gap-2 text-sm text-gray-300 mt-1">
                       <span>{selectedJob.company}</span>
                       <span>•</span>
                       <span>{selectedJob.location}</span>
@@ -423,10 +423,10 @@ export default function FindJobs() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="bg-gray-50 rounded-lg p-4 mb-6 dark:bg-[#232222]">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-medium">Applicants Summary</h3>
-                    <Badge className="bg-green-100 text-green-800 font-medium">
+                    <Badge className="bg-green-100 text-green-800 font-medium hover:bg-green-100 hover:text-inherit">
                       {selectedJob.job_status}
                     </Badge>
                   </div>
@@ -501,32 +501,31 @@ export default function FindJobs() {
 
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="border rounded-lg p-3">
-                    <div className="text-sm text-gray-500 mb-1">Job Type</div>
+                    <div className="text-sm text-gray-200 mb-1">Job Type</div>
                     <div className="font-medium">{selectedJob.job_type}</div>
                   </div>
                   <div className="border rounded-lg p-3">
-                    <div className="text-sm text-gray-500 mb-1">Experience</div>
+                    <div className="text-sm text-gray-200 mb-1">Experience</div>
                     <div className="font-medium">
                       {selectedJob.experience_required}
                     </div>
                   </div>
                   <div className="border rounded-lg p-3">
-                    <div className="text-sm text-gray-500 mb-1">Salary</div>
+                    <div className="text-sm text-gray-200 mb-1">Salary</div>
                     <div className="font-medium">{selectedJob.salary}</div>
                   </div>
                 </div>
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">About Job Role</h3>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-gray-300 leading-relaxed">
                     {selectedJob.description}
                   </p>
                 </div>
 
-                {/* Additional content to demonstrate scrolling */}
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Requirements</h3>
-                  <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.required_qualifications.map(
                       (requirement, index) => (
                         <li key={index}>{requirement}</li>
@@ -537,7 +536,7 @@ export default function FindJobs() {
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Preferred Qualifications</h3>
-                  <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.preferred_qualifications.map(
                       (qualification, index) => (
                         <li key={index}>{qualification}</li>
@@ -548,7 +547,7 @@ export default function FindJobs() {
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Responsibilities</h3>
-                  <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.responsibilities.map(
                       (responsibility, index) => (
                         <li key={index}>{responsibility}</li>
@@ -559,7 +558,7 @@ export default function FindJobs() {
 
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Benefits</h3>
-                  <ul className="text-sm text-gray-700 leading-relaxed list-disc pl-5 space-y-2">
+                  <ul className="text-sm text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
                     {selectedJob.benefits.map((benefit, index) => (
                       <li key={index}>{benefit}</li>
                     ))}
@@ -569,8 +568,8 @@ export default function FindJobs() {
             </div>
 
             {/* Sticky Apply Job button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212]">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg dark:bg-blue-500 dark:hover:bg-blue-600">
                 Apply Job
               </Button>
             </div>
