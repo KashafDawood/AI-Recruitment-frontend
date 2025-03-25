@@ -1,32 +1,24 @@
 "use client";
 
 import { getAllJobs } from "@/api/candidate/getAllJobs";
-import { useEffect, useState, JSX } from "react";
-import {
-  FilterIcon,
-  X,
-  ChevronDown,
-  BookmarkIcon,
-  Share2Icon,
-  Briefcase,
-  MapPin,
-  User,
-  Clock,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { FilterIcon, X, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import "./scrollbar.css";
 
 import { Job } from "@/types/job";
-import JobDetails from "./jobDetails";
+import JobDetails from "../../../../components/jobs/jobDetails";
 import JobCard from "@/components/custom/JobCard";
 import PaginationUI from "@/components/custom/PaginationUI";
 
 export default function FindJobs() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null)
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
+    {}
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
@@ -41,64 +33,60 @@ export default function FindJobs() {
   }, []);
 
   // Calculate total pages
-    const totalPages = Math.ceil(totalJobs / JobsPerPage);
-  
-    // Fetch jobs and total count on initial load and when currentPage changes
-    useEffect(() => {
-      const fetchJobs = async () => {
-        setLoading(true);
-        try {
-          console.log("Active filters:", activeFilters);
+  const totalPages = Math.ceil(totalJobs / JobsPerPage);
 
-          const data = await getAllJobs(currentPage, JobsPerPage, activeFilters);
-          if(data && data.results) {
-            setJobs(data.results);
-            setSelectedJob(data.results[0]); 
-            setTotalJobs(data.count);
-          }
-        } catch (error) {
-          console.error("Failed to fetch jobs:", error);
-          setJobs([]);
-          setTotalJobs(0);
-        } finally {
-          setLoading(false);
+  // Fetch jobs and total count on initial load and when currentPage changes
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        console.log("Active filters:", activeFilters);
+
+        const data = await getAllJobs(currentPage, JobsPerPage, activeFilters);
+        if (data && data.results) {
+          setJobs(data.results);
+          setSelectedJob(data.results[0]);
+          setTotalJobs(data.count);
         }
-      };
-  
-      fetchJobs();
-    }, [currentPage, activeFilters]);
-  
-    // Function to handle search input change
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+        setJobs([]);
+        setTotalJobs(0);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const applyFilter = () => {
-      if (!searchTerm) return;
+    fetchJobs();
+  }, [currentPage, activeFilters]);
 
+  // Function to handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
-      setActiveFilters(prevFilters => ({
-        ...prevFilters,   
-        [`search_${Date.now()}`]: searchTerm.toLowerCase(), // Generate a unique key for each search
-      }));
-      setSearchTerm(""); // Clear the input field
-      setCurrentPage(1); // Reset pagination when applying filters
-    };
-    
-    
+  const applyFilter = () => {
+    if (!searchTerm) return;
 
+    setActiveFilters((prevFilters) => ({
+      ...prevFilters,
+      [`search_${Date.now()}`]: searchTerm.toLowerCase(), // Generate a unique key for each search
+    }));
+    setSearchTerm(""); // Clear the input field
+    setCurrentPage(1); // Reset pagination when applying filters
+  };
 
-    const removeFilter = (filterKey: string) => {
-      setActiveFilters(prevFilters => {
-        const updatedFilters = { ...prevFilters };
-        delete updatedFilters[filterKey]; // Remove filter properly
-        return updatedFilters;
-      });
-    };
-    
-    const clearAllFilters = () => {
-      setActiveFilters({}); // Reset filters to an empty object
-    };
+  const removeFilter = (filterKey: string) => {
+    setActiveFilters((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      delete updatedFilters[filterKey]; // Remove filter properly
+      return updatedFilters;
+    });
+  };
+
+  const clearAllFilters = () => {
+    setActiveFilters({}); // Reset filters to an empty object
+  };
 
   return (
     <div className="container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
@@ -107,17 +95,17 @@ export default function FindJobs() {
         <div className="w-full lg:w-3/5 flex flex-col h-full overflow-y-auto custom-scrollbar">
           <div className="flex gap-4 mb-4">
             <div className="relative flex-grow">
-              <Input 
-                type="text"   
-                placeholder="Search job" 
+              <Input
+                type="text"
+                placeholder="Search job"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="w-full pl-4 pr-10 py-2 rounded-lg border"
               />
             </div>
-            <Button 
+            <Button
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2  dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white"
-              onClick={applyFilter}  
+              onClick={applyFilter}
             >
               <FilterIcon className="w-4 h-4" />
               Filter
@@ -133,7 +121,10 @@ export default function FindJobs() {
                   className="flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 dark:text-white"
                 >
                   {value}
-                  <X className="w-3 h-3 ml-1 cursor-pointer" onClick={() => removeFilter(key)} />
+                  <X
+                    className="w-3 h-3 ml-1 cursor-pointer"
+                    onClick={() => removeFilter(key)}
+                  />
                 </Badge>
               ))}
               <button
@@ -157,33 +148,32 @@ export default function FindJobs() {
               {loading ? (
                 <div>Loading...</div>
               ) : (
-              jobs.map((job, index) => (
-                <JobCard
-                  key={index}
-                  job={job}
-                  index={index}
-                  isSelected={selectedJob?.title === job.title} 
-                  onClick={() => setSelectedJob(job)} 
-                />
-              ))
+                jobs.map((job, index) => (
+                  <JobCard
+                    key={index}
+                    job={job}
+                    index={index}
+                    isSelected={selectedJob?.title === job.title}
+                    onClick={() => setSelectedJob(job)}
+                  />
+                ))
               )}
             </div>
           </div>
 
           {/* Only show pagination if there are posts */}
-          {totalPages > 0 && 
-            <PaginationUI 
+          {totalPages > 0 && (
+            <PaginationUI
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
             />
-          }
+          )}
         </div>
 
         {/* Right column - Job details with independent scrolling and sticky Apply button */}
         {selectedJob && <JobDetails selectedJob={selectedJob} />}
-
       </div>
-  </div>
-  )
+    </div>
+  );
 }
