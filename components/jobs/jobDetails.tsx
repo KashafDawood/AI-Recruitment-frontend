@@ -12,7 +12,7 @@ interface JobDetailsProps {
   
 const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {  
     return (
-        <div className="hidden lg:flex lg:w-2/5 flex-col border border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
+        <div className="lg:flex lg:w-2/5 flex-col h-full lg:border dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
             <div className="overflow-y-auto h-full custom-scrollbar pb-20">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
@@ -20,9 +20,9 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
                     <h2 className="text-xl font-bold dark:text-white">
                       {selectedJob.title}
                     </h2>
-                    <div className="flex items-center gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
+                    <div className="flex md:flex-col sm:flex-col lg:items-center lg:gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
                       <span>{selectedJob.company}</span>
-                      <span>•</span>
+                      <span className="hidden">•</span>
                       <span>{selectedJob.location}</span>
                     </div>
                   </div>

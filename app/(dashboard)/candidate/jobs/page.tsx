@@ -7,13 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import "./scrollbar.css";
+import useWindowWidth from "@/hooks/use-window-width";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { Job } from "@/types/job";
 import JobDetails from "../../../../components/jobs/jobDetails";
 import JobCard from "@/components/custom/JobCard";
 import PaginationUI from "@/components/custom/PaginationUI";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 export default function FindJobs() {
+  const width = useWindowWidth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
@@ -23,6 +27,7 @@ export default function FindJobs() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const JobsPerPage = 10;
 
   useEffect(() => {
@@ -63,6 +68,13 @@ export default function FindJobs() {
   // Function to handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+    if (width <= 1023) {
+      setIsSheetOpen(true); // Open sheet on small screens
+    }
   };
 
   const applyFilter = () => {
@@ -154,7 +166,7 @@ export default function FindJobs() {
                     job={job}
                     index={index}
                     isSelected={selectedJob?.title === job.title}
-                    onClick={() => setSelectedJob(job)}
+                    onClick={() => handleJobClick(job)}
                   />
                 ))
               )}
@@ -170,10 +182,23 @@ export default function FindJobs() {
             />
           )}
         </div>
-
+        
         {/* Right column - Job details with independent scrolling and sticky Apply button */}
-        {selectedJob && <JobDetails selectedJob={selectedJob} />}
+        {width>1023 &&  selectedJob && <JobDetails selectedJob={selectedJob} />}
+        
+        {/* Sheets for job details if width is < 1023 */}
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          <SheetContent side="right" className="max-h-full overflow-y-auto p-0 pt-4">
+            <VisuallyHidden>
+              <SheetTitle>Job Details</SheetTitle>
+            </VisuallyHidden>
+              { selectedJob && <JobDetails selectedJob={selectedJob} /> }
+          </SheetContent>
+        </Sheet>
       </div>
+
+      
+
     </div>
   );
 }
