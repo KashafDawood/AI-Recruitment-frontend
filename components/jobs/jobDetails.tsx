@@ -15,12 +15,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
   const applyJob = async () => {
     // Retrieve the logged-in user from local storage
     const userData = JSON.parse(localStorage.getItem("user-store") || "{}")?.state?.user;
-    console.log(userData);
   
     // Extract the resume dynamically
     const resumeEntries = userData?.resumes ? Object.values(userData.resumes) : [];
-    const resumeUrl = resumeEntries.length > 0 ? resumeEntries[0].resume : null;
-      console.log(resumeUrl);
+    const resumeUrl = resumeEntries.length > 0 ? (resumeEntries[0] as { resume: string }).resume : null;
 
     // Check if user and resume exist
     if (!userData || !userData.id || !userData.username || !resumeUrl) {
@@ -54,9 +52,9 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
                     <h2 className="text-xl font-bold dark:text-white">
                       {selectedJob.title}
                     </h2>
-                    <div className="flex md:flex-col sm:flex-col lg:items-center lg:gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
                       <span>{selectedJob.company}</span>
-                      <span className="hidden">•</span>
+                      <span className="hidden lg:block">•</span>
                       <span>{selectedJob.location}</span>
                     </div>
                   </div>
@@ -226,7 +224,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
             </div>
 
             {/* Sticky Apply Job button */}
-            <div className="fixed md:absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212] dark:border-gray-800">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212] dark:border-gray-800">
               <Button 
                onClick={applyJob}
                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg dark:bg-blue-500 dark:hover:bg-blue-600">

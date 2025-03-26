@@ -45,7 +45,6 @@ export default function FindJobs() {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        console.log("Active filters:", activeFilters);
 
         const data = await getAllJobs(currentPage, JobsPerPage, activeFilters);
         if (data && data.results) {
@@ -197,7 +196,7 @@ export default function FindJobs() {
             </SheetContent>
           )}
           {width!==null && width<=640 && (
-          <SheetContent side="bottom" className="max-h-full overflow-y-auto p-0 pt-4"> 
+          <SheetContent side="bottom" className="max-h-full h-full overflow-y-auto p-0 pt-4"> 
               <VisuallyHidden>
                 <SheetTitle>Job Details</SheetTitle>
               </VisuallyHidden>
