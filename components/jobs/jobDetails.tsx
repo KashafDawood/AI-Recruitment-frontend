@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BookmarkIcon, Share2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -6,8 +6,7 @@ import { Job } from "@/types/job";
 import ProfileCard from "@/components/jobs/ProfileCard";
 import { applyForJob } from "@/api/candidate/ApplyForJob";
 import { toast } from "sonner";
-import { useUserWithLoading } from "@/hooks/useUser";
-import { Resumes } from "@/store/userStore";
+import SelectResume from "../custom/selectResume";
 
 interface JobDetailsProps {
   selectedJob: Job;
@@ -18,57 +17,35 @@ const JobDetails: React.FC<JobDetailsProps> = ({
   selectedJob,
   forceSheetOnLargeScreens = false,
 }) => {
-  const [isApplying, setIsApplying] = React.useState(false);
-  const { user } = useUserWithLoading();
+  const [isApplying, setIsApplying] = useState(false);
+  const [selectedResume, setSelectedResume] = useState<string | null>(null);
 
   if (!selectedJob) {
-    console.log("No job selected"); // Debugging log
     return <div>No job selected</div>;
   }
 
-  console.log("Rendering JobDetails for:", selectedJob); // Debugging log
-
   const applyJob = async () => {
+    try {
+      const applicationData = {
+        resume: selectedResume,
+        job: selectedJob.id,
+      };
+
+      await applyForJob(applicationData);
+      toast.success("You have successfully applied for this job!");
+      setIsApplying(false);
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to apply for the job. Please try again."
+      );
+      setIsApplying(false);
+    }
+  };
+
+  const triggerSelectResume = () => {
     setIsApplying(true);
-
-    // // Retrieve the logged-in user from local storage
-    // const userData = JSON.parse(localStorage.getItem("user-store") || "{}")
-    //   ?.state?.user;
-
-    // // Extract the resume dynamically
-    // const resumeEntries = userData?.resumes
-    //   ? Object.values(userData.resumes)
-    //   : [];
-    // const resumeUrl =
-    //   resumeEntries.length > 0
-    //     ? (resumeEntries[0] as { resume: string }).resume
-    //     : null;
-
-    // // Check if user and resume exist
-    // if (!userData || !userData.id || !userData.username || !resumeUrl) {
-    //   toast.error(
-    //     "User data or resume not found. Please ensure you're logged in and have uploaded a resume."
-    //   );
-    //   return;
-    // }
-
-    // try {
-    //   const applicationData = {
-    //     resume: resumeUrl,
-    //     job: selectedJob.id,
-    //   };
-
-    //   const response = await applyForJob(applicationData);
-    //   console.log("Application successful:", response);
-    //   toast.success("You have successfully applied for this job!");
-    // } catch (error: unknown) {
-    //   console.error("Application failed:", error);
-    //   toast.error(
-    //     error instanceof Error
-    //       ? error.message
-    //       : "Failed to apply for the job. Please try again."
-    //   );
-    // }
   };
 
   const containerClass = forceSheetOnLargeScreens
@@ -80,61 +57,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({
       className={`${containerClass} lg:flex flex-col h-full dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar`}
     >
       {isApplying ? (
-        <div className="p-6 overflow-y-auto h-full custom-scrollbar pb-20">
-          <h2 className="text-xl font-bold mb-4 dark:text-white">
-            Resume Selection
-          </h2>
-          <p className="text-sm text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-            Please make sure your resume is up to date before submitting your
-            application. An updated resume increases your chances of getting
-            selected for this position.
-          </p>
-
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6">
-            <h3 className="font-medium mb-3 dark:text-white">Your Resumes</h3>
-
-            {user?.resumes && Object.values(user.resumes).length > 0 ? (
-              <div className="space-y-3">
-                {Object.values(user.resumes).map((resume: Resumes) => (
-                  <div
-                    key={resume.created_at}
-                    className="border dark:border-gray-800 rounded-lg p-4 bg-white dark:bg-gray-900 hover:border-blue-500 dark:hover:border-blue-500 cursor-pointer transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium dark:text-white">
-                          {resume.name}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Uploaded:{" "}
-                          {new Date(resume.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="w-5 h-5 rounded-full border-2 border-blue-600 dark:border-blue-500 flex items-center justify-center">
-                        <div className="w-3 h-3 rounded-full bg-blue-600 dark:bg-blue-500"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center p-6 border border-dashed dark:border-gray-700 rounded-lg">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  No resumes found
-                </p>
-              </div>
-            )}
-
-            <div className="text-center my-4 p-6 border border-dashed dark:border-gray-700 rounded-lg">
-              <Button
-                variant="outline"
-                className="text-blue-600 dark:text-blue-500 border-blue-600 dark:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950"
-              >
-                Upload Resume
-              </Button>
-            </div>
-          </div>
-        </div>
+        <SelectResume
+          selectedResume={selectedResume}
+          setSelectedResume={setSelectedResume}
+        />
       ) : (
         <div className="overflow-y-auto h-full custom-scrollbar pb-20">
           <div className="p-6">
@@ -361,7 +287,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
           </Button>
         ) : (
           <Button
-            onClick={applyJob}
+            onClick={triggerSelectResume}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
           >
             Apply for Job
