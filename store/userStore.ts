@@ -21,19 +21,18 @@ export interface User {
     skills: string[];
   };
   bio?: string;
-  resumes?: Record<
-    string,
-    {
-      name: string;
-      resume: string;
-      created_at: string;
-    }
-  >;
+  resumes?: Record<string, Resumes>;
   company_name?: string;
   company_size?: string;
   about_company?: string;
   logo?: string;
   industry?: string;
+}
+
+export interface Resumes {
+  name: string;
+  resume: string;
+  created_at: string;
 }
 
 export interface Certification {
