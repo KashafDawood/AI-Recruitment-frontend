@@ -4,13 +4,47 @@ import { BookmarkIcon, Share2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
 import ProfileCard from "@/components/jobs/ProfileCard";
-
+import { applyForJob } from "@/api/candidate/ApplyForJob";
+import {toast} from "sonner";
 
 interface JobDetailsProps {
     selectedJob: Job;
 }
   
 const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {  
+  const applyJob = async () => {
+    // Retrieve the logged-in user from local storage
+    const userData = JSON.parse(localStorage.getItem("user-store") || "{}")?.state?.user;
+    console.log(userData);
+  
+    // Extract the resume dynamically
+    const resumeEntries = userData?.resumes ? Object.values(userData.resumes) : [];
+    const resumeUrl = resumeEntries.length > 0 ? resumeEntries[0].resume : null;
+      console.log(resumeUrl);
+
+    // Check if user and resume exist
+    if (!userData || !userData.id || !userData.username || !resumeUrl) {
+      alert("User data or resume not found. Please ensure you're logged in and have uploaded a resume.");
+      return;
+    }
+  
+    try {
+      const applicationData = {
+        resume: resumeUrl,
+        job: selectedJob.id
+      };
+  
+      const response = await applyForJob(applicationData);
+      console.log("Application successful:", response);
+      toast.success("You have successfully applied for this job!");
+    } catch (error: any) {
+      console.error("Application failed:", error);
+      toast.error(error.message || "Failed to apply for the job. Please try again.");
+    }
+  };
+  
+  
+
     return (
         <div className="lg:flex lg:w-2/5 flex-col h-full lg:border dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
             <div className="overflow-y-auto h-full custom-scrollbar pb-20">
@@ -192,8 +226,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
             </div>
 
             {/* Sticky Apply Job button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212] dark:border-gray-800">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg dark:bg-blue-500 dark:hover:bg-blue-600">
+            <div className="fixed md:absolute bottom-0 left-0 right-0 p-4 bg-white border-t dark:bg-[#121212] dark:border-gray-800">
+              <Button 
+               onClick={applyJob}
+               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg dark:bg-blue-500 dark:hover:bg-blue-600">
                 Apply Job
               </Button>
             </div>

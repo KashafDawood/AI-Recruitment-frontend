@@ -6,6 +6,7 @@ export interface Employer {
 }
 
 export interface Job {
+  id: number;
   title: string;
   job_status: string;
   salary: string;

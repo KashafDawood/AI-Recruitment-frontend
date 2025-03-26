@@ -72,7 +72,7 @@ export default function FindJobs() {
 
   const handleJobClick = (job: Job) => {
     setSelectedJob(job);
-    if (width <= 1023) {
+    if (width!==null && width <= 1023) {
       setIsSheetOpen(true); // Open sheet on small screens
     }
   };
@@ -184,16 +184,26 @@ export default function FindJobs() {
         </div>
         
         {/* Right column - Job details with independent scrolling and sticky Apply button */}
-        {width>1023 &&  selectedJob && <JobDetails selectedJob={selectedJob} />}
+        {width!==null && width>1023 &&  selectedJob && <JobDetails selectedJob={selectedJob} />}
         
         {/* Sheets for job details if width is < 1023 */}
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent side="right" className="max-h-full overflow-y-auto p-0 pt-4">
-            <VisuallyHidden>
-              <SheetTitle>Job Details</SheetTitle>
-            </VisuallyHidden>
+          {width!==null && width>500 && width<=1023 && (
+          <SheetContent side="right" className="max-h-full overflow-y-auto p-0 pt-4"> 
+              <VisuallyHidden>
+                <SheetTitle>Job Details</SheetTitle>
+              </VisuallyHidden>
+               { selectedJob && <JobDetails selectedJob={selectedJob} /> }
+            </SheetContent>
+          )}
+          {width!==null && width<=640 && (
+          <SheetContent side="bottom" className="max-h-full overflow-y-auto p-0 pt-4"> 
+              <VisuallyHidden>
+                <SheetTitle>Job Details</SheetTitle>
+              </VisuallyHidden>
               { selectedJob && <JobDetails selectedJob={selectedJob} /> }
-          </SheetContent>
+            </SheetContent>
+          )}
         </Sheet>
       </div>
 
