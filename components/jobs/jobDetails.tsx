@@ -10,12 +10,26 @@ import { useUserWithLoading } from "@/hooks/useUser";
 import { Resumes } from "@/store/userStore";
 
 interface JobDetailsProps {
+<<<<<<< HEAD
   selectedJob: Job;
 }
 
 const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
   const [isApplying, setIsApplying] = React.useState(false);
   const { user } = useUserWithLoading();
+=======
+    selectedJob: Job;
+    forceSheetOnLargeScreens?: boolean; // New prop
+}
+  
+const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob, forceSheetOnLargeScreens = false }) => {  
+  if (!selectedJob) {
+    console.log("No job selected"); // Debugging log
+    return <div>No job selected</div>;
+  }
+
+  console.log("Rendering JobDetails for:", selectedJob); // Debugging log
+>>>>>>> 0d5df1dc23bed2b64d31b52c22c9714c3971a9ce
 
   const applyJob = async () => {
     setIsApplying(true);
@@ -59,6 +73,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
     //   );
     // }
   };
+<<<<<<< HEAD
 
   return (
     <div className="lg:flex lg:w-2/5 flex-col h-full lg:border dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
@@ -72,6 +87,45 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
             application. An updated resume increases your chances of getting
             selected for this position.
           </p>
+=======
+  
+  const containerClass = forceSheetOnLargeScreens
+    ? "w-full border-none"
+    : "lg:w-2/5 lg:border"; // Conditionally apply the width class
+
+    return (
+        <div className={`${containerClass} lg:flex flex-col h-full dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar`}>
+            <div className="overflow-y-auto h-full custom-scrollbar pb-20">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold dark:text-white">
+                      {selectedJob.title}
+                    </h2>
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
+                      <span>{selectedJob.company}</span>
+                      <span className="hidden lg:block">•</span>
+                      <span>{selectedJob.location}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="rounded-lg h-10 w-10"
+                    >
+                      <BookmarkIcon className="h-5 w-5 text-blue-600" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="rounded-lg h-10 w-10"
+                    >
+                      <Share2Icon className="h-5 w-5 text-blue-600" />
+                    </Button>
+                  </div>
+                </div>
+>>>>>>> 0d5df1dc23bed2b64d31b52c22c9714c3971a9ce
 
           <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6">
             <h3 className="font-medium mb-3 dark:text-white">Your Resumes</h3>
