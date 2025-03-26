@@ -4,20 +4,26 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getAllEmployerJobs } from "@/api/jobs/getAllEmployerjobs";
 import { Job } from "@/types/job";
-import JobCard from "../custom/JobCard";
+import JobList from "../jobs/JobList";
 import { toast } from "sonner";
 
 export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
-  const [jobs, setJobs] = useState<Job[] | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const JobsPerPage = 10;
 
   useEffect(() => {
     const fetchJobs = async () => {
       if (user?.username) {
         setLoading(true);
         try {
-          const res = await getAllEmployerJobs(user.username);
-          setJobs(res);
+          const res = await getAllEmployerJobs(currentPage, JobsPerPage, user.username, activeFilters);
+          setJobs(res.results || []);
+          setTotalJobs(res.count || 0);
         } catch {
           toast.error("Failed to fetch job openings. Please try again later.");
         } finally {
@@ -27,7 +33,22 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
     };
 
     fetchJobs();
-  }, [user]);
+  }, [user, currentPage, activeFilters]);
+
+  const handleJobClick = (job: Job) => {
+    console.log("Job clicked in OpeningsCard:", job); // Debugging log
+    setSelectedJob(job);
+  };
+
+  const applyFilter = (filters: Record<string, string>) => {
+    setActiveFilters(filters);
+    setCurrentPage(1); // Reset pagination when applying filters
+  };
+
+  const clearAllFilters = () => {
+    setActiveFilters({});
+    setCurrentPage(1); // Reset pagination when clearing filters
+  };
 
   return (
     <Card className="dark:bg-gray-900">
@@ -35,22 +56,18 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
         <h2 className="text-xl font-semibold">Current Openings</h2>
       </CardHeader>
       <CardContent>
-        {loading ? (
-          <div className="text-center p-4">Loading jobs...</div>
-        ) : jobs && Array.isArray(jobs) && jobs.length > 0 ? (
-          <div className="space-y-4">
-            {jobs.map((job, index) => (
-              <JobCard job={job} index={index} key={index} isSelected={false} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-lg bg-muted p-8 text-center bg-gray-200 dark:bg-gray-800">
-            <h3 className="text-lg font-bold mb-2">No open positions</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              There are currently no job openings at {user?.company_name}.
-            </p>
-          </div>
-        )}
+        <JobList
+          jobs={jobs}
+          totalJobs={totalJobs}
+          currentPage={currentPage}
+          selectedJob={selectedJob}
+          onPageChange={setCurrentPage}
+          onFilterChange={applyFilter}
+          onClearFilters={clearAllFilters}
+          onJobSelect={handleJobClick}
+          loading={loading}
+          forceSheetOnLargeScreens={true} // Enable sheet for large screens
+        />
       </CardContent>
     </Card>
   );

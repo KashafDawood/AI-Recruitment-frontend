@@ -9,9 +9,17 @@ import {toast} from "sonner";
 
 interface JobDetailsProps {
     selectedJob: Job;
+    forceSheetOnLargeScreens?: boolean; // New prop
 }
   
-const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {  
+const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob, forceSheetOnLargeScreens = false }) => {  
+  if (!selectedJob) {
+    console.log("No job selected"); // Debugging log
+    return <div>No job selected</div>;
+  }
+
+  console.log("Rendering JobDetails for:", selectedJob); // Debugging log
+
   const applyJob = async () => {
     // Retrieve the logged-in user from local storage
     const userData = JSON.parse(localStorage.getItem("user-store") || "{}")?.state?.user;
@@ -41,10 +49,12 @@ const JobDetails: React.FC<JobDetailsProps> = ({ selectedJob }) => {
     }
   };
   
-  
+  const containerClass = forceSheetOnLargeScreens
+    ? "w-full border-none"
+    : "lg:w-2/5 lg:border"; // Conditionally apply the width class
 
     return (
-        <div className="lg:flex lg:w-2/5 flex-col h-full lg:border dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar">
+        <div className={`${containerClass} lg:flex flex-col h-full dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar`}>
             <div className="overflow-y-auto h-full custom-scrollbar pb-20">
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
