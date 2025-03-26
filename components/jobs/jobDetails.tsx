@@ -35,11 +35,26 @@ const JobDetails: React.FC<JobDetailsProps> = ({
       toast.success("You have successfully applied for this job!");
       setIsApplying(false);
     } catch (error: unknown) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to apply for the job. Please try again."
-      );
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "alreadyApplied" in error &&
+        error.alreadyApplied === true
+      ) {
+        toast.error("You have already applied for this job!");
+      } else if (
+        error instanceof Error &&
+        error.message.toLowerCase().includes("already applied")
+      ) {
+        toast.error("You have already applied for this job!");
+      } else {
+        toast.error(
+          error instanceof Error ||
+            (typeof error === "object" && error !== null && "message" in error)
+            ? (error as { message: string }).message
+            : "Failed to apply for the job. Please try again."
+        );
+      }
       setIsApplying(false);
     }
   };
