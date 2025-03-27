@@ -3,6 +3,10 @@ export interface Employer {
   name: string;
   photo: string;
   company_name: string;
+  address: string;
+  industry: string;
+  about_company: string;
+  company_size: string;
 }
 
 export interface Job {

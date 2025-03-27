@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, BookmarkIcon, Check, Share2Icon } from "lucide-react";
+import {
+  AlertCircle,
+  BookmarkIcon,
+  Check,
+  Share2Icon,
+  Briefcase,
+  Clock,
+  DollarSign,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
 import ProfileCard from "@/components/jobs/ProfileCard";
@@ -69,7 +77,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
 
   return (
     <div
-      className={`${containerClass} lg:flex flex-col h-full dark:border-gray-600 rounded-lg relative overflow-y-auto custom-scrollbar`}
+      className={`${containerClass} lg:flex flex-col h-full dark:border-gray-600 rounded-lg relative overflow-y-auto custom-scrollbar shadow-sm`}
     >
       {isApplying ? (
         <SelectResume
@@ -79,60 +87,99 @@ const JobDetails: React.FC<JobDetailsProps> = ({
       ) : (
         <div className="overflow-y-auto h-full custom-scrollbar pb-20">
           <div className="p-6">
-            <div className="flex justify-between items-start mb-6">
+            {/* Enhanced header section */}
+            <div className="flex justify-between items-start mb-8">
               <div>
-                <h2 className="text-xl font-bold dark:text-white">
+                <h2 className="text-2xl font-bold dark:text-white mb-2">
                   {selectedJob.title}
                 </h2>
-                <div className="flex flex-col lg:flex-row lg:items-center lg:gap-2 text-sm text-gray-800 dark:text-gray-300 mt-1">
-                  <span>{selectedJob.company}</span>
-                  <span className="hidden lg:block">•</span>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                  <span className="font-medium">{selectedJob.company}</span>
+                  <span className="text-gray-400">•</span>
                   <span>{selectedJob.location}</span>
+                  <Badge
+                    variant="outline"
+                    className={`ml-1 font-medium ${
+                      selectedJob.job_status.toLowerCase() === "active"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
+                    }`}
+                  >
+                    {selectedJob.job_status}
+                  </Badge>
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-lg h-10 w-10"
+                  className="rounded-full h-10 w-10 border-gray-200 hover:bg-blue-50 hover:border-blue-200 dark:border-gray-700 dark:hover:bg-blue-900/20"
                 >
-                  <BookmarkIcon className="h-5 w-5 text-blue-600" />
+                  <BookmarkIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-lg h-10 w-10"
+                  className="rounded-full h-10 w-10 border-gray-200 hover:bg-blue-50 hover:border-blue-200 dark:border-gray-700 dark:hover:bg-blue-900/20"
                 >
-                  <Share2Icon className="h-5 w-5 text-blue-600" />
+                  <Share2Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </Button>
               </div>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6">
+            {/* Improved job stats section */}
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="border dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-2 mb-2">
+                  <Briefcase className="h-4 w-4 text-blue-500" />
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Job Type
+                  </div>
+                </div>
+                <div className="font-medium dark:text-white">
+                  {selectedJob.job_type}
+                </div>
+              </div>
+              <div className="border dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="h-4 w-4 text-indigo-500" />
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Experience
+                  </div>
+                </div>
+                <div className="font-medium dark:text-white">
+                  {selectedJob.experience_required}
+                </div>
+              </div>
+              <div className="border dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign className="h-4 w-4 text-green-500" />
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Salary
+                  </div>
+                </div>
+                <div className="font-medium dark:text-white">
+                  {selectedJob.salary}
+                </div>
+              </div>
+            </div>
+
+            {/* Improved applicants summary section */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800/50 dark:to-indigo-900/20 rounded-xl p-5 mb-8 border border-blue-100 dark:border-gray-700 shadow-sm">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium dark:text-gray-200">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">
                   Applicants Summary
                 </h3>
-                <Badge
-                  variant="outline"
-                  className={`font-medium ${
-                    selectedJob.job_status.toLowerCase() === "active"
-                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                      : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
-                  }`}
-                >
-                  {selectedJob.job_status}
-                </Badge>
               </div>
 
               <div className="flex items-center gap-6">
                 <div className="relative w-24 h-24">
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold dark:text-white">
                       67
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      /100
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      applicants
                     </span>
                   </div>
                   {/* This would be a pie chart in a real implementation */}
@@ -158,7 +205,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                       strokeWidth="12"
                       strokeDasharray="251.2"
                       strokeDashoffset="75"
-                      className="dark:stroke-indigo-500"
+                      className="dark:stroke-indigo-500 transition-all duration-1000 ease-out"
                     />
                     <circle
                       cx="50"
@@ -169,7 +216,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                       strokeWidth="12"
                       strokeDasharray="251.2"
                       strokeDashoffset="175"
-                      className="dark:stroke-blue-500"
+                      className="dark:stroke-blue-500 transition-all duration-1000 ease-out"
                     />
                     <circle
                       cx="50"
@@ -180,58 +227,37 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                       strokeWidth="12"
                       strokeDasharray="251.2"
                       strokeDashoffset="240"
-                      className="dark:stroke-red-500"
+                      className="dark:stroke-red-500 transition-all duration-1000 ease-out"
                     />
                   </svg>
                 </div>
                 <div className="flex-grow">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-2">
                     <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                    <span className="text-sm dark:text-gray-300">
-                      New Applicants
+                    <span className="text-sm font-medium dark:text-blue-300 text-blue-700">
+                      32 New Applicants
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-2">
                     <span className="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-500"></span>
-                    <span className="text-sm dark:text-gray-300">Approved</span>
+                    <span className="text-sm font-medium dark:text-indigo-300 text-indigo-700">
+                      24 Approved
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                    <span className="text-sm dark:text-gray-300">Rejected</span>
+                    <span className="text-sm font-medium dark:text-red-300 text-red-700">
+                      11 Rejected
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="border dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-900">
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Job Type
-                </div>
-                <div className="font-medium dark:text-white">
-                  {selectedJob.job_type}
-                </div>
-              </div>
-              <div className="border dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-900">
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Experience
-                </div>
-                <div className="font-medium dark:text-white">
-                  {selectedJob.experience_required}
-                </div>
-              </div>
-              <div className="border dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-900">
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  Salary
-                </div>
-                <div className="font-medium dark:text-white">
-                  {selectedJob.salary}
-                </div>
-              </div>
-            </div>
-
+            {/* Section headers with visual separators */}
             <div className="mb-6">
-              <h3 className="font-medium mb-3 dark:text-white">
+              <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-white flex items-center">
+                <div className="w-1.5 h-5 bg-blue-500 rounded-sm mr-2"></div>
                 About Job Role
               </h3>
               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -240,84 +266,132 @@ const JobDetails: React.FC<JobDetailsProps> = ({
             </div>
 
             <div className="mb-6">
-              <h3 className="font-medium mb-3 dark:text-white">Requirements</h3>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+              <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-white flex items-center">
+                <div className="w-1.5 h-5 bg-indigo-500 rounded-sm mr-2"></div>
+                Requirements
+              </h3>
+              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
                 {selectedJob.required_qualifications.map(
                   (requirement, index) => (
-                    <li key={index}>{requirement}</li>
+                    <li key={index} className="flex items-start">
+                      <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
+                        •
+                      </div>
+                      <span>{requirement}</span>
+                    </li>
                   )
                 )}
               </ul>
             </div>
 
             <div className="mb-6">
-              <h3 className="font-medium mb-3 dark:text-white">
+              <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-white flex items-center">
+                <div className="w-1.5 h-5 bg-purple-500 rounded-sm mr-2"></div>
                 Preferred Qualifications
               </h3>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
                 {selectedJob.preferred_qualifications.map(
                   (qualification, index) => (
-                    <li key={index}>{qualification}</li>
+                    <li key={index} className="flex items-start">
+                      <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
+                        •
+                      </div>
+                      <span>{qualification}</span>
+                    </li>
                   )
                 )}
               </ul>
             </div>
 
             <div className="mb-6">
-              <h3 className="font-medium mb-3 dark:text-white">
+              <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-white flex items-center">
+                <div className="w-1.5 h-5 bg-green-500 rounded-sm mr-2"></div>
                 Responsibilities
               </h3>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
                 {selectedJob.responsibilities.map((responsibility, index) => (
-                  <li key={index}>{responsibility}</li>
+                  <li key={index} className="flex items-start">
+                    <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
+                      •
+                    </div>
+                    <span>{responsibility}</span>
+                  </li>
                 ))}
               </ul>
             </div>
 
-            <div className="mb-6">
-              <h3 className="font-medium mb-3 dark:text-white">Benefits</h3>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc pl-5 space-y-2">
+            <div className="mb-8">
+              <h3 className="font-semibold text-lg mb-4 text-gray-800 dark:text-white flex items-center">
+                <div className="w-1.5 h-5 bg-yellow-500 rounded-sm mr-2"></div>
+                Benefits
+              </h3>
+              <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
                 {selectedJob.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
+                  <li key={index} className="flex items-start">
+                    <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
+                      •
+                    </div>
+                    <span>{benefit}</span>
+                  </li>
                 ))}
               </ul>
             </div>
 
-            {/* employer profile card */}
+            {/* Enhanced employer profile card */}
             {selectedJob.employer && (
-              <ProfileCard employer={selectedJob.employer} />
+              <div
+                className={`"border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm" ${
+                  selectedJob.has_applied ? "mb-9" : ""
+                }`}
+              >
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/50 px-4 py-3 border-b dark:border-gray-700">
+                  <h3 className="font-semibold text-gray-800 dark:text-white">
+                    About the Employer
+                  </h3>
+                </div>
+                <div>
+                  <ProfileCard employer={selectedJob.employer} />
+                </div>
+              </div>
             )}
           </div>
         </div>
       )}
 
-      {/* Sticky Apply Job button */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-600">
+      {/* Enhanced sticky Apply Job button */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-lg bg-opacity-95 dark:bg-opacity-95 backdrop-blur-sm">
         {selectedJob.job_status.toLowerCase() === "closed" ? (
-          <div className="flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-600">
+          <div className="flex items-center justify-center gap-2 py-4 px-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
             <AlertCircle className="h-5 w-5 text-gray-500 dark:text-gray-400" />
             <span className="font-medium text-gray-700 dark:text-gray-300">
               Position closed for applications
             </span>
           </div>
         ) : selectedJob.has_applied ? (
-          <div className="flex items-center justify-center gap-2 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-            <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
-            <span className="font-medium text-green-700 dark:text-green-400">
-              Already Applied
+          <div className="flex flex-col items-center justify-center gap-1 py-4 px-5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-800/50 flex items-center justify-center">
+                <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </div>
+              <span className="font-medium text-green-700 dark:text-green-400">
+                Already Applied
+              </span>
+            </div>
+            <span className="text-xs text-green-600 dark:text-green-500 mt-1">
+              Your application is under review
             </span>
           </div>
         ) : isApplying ? (
           <Button
             onClick={applyJob}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
           >
             Submit Application
           </Button>
         ) : (
           <Button
             onClick={triggerSelectResume}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
           >
             Apply for This Position
           </Button>
