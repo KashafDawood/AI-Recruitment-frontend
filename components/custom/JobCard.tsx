@@ -69,7 +69,7 @@ const JobCard: React.FC<JobCardProps> = ({
                       {job.title}
                     </h3>
                     {job.has_applied && (
-                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 flex items-center gap-1 border-none">
+                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-100/50 dark:hover:bg-blue-900/50 flex items-center gap-1 border-none">
                         <CheckCircle className="h-3 w-3" />
                         Applied
                       </Badge>

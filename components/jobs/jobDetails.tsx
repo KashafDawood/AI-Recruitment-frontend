@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertCircle,
@@ -19,16 +19,24 @@ import SelectResume from "../custom/selectResume";
 interface JobDetailsProps {
   selectedJob: Job;
   forceSheetOnLargeScreens?: boolean;
+  onJobApplied?: (jobId: number) => void; // Add callback prop
 }
 
 const JobDetails: React.FC<JobDetailsProps> = ({
   selectedJob,
   forceSheetOnLargeScreens = false,
+  onJobApplied,
 }) => {
   const [isApplying, setIsApplying] = useState(false);
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
+  const [jobData, setJobData] = useState<Job>(selectedJob);
 
-  if (!selectedJob) {
+  // Update job data when selectedJob changes
+  useEffect(() => {
+    setJobData(selectedJob);
+  }, [selectedJob]);
+
+  if (!jobData) {
     return <div>No job selected</div>;
   }
 
@@ -36,11 +44,23 @@ const JobDetails: React.FC<JobDetailsProps> = ({
     try {
       const applicationData = {
         resume: selectedResume,
-        job: selectedJob.id,
+        job: jobData.id,
       };
 
       await applyForJob(applicationData);
       toast.success("You have successfully applied for this job!");
+
+      // Update local state immediately
+      setJobData((prev) => ({
+        ...prev,
+        has_applied: true,
+      }));
+
+      // Notify parent components
+      if (onJobApplied) {
+        onJobApplied(jobData.id);
+      }
+
       setIsApplying(false);
     } catch (error: unknown) {
       if (
@@ -71,6 +91,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({
     setIsApplying(true);
   };
 
+  const handleJobChange = () => {
+    setIsApplying(false);
+  };
+
   const containerClass = forceSheetOnLargeScreens
     ? "w-full border-none"
     : "lg:w-2/5 lg:border"; // Conditionally apply the width class
@@ -83,6 +107,8 @@ const JobDetails: React.FC<JobDetailsProps> = ({
         <SelectResume
           selectedResume={selectedResume}
           setSelectedResume={setSelectedResume}
+          jobId={jobData.id}
+          onJobChange={handleJobChange}
         />
       ) : (
         <div className="overflow-y-auto h-full custom-scrollbar pb-20">
@@ -91,21 +117,21 @@ const JobDetails: React.FC<JobDetailsProps> = ({
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h2 className="text-2xl font-bold dark:text-white mb-2">
-                  {selectedJob.title}
+                  {jobData.title}
                 </h2>
                 <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                  <span className="font-medium">{selectedJob.company}</span>
+                  <span className="font-medium">{jobData.company}</span>
                   <span className="text-gray-400">•</span>
-                  <span>{selectedJob.location}</span>
+                  <span>{jobData.location}</span>
                   <Badge
                     variant="outline"
                     className={`ml-1 font-medium ${
-                      selectedJob.job_status.toLowerCase() === "active"
+                      jobData.job_status.toLowerCase() === "active"
                         ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
                         : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
                     }`}
                   >
-                    {selectedJob.job_status}
+                    {jobData.job_status}
                   </Badge>
                 </div>
               </div>
@@ -137,7 +163,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   </div>
                 </div>
                 <div className="font-medium dark:text-white">
-                  {selectedJob.job_type}
+                  {jobData.job_type}
                 </div>
               </div>
               <div className="border dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow">
@@ -148,7 +174,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   </div>
                 </div>
                 <div className="font-medium dark:text-white">
-                  {selectedJob.experience_required}
+                  {jobData.experience_required}
                 </div>
               </div>
               <div className="border dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow">
@@ -159,13 +185,13 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   </div>
                 </div>
                 <div className="font-medium dark:text-white">
-                  {selectedJob.salary}
+                  {jobData.salary}
                 </div>
               </div>
             </div>
 
             {/* Improved applicants summary section */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800/50 dark:to-indigo-900/20 rounded-xl p-5 mb-8 border border-blue-100 dark:border-gray-700 shadow-sm">
+            {/* <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800/50 dark:to-indigo-900/20 rounded-xl p-5 mb-8 border border-blue-100 dark:border-gray-700 shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-gray-800 dark:text-gray-200">
                   Applicants Summary
@@ -182,7 +208,6 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                       applicants
                     </span>
                   </div>
-                  {/* This would be a pie chart in a real implementation */}
                   <svg
                     viewBox="0 0 100 100"
                     className="w-full h-full -rotate-90"
@@ -252,7 +277,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Section headers with visual separators */}
             <div className="mb-6">
@@ -261,7 +286,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 About Job Role
               </h3>
               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                {selectedJob.description}
+                {jobData.description}
               </p>
             </div>
 
@@ -271,16 +296,14 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 Requirements
               </h3>
               <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
-                {selectedJob.required_qualifications.map(
-                  (requirement, index) => (
-                    <li key={index} className="flex items-start">
-                      <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
-                        •
-                      </div>
-                      <span>{requirement}</span>
-                    </li>
-                  )
-                )}
+                {jobData.required_qualifications.map((requirement, index) => (
+                  <li key={index} className="flex items-start">
+                    <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
+                      •
+                    </div>
+                    <span>{requirement}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -290,7 +313,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 Preferred Qualifications
               </h3>
               <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
-                {selectedJob.preferred_qualifications.map(
+                {jobData.preferred_qualifications.map(
                   (qualification, index) => (
                     <li key={index} className="flex items-start">
                       <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
@@ -309,7 +332,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 Responsibilities
               </h3>
               <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
-                {selectedJob.responsibilities.map((responsibility, index) => (
+                {jobData.responsibilities.map((responsibility, index) => (
                   <li key={index} className="flex items-start">
                     <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
                       •
@@ -326,7 +349,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 Benefits
               </h3>
               <ul className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-3">
-                {selectedJob.benefits.map((benefit, index) => (
+                {jobData.benefits.map((benefit, index) => (
                   <li key={index} className="flex items-start">
                     <div className="mt-1 mr-2 h-4 w-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs">
                       •
@@ -338,10 +361,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({
             </div>
 
             {/* Enhanced employer profile card */}
-            {selectedJob.employer && (
+            {jobData.employer && (
               <div
                 className={`"border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm" ${
-                  selectedJob.has_applied ? "mb-9" : ""
+                  jobData.has_applied ? "mb-9" : ""
                 }`}
               >
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/50 px-4 py-3 border-b dark:border-gray-700">
@@ -350,7 +373,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   </h3>
                 </div>
                 <div>
-                  <ProfileCard employer={selectedJob.employer} />
+                  <ProfileCard employer={jobData.employer} />
                 </div>
               </div>
             )}
@@ -360,14 +383,14 @@ const JobDetails: React.FC<JobDetailsProps> = ({
 
       {/* Enhanced sticky Apply Job button */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-lg bg-opacity-95 dark:bg-opacity-95 backdrop-blur-sm">
-        {selectedJob.job_status.toLowerCase() === "closed" ? (
+        {jobData.job_status.toLowerCase() === "closed" ? (
           <div className="flex items-center justify-center gap-2 py-4 px-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
             <AlertCircle className="h-5 w-5 text-gray-500 dark:text-gray-400" />
             <span className="font-medium text-gray-700 dark:text-gray-300">
               Position closed for applications
             </span>
           </div>
-        ) : selectedJob.has_applied ? (
+        ) : jobData.has_applied ? (
           <div className="flex flex-col items-center justify-center gap-1 py-4 px-5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
             <div className="flex items-center gap-2">
               <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-800/50 flex items-center justify-center">

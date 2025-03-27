@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useUserWithLoading } from "@/hooks/useUser";
 import { Button } from "../ui/button";
 import { Resumes, useUserStore } from "@/store/userStore";
@@ -10,15 +10,32 @@ import { Badge } from "../ui/badge";
 interface SelectResumeProps {
   selectedResume: string | null;
   setSelectedResume: (resume: string) => void;
+  jobId: number;
+  onJobChange: () => void;
 }
 
 const SelectResume = ({
   selectedResume,
   setSelectedResume,
+  jobId,
+  onJobChange,
 }: SelectResumeProps) => {
   const { user } = useUserWithLoading();
   const { refreshUser } = useUserStore();
   const [loading, setLoading] = useState(false);
+  const prevJobIdRef = useRef<number | null>(null);
+
+  // Effect to detect job changes and call onJobChange
+  useEffect(() => {
+    // Only trigger job change callback if this isn't the initial render
+    // and the job ID actually changed
+    if (prevJobIdRef.current !== null && prevJobIdRef.current !== jobId) {
+      onJobChange();
+    }
+
+    // Update the ref with current jobId for next comparison
+    prevJobIdRef.current = jobId;
+  }, [jobId, onJobChange]);
 
   const onSelectResume = (resume: Resumes) => {
     setSelectedResume(resume.resume);

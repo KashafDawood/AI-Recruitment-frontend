@@ -84,6 +84,14 @@ const JobList: React.FC<JobListProps> = ({
     setIsSheetOpen(true);
   };
 
+  // Handle successful job application
+  const handleJobApplied = (jobId: number) => {
+    // Update selected job if it's the one that was applied for
+    if (selectedJob && selectedJob.id === jobId) {
+      onJobSelect({ ...selectedJob, has_applied: true });
+    }
+  };
+
   return (
     <div className="flex flex-col h-full overflow-y-auto custom-scrollbar">
       <div className="flex gap-4 mb-4">
@@ -175,6 +183,7 @@ const JobList: React.FC<JobListProps> = ({
               <JobDetails
                 selectedJob={selectedJob}
                 forceSheetOnLargeScreens={true}
+                onJobApplied={handleJobApplied}
               />
             )}
           </SheetContent>
@@ -186,7 +195,12 @@ const JobList: React.FC<JobListProps> = ({
             <VisuallyHidden>
               <SheetTitle>Job Details</SheetTitle>
             </VisuallyHidden>
-            {selectedJob && <JobDetails selectedJob={selectedJob} />}
+            {selectedJob && (
+              <JobDetails
+                selectedJob={selectedJob}
+                onJobApplied={handleJobApplied}
+              />
+            )}
           </SheetContent>
         ) : width !== null && width <= 640 ? (
           <SheetContent
@@ -196,7 +210,12 @@ const JobList: React.FC<JobListProps> = ({
             <VisuallyHidden>
               <SheetTitle>Job Details</SheetTitle>
             </VisuallyHidden>
-            {selectedJob && <JobDetails selectedJob={selectedJob} />}
+            {selectedJob && (
+              <JobDetails
+                selectedJob={selectedJob}
+                onJobApplied={handleJobApplied}
+              />
+            )}
           </SheetContent>
         ) : null}
       </Sheet>

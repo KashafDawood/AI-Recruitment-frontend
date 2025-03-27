@@ -92,6 +92,20 @@ export default function FindJobs() {
     setActiveFilters({}); // Reset filters to an empty object
   };
 
+  // Handle successful job application
+  const handleJobApplied = (jobId: number) => {
+    // Update jobs list with applied status
+    const updatedJobs = jobs.map((job) =>
+      job.id === jobId ? { ...job, has_applied: true } : job
+    );
+    setJobs(updatedJobs);
+
+    // Update selected job if it's the one that was applied for
+    if (selectedJob && selectedJob.id === jobId) {
+      setSelectedJob({ ...selectedJob, has_applied: true });
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
       <div className="flex gap-4 h-full">
@@ -111,7 +125,10 @@ export default function FindJobs() {
         </div>
         {/* Right column - Job details with independent scrolling and sticky Apply button */}
         {width !== null && width > 1023 && selectedJob && (
-          <JobDetails selectedJob={selectedJob} />
+          <JobDetails
+            selectedJob={selectedJob}
+            onJobApplied={handleJobApplied}
+          />
         )}
       </div>
     </div>
