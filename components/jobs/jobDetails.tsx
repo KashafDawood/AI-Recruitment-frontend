@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { BookmarkIcon, Share2Icon } from "lucide-react";
+import { AlertCircle, BookmarkIcon, Check, Share2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
 import ProfileCard from "@/components/jobs/ProfileCard";
@@ -69,7 +69,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
 
   return (
     <div
-      className={`${containerClass} lg:flex flex-col h-full dark:border-gray-800 rounded-lg relative overflow-y-auto custom-scrollbar`}
+      className={`${containerClass} lg:flex flex-col h-full dark:border-gray-600 rounded-lg relative overflow-y-auto custom-scrollbar`}
     >
       {isApplying ? (
         <SelectResume
@@ -204,7 +204,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
             </div>
 
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="border dark:border-gray-800 rounded-lg p-3 bg-white dark:bg-gray-900">
+              <div className="border dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-900">
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   Job Type
                 </div>
@@ -212,7 +212,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   {selectedJob.job_type}
                 </div>
               </div>
-              <div className="border dark:border-gray-800 rounded-lg p-3 bg-white dark:bg-gray-900">
+              <div className="border dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-900">
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   Experience
                 </div>
@@ -220,7 +220,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   {selectedJob.experience_required}
                 </div>
               </div>
-              <div className="border dark:border-gray-800 rounded-lg p-3 bg-white dark:bg-gray-900">
+              <div className="border dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-900">
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   Salary
                 </div>
@@ -292,20 +292,34 @@ const JobDetails: React.FC<JobDetailsProps> = ({
       )}
 
       {/* Sticky Apply Job button */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-800">
-        {isApplying ? (
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-600">
+        {selectedJob.job_status.toLowerCase() === "closed" ? (
+          <div className="flex items-center justify-center gap-2 py-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-600">
+            <AlertCircle className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <span className="font-medium text-gray-700 dark:text-gray-300">
+              Position closed for applications
+            </span>
+          </div>
+        ) : selectedJob.has_applied ? (
+          <div className="flex items-center justify-center gap-2 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+            <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <span className="font-medium text-green-700 dark:text-green-400">
+              Already Applied
+            </span>
+          </div>
+        ) : isApplying ? (
           <Button
             onClick={applyJob}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
           >
-            Submit
+            Submit Application
           </Button>
         ) : (
           <Button
             onClick={triggerSelectResume}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium dark:bg-blue-600 dark:hover:bg-blue-700"
           >
-            Apply for Job
+            Apply for This Position
           </Button>
         )}
       </div>

@@ -1,6 +1,13 @@
 import React from "react";
 import { Job } from "@/types/job";
-import { BookmarkIcon, Briefcase, MapPin, User, Clock } from "lucide-react";
+import {
+  BookmarkIcon,
+  Briefcase,
+  MapPin,
+  User,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GlowCard, vibrantColors } from "./GlowCard";
@@ -31,6 +38,13 @@ const JobCard: React.FC<JobCardProps> = ({
   // Select a color from vibrantColors based on job index
   const cardColor = vibrantColors[index % vibrantColors.length];
 
+  // Determine status style
+  const isOpen = job.job_status.toLowerCase() === "open";
+  const statusColor = isOpen
+    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+    : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
+  const statusDot = isOpen ? "bg-green-500" : "bg-gray-500";
+
   return (
     <GlowCard color={cardColor} className="mb-4 !pl-0 shadow-lg">
       <div
@@ -50,14 +64,25 @@ const JobCard: React.FC<JobCardProps> = ({
             <div className="flex justify-between gap-2">
               <div className="flex gap-2">
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {job.title}
-                  </h3>
+                  <div className="flex items-center gap-4 pb-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {job.title}
+                    </h3>
+                    {job.has_applied && (
+                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 flex items-center gap-1 border-none">
+                        <CheckCircle className="h-3 w-3" />
+                        Applied
+                      </Badge>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2 my-2">
                     <Badge
                       variant="secondary"
-                      className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs px-2"
+                      className={`flex items-center gap-1.5 rounded-full text-xs px-2 ${statusColor}`}
                     >
+                      <div
+                        className={`h-2 w-2 rounded-full ${statusDot}`}
+                      ></div>
                       {job.job_status}
                     </Badge>
                     <Badge
@@ -113,9 +138,7 @@ const JobCard: React.FC<JobCardProps> = ({
                 className="text-xs gap-1 flex items-center border-none"
               >
                 <User className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-1" />
-                <span>
-                  {job.applicants} applied
-                </span>
+                <span>{job.applicants} applied</span>
               </Badge>
 
               <div className="flex items-center gap-1 ml-auto">

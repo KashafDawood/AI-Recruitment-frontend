@@ -24,6 +24,7 @@ interface JobListProps {
   onJobSelect: (job: Job) => void;
   loading: boolean;
   forceSheetOnLargeScreens?: boolean;
+  showSavedJobs?: boolean;
 }
 
 const JobsPerPage = 10;
@@ -39,10 +40,13 @@ const JobList: React.FC<JobListProps> = ({
   onJobSelect,
   loading,
   forceSheetOnLargeScreens = false,
+  showSavedJobs = false,
 }) => {
   const width = useWindowWidth();
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
+    {}
+  );
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const totalPages = Math.ceil(totalJobs / JobsPerPage);
@@ -143,6 +147,7 @@ const JobList: React.FC<JobListProps> = ({
                 index={index}
                 isSelected={selectedJob?.title === job.title}
                 onClick={() => handleJobClick(job)}
+                showSaveJob={showSavedJobs}
               />
             ))
           )}
@@ -158,28 +163,42 @@ const JobList: React.FC<JobListProps> = ({
       )}
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-      {forceSheetOnLargeScreens && (width !== null && width > 640) ? (
-        <SheetContent side="right" className="max-h-full overflow-y-auto p-0 pt-4">
-          <VisuallyHidden>
-            <SheetTitle>Job Details</SheetTitle>
-          </VisuallyHidden>
-          {selectedJob && <JobDetails selectedJob={selectedJob} forceSheetOnLargeScreens={true} />}
-        </SheetContent>
-      ) : width !== null && width > 640 && width <= 1023 ? (
-        <SheetContent side="right" className="max-h-full overflow-y-auto p-0 pt-4">
-          <VisuallyHidden>
-            <SheetTitle>Job Details</SheetTitle>
-          </VisuallyHidden>
-          {selectedJob && <JobDetails selectedJob={selectedJob} />}
-        </SheetContent>
-      ) : width !== null && width <= 640 ? (
-        <SheetContent side="bottom" className="max-h-full h-full overflow-y-auto p-0 pt-4">
-          <VisuallyHidden>
-            <SheetTitle>Job Details</SheetTitle>
-          </VisuallyHidden>
-          {selectedJob && <JobDetails selectedJob={selectedJob} />}
-        </SheetContent>
-      ) : null}
+        {forceSheetOnLargeScreens && width !== null && width > 640 ? (
+          <SheetContent
+            side="right"
+            className="max-h-full overflow-y-auto p-0 pt-4"
+          >
+            <VisuallyHidden>
+              <SheetTitle>Job Details</SheetTitle>
+            </VisuallyHidden>
+            {selectedJob && (
+              <JobDetails
+                selectedJob={selectedJob}
+                forceSheetOnLargeScreens={true}
+              />
+            )}
+          </SheetContent>
+        ) : width !== null && width > 640 && width <= 1023 ? (
+          <SheetContent
+            side="right"
+            className="max-h-full overflow-y-auto p-0 pt-4"
+          >
+            <VisuallyHidden>
+              <SheetTitle>Job Details</SheetTitle>
+            </VisuallyHidden>
+            {selectedJob && <JobDetails selectedJob={selectedJob} />}
+          </SheetContent>
+        ) : width !== null && width <= 640 ? (
+          <SheetContent
+            side="bottom"
+            className="max-h-full h-full overflow-y-auto p-0 pt-4"
+          >
+            <VisuallyHidden>
+              <SheetTitle>Job Details</SheetTitle>
+            </VisuallyHidden>
+            {selectedJob && <JobDetails selectedJob={selectedJob} />}
+          </SheetContent>
+        ) : null}
       </Sheet>
     </div>
   );

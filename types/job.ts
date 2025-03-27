@@ -22,5 +22,6 @@ export interface Job {
   benefits: string[];
   created_at: string;
   applicants: BigInteger;
+  has_applied: boolean;
   employer: Employer | null;
 }

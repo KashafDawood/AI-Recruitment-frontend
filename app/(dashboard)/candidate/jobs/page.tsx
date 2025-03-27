@@ -2,19 +2,11 @@
 
 import { getAllJobs } from "@/api/candidate/getAllJobs";
 import { useEffect, useState } from "react";
-import { FilterIcon, X, ChevronDown } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import "./scrollbar.css";
 import useWindowWidth from "@/hooks/use-window-width";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { Job } from "@/types/job";
 import JobDetails from "../../../../components/jobs/jobDetails";
-import JobCard from "@/components/custom/JobCard";
-import PaginationUI from "@/components/custom/PaginationUI";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import JobList from "@/components/jobs/JobList";
 
 export default function FindJobs() {
@@ -46,7 +38,6 @@ export default function FindJobs() {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-
         const data = await getAllJobs(currentPage, JobsPerPage, activeFilters);
         if (data && data.results) {
           setJobs(data.results);
@@ -115,10 +106,13 @@ export default function FindJobs() {
             onClearFilters={() => setActiveFilters({})}
             onJobSelect={handleJobClick}
             loading={loading}
+            showSavedJobs={true}
           />
         </div>
         {/* Right column - Job details with independent scrolling and sticky Apply button */}
-        {width!==null && width>1023 &&  selectedJob && <JobDetails selectedJob={selectedJob} />}
+        {width !== null && width > 1023 && selectedJob && (
+          <JobDetails selectedJob={selectedJob} />
+        )}
       </div>
     </div>
   );
