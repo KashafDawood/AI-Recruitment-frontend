@@ -4,7 +4,8 @@ import { Button } from "../ui/button";
 import { Resumes, useUserStore } from "@/store/userStore";
 import { toast } from "sonner";
 import { updateMe } from "@/api/user/upadateuser";
-import { Loader2 } from "lucide-react";
+import { File, FileText, Loader2 } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 interface SelectResumeProps {
   selectedResume: string | null;
@@ -21,6 +22,18 @@ const SelectResume = ({
 
   const onSelectResume = (resume: Resumes) => {
     setSelectedResume(resume.resume);
+  };
+
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split(".").pop()?.toLowerCase();
+
+    if (extension === "pdf") {
+      return <FileText className="h-5 w-5 text-red-500" />;
+    } else if (extension === "doc" || extension === "docx") {
+      return <FileText className="h-5 w-5 text-blue-600" />;
+    } else {
+      return <File className="h-5 w-5 text-gray-500" />;
+    }
   };
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -95,14 +108,22 @@ const SelectResume = ({
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium dark:text-white">
-                        {resume.name}
+                    <div className="flex flex-col">
+                      <p className="flex gap-2 items-center pb-1 font-medium dark:text-white">
+                        {getFileIcon(resume.name)}
+                        <span className="truncate max-w-[200px]">
+                          {resume.name}
+                        </span>
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Uploaded:{" "}
-                        {new Date(resume.created_at).toLocaleDateString()}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Uploaded:{" "}
+                          {new Date(resume.created_at).toLocaleDateString()}
+                        </p>
+                        <Badge variant="outline" className="text-xs">
+                          {resume.name.split(".").pop()?.toUpperCase()}
+                        </Badge>
+                      </div>
                     </div>
                     {selectedResume === resume.resume && (
                       <div className="text-blue-600 dark:text-blue-500 font-medium text-sm">
