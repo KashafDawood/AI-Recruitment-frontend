@@ -129,7 +129,7 @@ const JobList: React.FC<JobListProps> = ({
       )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-        <div className="sticky top-0 bg-white z-10 py-2 mb-2 flex justify-between items-center dark:bg-[#121212]">
+        <div className="sticky top-0 bg-white z-20 py-2 mb-2 flex justify-between items-center dark:bg-[#1c1b22]">
           <span className="text-sm text-gray-300">Sort by:</span>
           <button className="text-sm font-medium flex items-center">
             Popular Jobs <ChevronDown className="w-4 h-4 ml-1" />
