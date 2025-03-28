@@ -34,11 +34,15 @@ export default function FindJobs() {
         const data = await getAllJobs(currentPage, jobsPerPage, filters);
         if (data && data.results) {
           setJobs(data.results);
-          if (data.results.length > 0) {
+
+          // Only auto-select the first job on desktop view after initial load
+          if (data.results.length > 0 && width !== null && width > 1023) {
             setSelectedJob(data.results[0]);
-          } else {
+          } else if (data.results.length === 0) {
+            // Clear selected job if no results
             setSelectedJob(null);
           }
+
           setTotalJobs(data.count);
         }
       } catch (error) {
@@ -52,7 +56,7 @@ export default function FindJobs() {
     };
 
     fetchJobs();
-  }, [currentPage, filters]);
+  }, [currentPage, filters, width]);
 
   // Handle job selection
   const handleJobSelect = (job: Job) => {

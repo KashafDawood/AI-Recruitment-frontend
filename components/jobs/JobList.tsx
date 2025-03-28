@@ -64,7 +64,7 @@ const JobList: React.FC<JobListProps> = ({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
   const [sortOption, setSortOption] = useState("latest");
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [sheetJob, setSheetJob] = useState<Job | null>(null);
 
   const totalPages = Math.ceil(totalJobs / JobsPerPage);
 
@@ -85,6 +85,12 @@ const JobList: React.FC<JobListProps> = ({
     { value: "salary_high_to_low", label: "Salary (High to Low)" },
     { value: "salary_low_to_high", label: "Salary (Low to High)" },
   ];
+
+  useEffect(() => {
+    if (!isSheetOpen) {
+      setSheetJob(null);
+    }
+  }, [isSheetOpen]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -135,39 +141,22 @@ const JobList: React.FC<JobListProps> = ({
   };
 
   const handleJobClick = (job: Job) => {
-    // Always open sheet on mobile OR when forceSheetOnLargeScreens is true
     if ((width !== null && width <= 1023) || forceSheetOnLargeScreens) {
+      setSheetJob(job);
       setIsSheetOpen(true);
-    }
-
-    // If it's the same job, trigger a forceUpdate to ensure proper handling
-    if (selectedJob && selectedJob.id === job.id) {
-      setForceUpdate((prev) => prev + 1);
     } else {
-      // Only call onJobSelect if it's a different job to avoid unnecessary rerenders
       onJobSelect(job);
     }
   };
 
-  // Handle successful job application
   const handleJobApplied = (jobId: number) => {
-    // Update selected job if it's the one that was applied for
-    if (selectedJob && selectedJob.id === jobId) {
+    if (sheetJob && sheetJob.id === jobId) {
+      setSheetJob({ ...sheetJob, has_applied: true });
+    }
+    if (selectedJob && selectedJob.id === jobId && !isSheetOpen) {
       onJobSelect({ ...selectedJob, has_applied: true });
     }
   };
-
-  useEffect(() => {
-    // Open sheet when a job is selected and:
-    // - Either we're on a mobile device
-    // - OR forceSheetOnLargeScreens is true
-    if (
-      selectedJob &&
-      ((width !== null && width <= 1023) || forceSheetOnLargeScreens)
-    ) {
-      setIsSheetOpen(true);
-    }
-  }, [selectedJob, width, forceUpdate, forceSheetOnLargeScreens]);
 
   return (
     <div className="flex flex-col h-full">
@@ -312,10 +301,8 @@ const JobList: React.FC<JobListProps> = ({
         {Object.keys(activeFilters).length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4 items-center">
             {Object.entries(activeFilters).map(([key, value]) => {
-              // Skip the sort_by filter from displaying as a badge
               if (key === "sort_by") return null;
 
-              // Format the filter key for display
               const displayKey = key.replace(/_/g, " ");
               const displayValue =
                 key === "time_published"
@@ -387,7 +374,11 @@ const JobList: React.FC<JobListProps> = ({
               key={job.id || index}
               job={job}
               index={index}
-              isSelected={selectedJob?.id === job.id}
+              isSelected={
+                (width !== null && width <= 1023) || forceSheetOnLargeScreens
+                  ? sheetJob?.id === job.id
+                  : selectedJob?.id === job.id
+              }
               onClick={() => handleJobClick(job)}
               showSaveJob={showSavedJobs}
             />
@@ -411,22 +402,22 @@ const JobList: React.FC<JobListProps> = ({
         <SheetContent
           side={width !== null && width <= 640 ? "bottom" : "right"}
           className={`
-      ${width !== null && width <= 640 ? "h-[85vh]" : ""} 
-      ${
-        (width !== null && width > 640 && width <= 1023) ||
-        forceSheetOnLargeScreens
-          ? "!w-[60%] !max-w-[700px]"
-          : ""
-      }
-      max-h-full overflow-y-auto p-0 pt-4
-    `}
+            ${width !== null && width <= 640 ? "h-[85vh]" : ""} 
+            ${
+              (width !== null && width > 640 && width <= 1023) ||
+              forceSheetOnLargeScreens
+                ? "!w-[60%] !max-w-[700px]"
+                : ""
+            }
+            max-h-full overflow-y-auto p-0 pt-4
+          `}
         >
           <VisuallyHidden>
             <SheetTitle>Job Details</SheetTitle>
           </VisuallyHidden>
-          {selectedJob && (
+          {sheetJob && (
             <JobDetails
-              selectedJob={selectedJob}
+              selectedJob={sheetJob}
               onJobApplied={handleJobApplied}
               forceSheetOnLargeScreens={forceSheetOnLargeScreens}
             />
