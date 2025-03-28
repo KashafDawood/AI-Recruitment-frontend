@@ -1,14 +1,31 @@
+"use client";
+
 import Link from "next/link";
 import OptimizeImage from "../custom/optimizeImage";
 import { ExternalLink, MapPin, Building } from "lucide-react";
 import { Employer } from "@/types/job";
+import DOMPurify from "dompurify";
 
 interface ProfileCardProps {
   employer: Employer;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ employer }) => {
-  const about = employer.about_company.slice(0, 100);
+  const truncateText = (text: string, maxLength: number) => {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+
+    const lastSpaceIndex = text.lastIndexOf(" ", maxLength);
+
+    if (lastSpaceIndex === -1) return text.slice(0, maxLength) + "...";
+
+    return text.slice(0, lastSpaceIndex) + "...";
+  };
+
+  const about = employer.about_company
+    ? truncateText(employer.about_company, 125)
+    : "";
+  const sanitizedAbout = DOMPurify.sanitize(about);
 
   return (
     <Link href={`/${employer.username}`} className="block w-full group">
@@ -59,9 +76,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ employer }) => {
           </div>
 
           {employer.about_company && (
-            <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 line-clamp-2 hidden md:block">
-              {about}...
-            </p>
+            <p
+              className="text-xs text-gray-600 dark:text-gray-300 mt-2 line-clamp-2 hidden md:block"
+              dangerouslySetInnerHTML={{ __html: sanitizedAbout }}
+            />
           )}
 
           {/* Company badges/tags */}
