@@ -34,9 +34,10 @@ export default function FindJobs() {
         const data = await getAllJobs(currentPage, jobsPerPage, filters);
         if (data && data.results) {
           setJobs(data.results);
-          // Only set selected job if none is selected or if we're on first load
-          if (data.results.length > 0 && !selectedJob) {
+          if (data.results.length > 0) {
             setSelectedJob(data.results[0]);
+          } else {
+            setSelectedJob(null);
           }
           setTotalJobs(data.count);
         }
@@ -44,13 +45,14 @@ export default function FindJobs() {
         console.error("Failed to fetch jobs:", error);
         setJobs([]);
         setTotalJobs(0);
+        setSelectedJob(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchJobs();
-  }, [currentPage, filters, selectedJob]); // Remove selectedJob from dependencies
+  }, [currentPage, filters]);
 
   // Handle job selection
   const handleJobSelect = (job: Job) => {
