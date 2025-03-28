@@ -1,28 +1,24 @@
 "use client";
 
-import { getAllJobs } from "@/api/candidate/getAllJobs";
 import { useEffect, useState } from "react";
-import "./scrollbar.css";
-import useWindowWidth from "@/hooks/use-window-width";
-
+import { getAllJobs } from "@/api/candidate/getAllJobs";
 import { Job } from "@/types/job";
 import JobDetails from "../../../../components/jobs/jobDetails";
 import JobList from "@/components/jobs/JobList";
+import useWindowWidth from "@/hooks/use-window-width";
+import "./scrollbar.css";
 
 export default function FindJobs() {
   const width = useWindowWidth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {}
-  );
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const JobsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const jobsPerPage = 10;
 
+  // Lock scrolling on the main document
   useEffect(() => {
     document.documentElement.style.overflow = "hidden";
     return () => {
@@ -30,18 +26,18 @@ export default function FindJobs() {
     };
   }, []);
 
-  // Calculate total pages
-  const totalPages = Math.ceil(totalJobs / JobsPerPage);
-
-  // Fetch jobs and total count on initial load and when currentPage changes
+  // Fetch jobs based on current filters and pagination
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        const data = await getAllJobs(currentPage, JobsPerPage, activeFilters);
+        const data = await getAllJobs(currentPage, jobsPerPage, filters);
         if (data && data.results) {
           setJobs(data.results);
-          setSelectedJob(data.results[0]);
+          // Only set selected job if none is selected or if we're on first load
+          if (data.results.length > 0 && !selectedJob) {
+            setSelectedJob(data.results[0]);
+          }
           setTotalJobs(data.count);
         }
       } catch (error) {
@@ -54,45 +50,20 @@ export default function FindJobs() {
     };
 
     fetchJobs();
-  }, [currentPage, activeFilters]);
+  }, [currentPage, filters, selectedJob]); // Remove selectedJob from dependencies
 
-  // Function to handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleJobClick = (job: Job) => {
-    console.log("Job clicked:", job); // Debugging log
+  // Handle job selection
+  const handleJobSelect = (job: Job) => {
     setSelectedJob(job);
-    if (width !== null && width <= 1023) {
-      setIsSheetOpen(true); // Open sheet on small screens
-    }
   };
 
-  const applyFilter = () => {
-    if (!searchTerm) return;
-
-    setActiveFilters((prevFilters) => ({
-      ...prevFilters,
-      [`search_${Date.now()}`]: searchTerm.toLowerCase(), // Generate a unique key for each search
-    }));
-    setSearchTerm(""); // Clear the input field
-    setCurrentPage(1); // Reset pagination when applying filters
+  // Handle filter changes
+  const handleFilterChange = (newFilters: Record<string, string>) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
-  const removeFilter = (filterKey: string) => {
-    setActiveFilters((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      delete updatedFilters[filterKey]; // Remove filter properly
-      return updatedFilters;
-    });
-  };
-
-  const clearAllFilters = () => {
-    setActiveFilters({}); // Reset filters to an empty object
-  };
-
-  // Handle successful job application
+  // Handle job application
   const handleJobApplied = (jobId: number) => {
     // Update jobs list with applied status
     const updatedJobs = jobs.map((job) =>
@@ -109,6 +80,7 @@ export default function FindJobs() {
   return (
     <div className="container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
       <div className="flex gap-4 h-full">
+        {/* Job List Section - Responsive width */}
         <div className="w-full lg:w-3/5 flex flex-col h-full overflow-y-auto custom-scrollbar">
           <JobList
             jobs={jobs}
@@ -116,14 +88,15 @@ export default function FindJobs() {
             currentPage={currentPage}
             selectedJob={selectedJob}
             onPageChange={setCurrentPage}
-            onFilterChange={setActiveFilters}
-            onClearFilters={() => setActiveFilters({})}
-            onJobSelect={handleJobClick}
+            onFilterChange={handleFilterChange}
+            onClearFilters={() => setFilters({})}
+            onJobSelect={handleJobSelect}
             loading={loading}
             showSavedJobs={true}
           />
         </div>
-        {/* Right column - Job details with independent scrolling and sticky Apply button */}
+
+        {/* Job Details Section - Only visible on larger screens */}
         {width !== null && width > 1023 && selectedJob && (
           <JobDetails
             selectedJob={selectedJob}
