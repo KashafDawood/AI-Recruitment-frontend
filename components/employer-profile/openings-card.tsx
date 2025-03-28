@@ -12,7 +12,9 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalJobs, setTotalJobs] = useState(0);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
+    {}
+  );
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const JobsPerPage = 10;
 
@@ -21,7 +23,12 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
       if (user?.username) {
         setLoading(true);
         try {
-          const res = await getAllEmployerJobs(currentPage, JobsPerPage, user.username, activeFilters);
+          const res = await getAllEmployerJobs(
+            currentPage,
+            JobsPerPage,
+            user.username,
+            activeFilters
+          );
           setJobs(res.results || []);
           setTotalJobs(res.count || 0);
         } catch {
@@ -36,7 +43,6 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
   }, [user, currentPage, activeFilters]);
 
   const handleJobClick = (job: Job) => {
-    console.log("Job clicked in OpeningsCard:", job); // Debugging log
     setSelectedJob(job);
   };
 
@@ -66,7 +72,7 @@ export const OpeningsCard: React.FC<{ user: User | null }> = ({ user }) => {
           onClearFilters={clearAllFilters}
           onJobSelect={handleJobClick}
           loading={loading}
-          forceSheetOnLargeScreens={true} // Enable sheet for large screens
+          forceSheetOnLargeScreens={true}
         />
       </CardContent>
     </Card>

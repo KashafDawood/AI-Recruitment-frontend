@@ -19,13 +19,15 @@ import SelectResume from "../custom/selectResume";
 interface JobDetailsProps {
   selectedJob: Job;
   forceSheetOnLargeScreens?: boolean;
-  onJobApplied?: (jobId: number) => void; // Add callback prop
+  onJobApplied?: (jobId: number) => void;
+  className?: string;
 }
 
 const JobDetails: React.FC<JobDetailsProps> = ({
   selectedJob,
   forceSheetOnLargeScreens = false,
   onJobApplied,
+  className,
 }) => {
   const [isApplying, setIsApplying] = useState(false);
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
@@ -101,7 +103,9 @@ const JobDetails: React.FC<JobDetailsProps> = ({
 
   return (
     <div
-      className={`${containerClass} lg:flex flex-col h-full dark:border-gray-600 rounded-lg relative overflow-y-auto custom-scrollbar shadow-sm`}
+      className={`${
+        className ? className : ""
+      } ${containerClass} lg:flex flex-col h-full dark:border-gray-600 rounded-lg relative overflow-y-auto custom-scrollbar shadow-sm`}
     >
       {isApplying ? (
         <SelectResume

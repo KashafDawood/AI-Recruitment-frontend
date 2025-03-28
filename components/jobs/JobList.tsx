@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,7 @@ const JobList: React.FC<JobListProps> = ({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
   const [sortOption, setSortOption] = useState("latest");
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   const totalPages = Math.ceil(totalJobs / JobsPerPage);
 
@@ -134,14 +135,17 @@ const JobList: React.FC<JobListProps> = ({
   };
 
   const handleJobClick = (job: Job) => {
-    // Only call onJobSelect if it's a different job to avoid unnecessary rerenders
-    if (!selectedJob || selectedJob.id !== job.id) {
-      onJobSelect(job);
+    // Always open sheet on mobile OR when forceSheetOnLargeScreens is true
+    if ((width !== null && width <= 1023) || forceSheetOnLargeScreens) {
+      setIsSheetOpen(true);
     }
 
-    // Open sheet on smaller screens regardless
-    if (width !== null && width <= 1023) {
-      setIsSheetOpen(true);
+    // If it's the same job, trigger a forceUpdate to ensure proper handling
+    if (selectedJob && selectedJob.id === job.id) {
+      setForceUpdate((prev) => prev + 1);
+    } else {
+      // Only call onJobSelect if it's a different job to avoid unnecessary rerenders
+      onJobSelect(job);
     }
   };
 
@@ -152,6 +156,18 @@ const JobList: React.FC<JobListProps> = ({
       onJobSelect({ ...selectedJob, has_applied: true });
     }
   };
+
+  useEffect(() => {
+    // Open sheet when a job is selected and:
+    // - Either we're on a mobile device
+    // - OR forceSheetOnLargeScreens is true
+    if (
+      selectedJob &&
+      ((width !== null && width <= 1023) || forceSheetOnLargeScreens)
+    ) {
+      setIsSheetOpen(true);
+    }
+  }, [selectedJob, width, forceUpdate, forceSheetOnLargeScreens]);
 
   return (
     <div className="flex flex-col h-full">
@@ -395,14 +411,15 @@ const JobList: React.FC<JobListProps> = ({
         <SheetContent
           side={width !== null && width <= 640 ? "bottom" : "right"}
           className={`
-            ${width !== null && width <= 640 ? "h-[85vh]" : ""} 
-            ${
-              width !== null && width > 640 && width <= 1023
-                ? "w-[500px] sm:w-[600px] md:w-[650px]"
-                : ""
-            }
-            max-h-full overflow-y-auto p-0 pt-4
-          `}
+      ${width !== null && width <= 640 ? "h-[85vh]" : ""} 
+      ${
+        (width !== null && width > 640 && width <= 1023) ||
+        forceSheetOnLargeScreens
+          ? "!w-[60%] !max-w-[700px]"
+          : ""
+      }
+      max-h-full overflow-y-auto p-0 pt-4
+    `}
         >
           <VisuallyHidden>
             <SheetTitle>Job Details</SheetTitle>

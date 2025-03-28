@@ -80,10 +80,10 @@ export default function FindJobs() {
   };
 
   return (
-    <div className="container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
+    <div className="xl:container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
       <div className="flex gap-4 h-full">
         {/* Job List Section - Responsive width */}
-        <div className="w-full lg:w-3/5 flex flex-col h-full overflow-y-auto custom-scrollbar">
+        <div className="lg:w-3/5 flex flex-col h-full overflow-y-auto custom-scrollbar">
           <JobList
             jobs={jobs}
             totalJobs={totalJobs}
@@ -101,6 +101,7 @@ export default function FindJobs() {
         {/* Job Details Section - Only visible on larger screens */}
         {width !== null && width > 1023 && selectedJob && (
           <JobDetails
+            className="min-w-[500px]"
             selectedJob={selectedJob}
             onJobApplied={handleJobApplied}
           />
