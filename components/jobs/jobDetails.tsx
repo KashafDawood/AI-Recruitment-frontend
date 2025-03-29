@@ -158,7 +158,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
             </div>
 
             {/* Improved job stats section */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4 mb-8">
               <div className="border dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/50 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-2 mb-2">
                   <Briefcase className="h-4 w-4 text-blue-500" />
