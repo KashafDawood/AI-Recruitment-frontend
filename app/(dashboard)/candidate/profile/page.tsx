@@ -10,15 +10,11 @@ import { useState } from "react";
 import EditProfileBio from "@/components/profile-page/edit-bio";
 import AddCertificationForm from "@/components/profile-page/edit-certifications/addCertification-form";
 import EditCertificationForm from "@/components/profile-page/edit-certifications/editCertification-form";
-import { useUserStore } from "@/store/userStore";
+import { Certification, Education, useUserStore } from "@/store/userStore";
 import Spinner from "@/components/ui/spinner";
-
-interface Certification {
-  source?: string;
-  source_url?: string;
-  date_obtained?: string;
-  certification_name?: string;
-}
+import CompleteProfileCard from "@/components/custom/completeProfileCard";
+import EditEducationForm from "@/components/profile-page/edit-education/editEducation-form";
+import AddEducationForm from "@/components/profile-page/edit-education/addEducation-form";
 
 type EditSection = "profile" | "bio" | "education" | "certifications" | null;
 
@@ -28,6 +24,10 @@ export default function CandidateProfile() {
   const [isAddingCertification, setIsAddingCertification] = useState(false);
   const [editingCertification, setEditingCertification] =
     useState<Certification | null>(null);
+  const [isAddingEducation, setIsAddingEducation] = useState(false);
+  const [editingEducation, setEditingEducation] = useState<Education | null>(
+    null
+  );
   const { refreshUser } = useUserStore();
 
   const handleEditClick = (section: EditSection) => {
@@ -54,6 +54,34 @@ export default function CandidateProfile() {
     setEditingCertification(null);
   };
 
+  const handleCancelAddEducation = () => {
+    setIsAddingEducation(false);
+  };
+
+  const handleCancelEditEducation = () => {
+    setEditingEducation(null);
+  };
+
+  const handleProfileSectionClick = (section: string) => {
+    if (section === "certifications") {
+      setIsAddingCertification(true);
+    } else if (section === "bio") {
+      setEditSection("bio");
+    } else if (section === "education") {
+      if (
+        !user?.education ||
+        !Array.isArray(user.education) ||
+        user.education.length === 0
+      ) {
+        setIsAddingEducation(true);
+      } else {
+        setEditSection("education");
+      }
+    } else {
+      setEditSection(section as EditSection);
+    }
+  };
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -69,22 +97,56 @@ export default function CandidateProfile() {
         />
       )}
       <div className="bg-slate-200 dark:bg-slate-800 text-black dark:text-white shadow p-6 rounded-b-xl">
-        {editSection === "bio" ? (
-          <EditProfileBio
-            bio={user?.bio || ""}
-            onEditCencel={handleEditComplete}
-          />
-        ) : (
-          <ProfileBio
-            bio={user?.bio || ""}
-            onEditClick={() => handleEditClick("bio")}
-          />
-        )}
-
-        <EducationTimeline
-          educationData={user?.education}
-          onEditClick={() => handleEditClick("education")}
+        <CompleteProfileCard
+          user={user}
+          onEditClick={handleProfileSectionClick}
         />
+
+        {user?.bio || editSection === "bio" ? (
+          editSection === "bio" ? (
+            <EditProfileBio
+              bio={user?.bio || ""}
+              onEditCencel={handleEditComplete}
+            />
+          ) : (
+            <ProfileBio
+              bio={user?.bio || ""}
+              onEditClick={() => handleEditClick("bio")}
+            />
+          )
+        ) : null}
+
+        {isAddingEducation ? (
+          <div className="mt-6">
+            <AddEducationForm
+              onCancel={handleCancelAddEducation}
+              onSuccess={() => {
+                refreshUser();
+                setIsAddingEducation(false);
+              }}
+            />
+          </div>
+        ) : editingEducation ? (
+          <div className="mt-6">
+            <EditEducationForm
+              education={editingEducation}
+              onCancel={handleCancelEditEducation}
+              onSuccess={() => {
+                refreshUser();
+                setEditingEducation(null);
+              }}
+            />
+          </div>
+        ) : (
+          user?.education &&
+          Array.isArray(user.education) &&
+          user.education.length > 0 && (
+            <EducationTimeline
+              educationData={user.education}
+              onEditClick={() => handleEditClick("education")}
+            />
+          )
+        )}
 
         {isAddingCertification ? (
           <AddCertificationForm
