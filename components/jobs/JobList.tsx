@@ -12,6 +12,8 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import useWindowWidth from "@/hooks/use-window-width";
 import { Job } from "@/types/job";
 import JobDetails from "./jobDetails";
+import { saveJob } from "@/api/candidate/saveJob";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +41,7 @@ interface JobListProps {
   loading: boolean;
   forceSheetOnLargeScreens?: boolean;
   showSavedJobs?: boolean;
+  onSaveJob?: (jobId: number) => void; // Add onSaveJob prop
 }
 
 const JobsPerPage = 10;
@@ -55,6 +58,7 @@ const JobList: React.FC<JobListProps> = ({
   loading,
   forceSheetOnLargeScreens = false,
   showSavedJobs = false,
+  onSaveJob,
 }) => {
   const width = useWindowWidth();
   const [searchTerm, setSearchTerm] = useState("");
@@ -155,6 +159,17 @@ const JobList: React.FC<JobListProps> = ({
     }
     if (selectedJob && selectedJob.id === jobId && !isSheetOpen) {
       onJobSelect({ ...selectedJob, has_applied: true });
+    }
+  };
+
+  const handleSaveJob = async (jobId: number) => {
+    try {
+      const response = await saveJob(jobId);
+
+      toast.success(response.message);
+    } catch (error) {
+      console.error("Error saving job:", error);
+      toast.error("Failed to save job.");
     }
   };
 
@@ -381,6 +396,8 @@ const JobList: React.FC<JobListProps> = ({
               }
               onClick={() => handleJobClick(job)}
               showSaveJob={showSavedJobs}
+              onSaveJob={onSaveJob}
+
             />
           ))
         )}
@@ -420,6 +437,7 @@ const JobList: React.FC<JobListProps> = ({
               selectedJob={sheetJob}
               onJobApplied={handleJobApplied}
               forceSheetOnLargeScreens={forceSheetOnLargeScreens}
+              onSaveJob={onSaveJob}
             />
           )}
         </SheetContent>

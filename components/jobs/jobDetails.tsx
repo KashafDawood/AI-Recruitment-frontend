@@ -19,6 +19,7 @@ import SelectResume from "../custom/selectResume";
 interface JobDetailsProps {
   selectedJob: Job;
   forceSheetOnLargeScreens?: boolean;
+  onSaveJob?: (jobId: number) => void;
   onJobApplied?: (jobId: number) => void;
   className?: string;
 }
@@ -26,6 +27,7 @@ interface JobDetailsProps {
 const JobDetails: React.FC<JobDetailsProps> = ({
   selectedJob,
   forceSheetOnLargeScreens = false,
+  onSaveJob,
   onJobApplied,
   className,
 }) => {
@@ -143,9 +145,21 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full h-10 w-10 border-gray-200 hover:bg-blue-50 hover:border-blue-200 dark:border-gray-700 dark:hover:bg-blue-900/20"
+                  className={`rounded-full h-10 w-10 border-gray-200 hover:border-blue-200 dark:border-gray-700 ${
+                    selectedJob.is_saved
+                      ? "bg-blue-500 text-white hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
+                      : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onSaveJob) {
+                      onSaveJob(selectedJob.id);
+                    }
+                  }}
                 >
-                  <BookmarkIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <BookmarkIcon className={`h-5 w-5 ${
+                    selectedJob.is_saved ? "text-white dark:text-white" : "text-blue-600 dark:text-blue-400"
+                  }`} />
                 </Button>
                 <Button
                   variant="outline"

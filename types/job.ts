@@ -27,5 +27,6 @@ export interface Job {
   created_at: string;
   applicants: BigInteger;
   has_applied: boolean;
+  is_saved: boolean;
   employer: Employer | null;
 }

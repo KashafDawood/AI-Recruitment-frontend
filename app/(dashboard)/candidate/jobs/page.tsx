@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getAllJobs } from "@/api/candidate/getAllJobs";
+import { saveJob } from "@/api/candidate/saveJob";
+import { toast } from "sonner";
 import { Job } from "@/types/job";
 import JobDetails from "../../../../components/jobs/jobDetails";
 import JobList from "@/components/jobs/JobList";
@@ -83,6 +85,31 @@ export default function FindJobs() {
     }
   };
 
+  const handleSaveJob = async (jobId: number) => {
+    try {
+      const response = await saveJob(jobId);
+
+      // Update the saved state for the job in the jobs list
+      setJobs((prevJobs) =>
+        prevJobs.map((job) =>
+          job.id === jobId ? { ...job, is_saved: !job.is_saved } : job
+        )
+      );
+
+      // Update the saved state for the selected job
+      setSelectedJob((prevSelectedJob) =>
+        prevSelectedJob && prevSelectedJob.id === jobId
+          ? { ...prevSelectedJob, is_saved: !prevSelectedJob.is_saved }
+          : prevSelectedJob
+      );
+
+      toast.success(response.message);
+    } catch (error) {
+      console.error("Error saving job:", error);
+      toast.error("Failed to save job.");
+    }
+  };
+
   return (
     <div className="xl:container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
       <div className="flex gap-4 h-full">
@@ -99,14 +126,18 @@ export default function FindJobs() {
             onJobSelect={handleJobSelect}
             loading={loading}
             showSavedJobs={true}
+            onSaveJob={handleSaveJob}
           />
         </div>
 
         {/* Job Details Section - Only visible on larger screens */}
         {width !== null && width > 1023 && selectedJob && (
           <JobDetails
+           
             className="min-w-[500px]"
             selectedJob={selectedJob}
+            onSaveJob={handleSaveJob} 
+         
             onJobApplied={handleJobApplied}
           />
         )}

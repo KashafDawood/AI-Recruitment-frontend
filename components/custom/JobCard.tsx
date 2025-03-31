@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Job } from "@/types/job";
 import {
   BookmarkIcon,
@@ -18,6 +18,7 @@ interface JobCardProps {
   isSelected: boolean;
   showSaveJob?: boolean;
   onClick?: () => void;
+  onSaveJob?: (jobId: number) => void;
 }
 
 const calculateDaysAgo = (dateString: string) => {
@@ -34,6 +35,7 @@ const JobCard: React.FC<JobCardProps> = ({
   isSelected,
   showSaveJob = false,
   onClick,
+  onSaveJob,
 }) => {
   // Select a color from vibrantColors based on job index
   const cardColor = vibrantColors[index % vibrantColors.length];
@@ -104,11 +106,19 @@ const JobCard: React.FC<JobCardProps> = ({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-lg h-10 w-10 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                  className={`rounded-lg h-10 w-10 border-gray-200 dark:border-gray-700 z-10 ${
+                    job.is_saved
+                      ? "bg-blue-500 text-white hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
+                      : "dark:bg-gray-800 dark:hover:bg-gray-700"
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSaveJob && onSaveJob(job.id);
+                  }}
                 >
                   <BookmarkIcon
                     className="h-5 w-5"
-                    style={{ color: cardColor }}
+                    style={{ color: job.is_saved ? "white" : cardColor }}
                   />
                 </Button>
               )}
