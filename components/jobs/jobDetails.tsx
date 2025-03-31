@@ -29,7 +29,6 @@ const JobDetails: React.FC<JobDetailsProps> = ({
 }) => {
   const [isApplying, setIsApplying] = useState(false);
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(selectedJob.is_saved);
 
   if (!selectedJob) {
     return <div>No job selected</div>;
@@ -117,22 +116,20 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   variant="outline"
                   size="icon"
                   className={`rounded-full h-10 w-10 border-gray-200 hover:border-blue-200 dark:border-gray-700 ${
-                    isSaved
+                    selectedJob.is_saved
                       ? "bg-blue-500 text-white hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
                       : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (onSaveJob) {
-                      console.log("Calling onSaveJob with jobId:", selectedJob.id); // Debug log
-                      onSaveJob(selectedJob.id); // Call the API
-                    } else {
-                      console.error("onSaveJob is not defined"); // Debug log if undefined
+                      onSaveJob(selectedJob.id);
                     }
-                    setIsSaved((prev) => !prev); // Then toggle the state
                   }}
                 >
-                  <BookmarkIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <BookmarkIcon className={`h-5 w-5 ${
+                    selectedJob.is_saved ? "text-white dark:text-white" : "text-blue-600 dark:text-blue-400"
+                  }`} />
                 </Button>
                 <Button
                   variant="outline"

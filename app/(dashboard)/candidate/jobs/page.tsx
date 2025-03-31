@@ -97,6 +97,21 @@ export default function FindJobs() {
   const handleSaveJob = async (jobId: number) => {
     try {
       const response = await saveJob(jobId);
+
+      // Update the saved state for the job in the jobs list
+      setJobs((prevJobs) =>
+        prevJobs.map((job) =>
+          job.id === jobId ? { ...job, is_saved: !job.is_saved } : job
+        )
+      );
+
+      // Update the saved state for the selected job
+      setSelectedJob((prevSelectedJob) =>
+        prevSelectedJob && prevSelectedJob.id === jobId
+          ? { ...prevSelectedJob, is_saved: !prevSelectedJob.is_saved }
+          : prevSelectedJob
+      );
+
       toast.success(response.message);
     } catch (error) {
       console.error("Error saving job:", error);
@@ -116,16 +131,16 @@ export default function FindJobs() {
             onPageChange={setCurrentPage}
             onFilterChange={setActiveFilters}
             onClearFilters={() => setActiveFilters({})}
-            onJobSelect={handleJobClick}
+            onJobSelect={setSelectedJob}
             loading={loading}
             showSavedJobs={true}
-            onSaveJob={handleSaveJob} // Pass handleSaveJob to JobList
+            onSaveJob={handleSaveJob}
           />
         </div>
         {width !== null && width > 1023 && selectedJob && (
           <JobDetails
             selectedJob={selectedJob}
-            onSaveJob={handleSaveJob} // Pass handleSaveJob to JobDetails
+            onSaveJob={handleSaveJob} 
           />
         )}
       </div>

@@ -160,10 +160,10 @@ const JobList: React.FC<JobListProps> = ({
                 key={index}
                 job={job}
                 index={index}
-                isSelected={selectedJob?.title === job.title}
+                isSelected={selectedJob?.id === job.id}
                 onClick={() => handleJobClick(job)}
                 showSaveJob={showSavedJobs}
-                onSaveJob={handleSaveJob}
+                onSaveJob={onSaveJob}
               />
             ))
           )}
@@ -191,7 +191,7 @@ const JobList: React.FC<JobListProps> = ({
               <JobDetails
                 selectedJob={selectedJob}
                 forceSheetOnLargeScreens={true}
-                onSaveJob={onSaveJob} // Pass onSaveJob to JobDetails
+                onSaveJob={onSaveJob}
               />
             )}
           </SheetContent>
@@ -206,7 +206,7 @@ const JobList: React.FC<JobListProps> = ({
             {selectedJob && (
               <JobDetails
                 selectedJob={selectedJob}
-                onSaveJob={onSaveJob} // Pass onSaveJob to JobDetails
+                onSaveJob={onSaveJob}
               />
             )}
           </SheetContent>
@@ -221,7 +221,7 @@ const JobList: React.FC<JobListProps> = ({
             {selectedJob && (
               <JobDetails
                 selectedJob={selectedJob}
-                onSaveJob={onSaveJob} // Pass onSaveJob to JobDetails
+                onSaveJob={onSaveJob}
               />
             )}
           </SheetContent>
