@@ -12,6 +12,8 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import useWindowWidth from "@/hooks/use-window-width";
 import { Job } from "@/types/job";
 import JobDetails from "./jobDetails";
+import { saveJob } from "@/api/candidate/saveJob";
+import { toast } from "sonner";
 
 interface JobListProps {
   jobs: Job[];
@@ -25,6 +27,7 @@ interface JobListProps {
   loading: boolean;
   forceSheetOnLargeScreens?: boolean;
   showSavedJobs?: boolean;
+  onSaveJob?: (jobId: number) => void; // Add onSaveJob prop
 }
 
 const JobsPerPage = 10;
@@ -41,6 +44,7 @@ const JobList: React.FC<JobListProps> = ({
   loading,
   forceSheetOnLargeScreens = false,
   showSavedJobs = false,
+  onSaveJob,
 }) => {
   const width = useWindowWidth();
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,6 +86,17 @@ const JobList: React.FC<JobListProps> = ({
   const handleJobClick = (job: Job) => {
     onJobSelect(job);
     setIsSheetOpen(true);
+  };
+
+  const handleSaveJob = async (jobId: number) => {
+    try {
+      const response = await saveJob(jobId);
+
+      toast.success(response.message);
+    } catch (error) {
+      console.error("Error saving job:", error);
+      toast.error("Failed to save job.");
+    }
   };
 
   return (
@@ -148,6 +163,7 @@ const JobList: React.FC<JobListProps> = ({
                 isSelected={selectedJob?.title === job.title}
                 onClick={() => handleJobClick(job)}
                 showSaveJob={showSavedJobs}
+                onSaveJob={handleSaveJob}
               />
             ))
           )}
@@ -175,6 +191,7 @@ const JobList: React.FC<JobListProps> = ({
               <JobDetails
                 selectedJob={selectedJob}
                 forceSheetOnLargeScreens={true}
+                onSaveJob={onSaveJob} // Pass onSaveJob to JobDetails
               />
             )}
           </SheetContent>
@@ -186,7 +203,12 @@ const JobList: React.FC<JobListProps> = ({
             <VisuallyHidden>
               <SheetTitle>Job Details</SheetTitle>
             </VisuallyHidden>
-            {selectedJob && <JobDetails selectedJob={selectedJob} />}
+            {selectedJob && (
+              <JobDetails
+                selectedJob={selectedJob}
+                onSaveJob={onSaveJob} // Pass onSaveJob to JobDetails
+              />
+            )}
           </SheetContent>
         ) : width !== null && width <= 640 ? (
           <SheetContent
@@ -196,7 +218,12 @@ const JobList: React.FC<JobListProps> = ({
             <VisuallyHidden>
               <SheetTitle>Job Details</SheetTitle>
             </VisuallyHidden>
-            {selectedJob && <JobDetails selectedJob={selectedJob} />}
+            {selectedJob && (
+              <JobDetails
+                selectedJob={selectedJob}
+                onSaveJob={onSaveJob} // Pass onSaveJob to JobDetails
+              />
+            )}
           </SheetContent>
         ) : null}
       </Sheet>

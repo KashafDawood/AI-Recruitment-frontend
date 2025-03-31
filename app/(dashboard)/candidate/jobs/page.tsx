@@ -1,6 +1,8 @@
 "use client";
 
 import { getAllJobs } from "@/api/candidate/getAllJobs";
+import { saveJob } from "@/api/candidate/saveJob";
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import "./scrollbar.css";
 import useWindowWidth from "@/hooks/use-window-width";
@@ -92,6 +94,16 @@ export default function FindJobs() {
     setActiveFilters({}); // Reset filters to an empty object
   };
 
+  const handleSaveJob = async (jobId: number) => {
+    try {
+      const response = await saveJob(jobId);
+      toast.success(response.message);
+    } catch (error) {
+      console.error("Error saving job:", error);
+      toast.error("Failed to save job.");
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 h-[calc(100vh-5rem)] overflow-y-hidden">
       <div className="flex gap-4 h-full">
@@ -107,11 +119,14 @@ export default function FindJobs() {
             onJobSelect={handleJobClick}
             loading={loading}
             showSavedJobs={true}
+            onSaveJob={handleSaveJob} // Pass handleSaveJob to JobList
           />
         </div>
-        {/* Right column - Job details with independent scrolling and sticky Apply button */}
         {width !== null && width > 1023 && selectedJob && (
-          <JobDetails selectedJob={selectedJob} />
+          <JobDetails
+            selectedJob={selectedJob}
+            onSaveJob={handleSaveJob} // Pass handleSaveJob to JobDetails
+          />
         )}
       </div>
     </div>
