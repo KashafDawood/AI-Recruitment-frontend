@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
-  darkMode: ["class"],
+  darkMode: ["class"], 
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -38,7 +38,7 @@ export default {
   },
   plugins: [
     tailwindcssAnimate,
-    function ({ addBase }) {
+    function ({ addBase }: { addBase: (baseStyles: Record<string, any>) => void }) {
       addBase({
         'input[type="number"]::-webkit-inner-spin-button': {
           "-webkit-appearance": "none",

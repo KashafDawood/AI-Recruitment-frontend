@@ -21,11 +21,12 @@ interface JobListProps {
   currentPage: number;
   selectedJob: Job | null;
   onPageChange: (page: number) => void;
-  onFilterChange: (filters: Record<string, string>) => void;
-  onClearFilters: () => void;
+  onFilterChange?: (filters: Record<string, string>) => void;
+  onClearFilters?: () => void;
   onJobSelect: (job: Job) => void;
   loading: boolean;
   forceSheetOnLargeScreens?: boolean;
+  includeFilters?: boolean;
   showSavedJobs?: boolean;
   onSaveJob?: (jobId: number) => void; // Add onSaveJob prop
 }
@@ -43,6 +44,7 @@ const JobList: React.FC<JobListProps> = ({
   onJobSelect,
   loading,
   forceSheetOnLargeScreens = false,
+  includeFilters = true,
   showSavedJobs = false,
   onSaveJob,
 }) => {
@@ -67,7 +69,7 @@ const JobList: React.FC<JobListProps> = ({
       [`search_${Date.now()}`]: searchTerm.toLowerCase(),
     };
     setActiveFilters(newFilters);
-    onFilterChange(newFilters);
+    onFilterChange?.(newFilters);
     setSearchTerm("");
   };
 
@@ -75,12 +77,12 @@ const JobList: React.FC<JobListProps> = ({
     const updatedFilters = { ...activeFilters };
     delete updatedFilters[filterKey];
     setActiveFilters(updatedFilters);
-    onFilterChange(updatedFilters);
+    onFilterChange?.(updatedFilters);
   };
 
   const clearAllFilters = () => {
     setActiveFilters({});
-    onClearFilters();
+    onClearFilters?.();
   };
 
   const handleJobClick = (job: Job) => {
@@ -101,6 +103,7 @@ const JobList: React.FC<JobListProps> = ({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto custom-scrollbar">
+      {includeFilters && 
       <div className="flex gap-4 mb-4">
         <div className="relative flex-grow">
           <Input
@@ -117,8 +120,7 @@ const JobList: React.FC<JobListProps> = ({
         >
           Filter
         </Button>
-      </div>
-
+      </div> }
       {Object.keys(activeFilters).length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4 items-center">
           {Object.entries(activeFilters).map(([key, value], index) => (
@@ -144,12 +146,12 @@ const JobList: React.FC<JobListProps> = ({
       )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-        <div className="sticky top-0 bg-white z-20 py-2 mb-2 flex justify-between items-center dark:bg-[#1c1b22]">
+        {includeFilters && <div className="sticky top-0 bg-white z-20 py-2 mb-2 flex justify-between items-center dark:bg-[#1c1b22]">
           <span className="text-sm text-gray-300">Sort by:</span>
           <button className="text-sm font-medium flex items-center">
             Popular Jobs <ChevronDown className="w-4 h-4 ml-1" />
           </button>
-        </div>
+        </div> }
 
         <div className="space-y-4 pb-4">
           {loading ? (
