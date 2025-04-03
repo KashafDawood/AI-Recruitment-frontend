@@ -35,11 +35,12 @@ interface JobListProps {
   currentPage: number;
   selectedJob: Job | null;
   onPageChange: (page: number) => void;
-  onFilterChange: (filters: Record<string, string>) => void;
-  onClearFilters: () => void;
+  onFilterChange?: (filters: Record<string, string>) => void;
+  onClearFilters?: () => void;
   onJobSelect: (job: Job) => void;
   loading: boolean;
   forceSheetOnLargeScreens?: boolean;
+  includeFilters?: boolean;
   showSavedJobs?: boolean;
   onSaveJob?: (jobId: number) => void; // Add onSaveJob prop
 }
@@ -57,6 +58,7 @@ const JobList: React.FC<JobListProps> = ({
   onJobSelect,
   loading,
   forceSheetOnLargeScreens = false,
+  includeFilters = true,
   showSavedJobs = false,
   onSaveJob,
 }) => {
@@ -108,7 +110,7 @@ const JobList: React.FC<JobListProps> = ({
       search: searchTerm.trim(),
     };
     setActiveFilters(newFilters);
-    onFilterChange(newFilters);
+    onFilterChange?.(newFilters);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -120,7 +122,7 @@ const JobList: React.FC<JobListProps> = ({
   const applyFilter = (type: string, value: string) => {
     const newFilters = { ...activeFilters, [type]: value };
     setActiveFilters(newFilters);
-    onFilterChange(newFilters);
+    onFilterChange?.(newFilters);
     setIsFilterDialogOpen(false);
   };
 
@@ -128,20 +130,20 @@ const JobList: React.FC<JobListProps> = ({
     const updatedFilters = { ...activeFilters };
     delete updatedFilters[filterKey];
     setActiveFilters(updatedFilters);
-    onFilterChange(updatedFilters);
+    onFilterChange?.(updatedFilters);
   };
 
   const clearAllFilters = () => {
     setActiveFilters({});
     setSearchTerm("");
-    onClearFilters();
+    onClearFilters?.();
   };
 
   const handleSortChange = (value: string) => {
     setSortOption(value);
     const newFilters = { ...activeFilters, sort_by: value };
     setActiveFilters(newFilters);
-    onFilterChange(newFilters);
+    onFilterChange?.(newFilters);
   };
 
   const handleJobClick = (job: Job) => {
@@ -177,6 +179,7 @@ const JobList: React.FC<JobListProps> = ({
     <div className="flex flex-col h-full">
       <div className="sticky top-0 z-10 bg-background pb-4">
         {/* Search and Filter Controls */}
+        {includeFilters && 
         <div className="flex gap-2 mb-4">
           <div className="relative flex-grow">
             <Input
@@ -311,9 +314,9 @@ const JobList: React.FC<JobListProps> = ({
             </DialogContent>
           </Dialog>
         </div>
-
+}
         {/* Active Filters Display */}
-        {Object.keys(activeFilters).length > 0 && (
+        {Object.keys(activeFilters).length > 0 && includeFilters && (
           <div className="flex flex-wrap gap-2 mb-4 items-center">
             {Object.entries(activeFilters).map(([key, value]) => {
               if (key === "sort_by") return null;
