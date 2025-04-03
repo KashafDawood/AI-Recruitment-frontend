@@ -6,14 +6,23 @@ import { Job } from "@/types/job";
 import JobList from "@/components/jobs/JobList";
 import { toast } from "sonner";
 import { saveJob } from "@/api/candidate/saveJob";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export default function SavedJobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalJobs, setTotalJobs] = useState(0);
-    const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-    const JobsPerPage = 10;
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const JobsPerPage = 10;
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -21,7 +30,7 @@ export default function SavedJobs() {
         setLoading(true);
         const res = await getSavedJobs(currentPage, JobsPerPage);
         console.log(res);
-        setJobs(res.results || []); 
+        setJobs(res.results || []);
         setTotalJobs(res.count || 0);
       } catch (error) {
         console.error("Error fetching saved jobs:", error);
@@ -29,40 +38,28 @@ export default function SavedJobs() {
       } finally {
         setLoading(false);
       }
-      
     };
     fetchSavedJobs();
   }, [currentPage]);
 
   const handleJobClick = (job: Job) => {
-      console.log("Job clicked in OpeningsCard:", job); // Debugging log
-      setSelectedJob(job);
-    };
+    console.log("Job clicked in OpeningsCard:", job); // Debugging log
+    setSelectedJob(job);
+  };
 
   const handleSaveJob = async (jobId: number) => {
-      try {
-        const response = await saveJob(jobId);
-  
-        // Update the saved state for the job in the jobs list
-        setJobs((prevJobs) =>
-          prevJobs.map((job) =>
-            job.id === jobId ? { ...job, is_saved: !job.is_saved } : job
-          )
-        );
-  
-        // Update the saved state for the selected job
-        setSelectedJob((prevSelectedJob) =>
-          prevSelectedJob && prevSelectedJob.id === jobId
-            ? { ...prevSelectedJob, is_saved: !prevSelectedJob.is_saved }
-            : prevSelectedJob
-        );
-  
-        toast.success(response.message);
-      } catch (error) {
-        console.error("Error saving job:", error);
-        toast.error("Failed to save job.");
-      }
-    };
+    try {
+      const response = await saveJob(jobId);
+
+      // Remove the unsaved job from the list
+      setJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
+
+      toast.success(response.message);
+    } catch (error) {
+      console.error("Error saving job:", error);
+      toast.error("Failed to save job.");
+    }
+  };
 
   return (
     <div>
@@ -87,8 +84,24 @@ export default function SavedJobs() {
           includeFilters={false} // Disable filters for saved jobs
           forceSheetOnLargeScreens={true} // Enable sheet for large screens
         />
-      </div>
-      
+      </div>  
+      <Dialog>
+        <DialogTrigger className="ml-6 text-blue-900 dark:text-blue-500 font-bold">Not seeing a Job?</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-bold">Not seeing a job?</DialogTitle>
+            <DialogDescription>
+              <div className="mt-4 border-t pt-8">
+                To keep things tidy, we remove saved jobs that are older than 6 months.
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-sm mt-2">Have a question?  
+            <Link href="/contact" className="underline underline-offset-4">Contact us</Link> 
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

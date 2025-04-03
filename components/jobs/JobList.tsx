@@ -165,7 +165,7 @@ const JobList: React.FC<JobListProps> = ({
                 isSelected={selectedJob?.id === job.id}
                 onClick={() => handleJobClick(job)}
                 showSaveJob={showSavedJobs}
-                onSaveJob={onSaveJob}
+                onSaveJob={onSaveJob} 
               />
             ))
           )}
