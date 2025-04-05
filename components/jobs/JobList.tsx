@@ -12,8 +12,6 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import useWindowWidth from "@/hooks/use-window-width";
 import { Job } from "@/types/job";
 import JobDetails from "./jobDetails";
-import { saveJob } from "@/api/candidate/saveJob";
-import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -164,157 +162,146 @@ const JobList: React.FC<JobListProps> = ({
     }
   };
 
-  const handleSaveJob = async (jobId: number) => {
-    try {
-      const response = await saveJob(jobId);
-
-      toast.success(response.message);
-    } catch (error) {
-      console.error("Error saving job:", error);
-      toast.error("Failed to save job.");
-    }
-  };
-
   return (
     <div className="flex flex-col h-full">
       <div className="sticky top-0 z-10 bg-background pb-4">
         {/* Search and Filter Controls */}
-        {includeFilters && 
-        <div className="flex gap-2 mb-4">
-          <div className="relative flex-grow">
-            <Input
-              type="text"
-              placeholder="Search jobs, companies, or locations"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              onKeyDown={handleKeyPress}
-              className="w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+        {includeFilters && (
+          <div className="flex gap-2 mb-4">
+            <div className="relative flex-grow">
+              <Input
+                type="text"
+                placeholder="Search jobs, companies, or locations"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyPress}
+                className="w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            </div>
+
+            <Button
+              variant="default"
+              className="px-3"
+              onClick={applySearch}
+              aria-label="Search jobs"
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+
+            <Dialog
+              open={isFilterDialogOpen}
+              onOpenChange={setIsFilterDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="px-3 flex items-center gap-1"
+                  aria-label="Filter jobs"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  <span className="hidden sm:inline">Filters</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Filter Jobs</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Job Type</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {jobTypes.map((type) => (
+                        <Badge
+                          key={type}
+                          variant={
+                            activeFilters.job_type === type
+                              ? "default"
+                              : "outline"
+                          }
+                          className="cursor-pointer capitalize"
+                          onClick={() => applyFilter("job_type", type)}
+                        >
+                          {type}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Location Type</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {locationTypes.map((type) => (
+                        <Badge
+                          key={type}
+                          variant={
+                            activeFilters.job_location_type === type
+                              ? "default"
+                              : "outline"
+                          }
+                          className="cursor-pointer capitalize"
+                          onClick={() => applyFilter("job_location_type", type)}
+                        >
+                          {type}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Experience Level</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {experienceLevels.map((level) => (
+                        <Badge
+                          key={level}
+                          variant={
+                            activeFilters.experience_level === level
+                              ? "default"
+                              : "outline"
+                          }
+                          className="cursor-pointer capitalize"
+                          onClick={() => applyFilter("experience_level", level)}
+                        >
+                          {level}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Date Posted</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {timeFilters.map((filter) => (
+                        <Badge
+                          key={filter.value}
+                          variant={
+                            activeFilters.time_published === filter.value
+                              ? "default"
+                              : "outline"
+                          }
+                          className="cursor-pointer"
+                          onClick={() =>
+                            applyFilter("time_published", filter.value)
+                          }
+                        >
+                          {filter.label}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <Button variant="outline" onClick={clearAllFilters}>
+                    Clear All
+                  </Button>
+                  <Button onClick={() => setIsFilterDialogOpen(false)}>
+                    Apply Filters
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
-
-          <Button
-            variant="default"
-            className="px-3"
-            onClick={applySearch}
-            aria-label="Search jobs"
-          >
-            <Search className="w-4 h-4" />
-          </Button>
-
-          <Dialog
-            open={isFilterDialogOpen}
-            onOpenChange={setIsFilterDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="px-3 flex items-center gap-1"
-                aria-label="Filter jobs"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                <span className="hidden sm:inline">Filters</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Filter Jobs</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Job Type</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {jobTypes.map((type) => (
-                      <Badge
-                        key={type}
-                        variant={
-                          activeFilters.job_type === type
-                            ? "default"
-                            : "outline"
-                        }
-                        className="cursor-pointer capitalize"
-                        onClick={() => applyFilter("job_type", type)}
-                      >
-                        {type}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Location Type</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {locationTypes.map((type) => (
-                      <Badge
-                        key={type}
-                        variant={
-                          activeFilters.job_location_type === type
-                            ? "default"
-                            : "outline"
-                        }
-                        className="cursor-pointer capitalize"
-                        onClick={() => applyFilter("job_location_type", type)}
-                      >
-                        {type}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Experience Level</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {experienceLevels.map((level) => (
-                      <Badge
-                        key={level}
-                        variant={
-                          activeFilters.experience_level === level
-                            ? "default"
-                            : "outline"
-                        }
-                        className="cursor-pointer capitalize"
-                        onClick={() => applyFilter("experience_level", level)}
-                      >
-                        {level}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Date Posted</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {timeFilters.map((filter) => (
-                      <Badge
-                        key={filter.value}
-                        variant={
-                          activeFilters.time_published === filter.value
-                            ? "default"
-                            : "outline"
-                        }
-                        className="cursor-pointer"
-                        onClick={() =>
-                          applyFilter("time_published", filter.value)
-                        }
-                      >
-                        {filter.label}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={clearAllFilters}>
-                  Clear All
-                </Button>
-                <Button onClick={() => setIsFilterDialogOpen(false)}>
-                  Apply Filters
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-}
+        )}
         {/* Active Filters Display */}
         {Object.keys(activeFilters).length > 0 && includeFilters && (
           <div className="flex flex-wrap gap-2 mb-4 items-center">
@@ -354,23 +341,25 @@ const JobList: React.FC<JobListProps> = ({
         )}
 
         {/* Sorting Control */}
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-sm text-muted-foreground">
-            {loading ? "Loading..." : `${totalJobs} jobs found`}
-          </span>
-          <Select value={sortOption} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              {sortOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {includeFilters && (
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-sm text-muted-foreground">
+              {loading ? "Loading..." : `${totalJobs} jobs found`}
+            </span>
+            <Select value={sortOption} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Job Listings */}
@@ -400,7 +389,6 @@ const JobList: React.FC<JobListProps> = ({
               onClick={() => handleJobClick(job)}
               showSaveJob={showSavedJobs}
               onSaveJob={onSaveJob}
-
             />
           ))
         )}
