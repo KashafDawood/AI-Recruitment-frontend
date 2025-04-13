@@ -3,10 +3,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "./app/_lib/session";
 
 const protectedRoutes = {
-  candidate: ["/candidate", "/candidate/profile", "/candidate/jobs", "/candidate/savedjobs"],
-  employer: ["/employer", "/employer/profile"],
+  candidate: [
+    "/candidate",
+    "/candidate/profile",
+    "/candidate/jobs",
+    "/candidate/savedjobs",
+  ],
+  employer: [
+    "/employer",
+    "/employer/profile",
+    "/employer/create-job",
+    "/employer/my-joblistings",
+  ],
 };
-const publicRoutes = ["/login", "/signup"]; // signup is already included here
+const publicRoutes = ["/login", "/signup"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;

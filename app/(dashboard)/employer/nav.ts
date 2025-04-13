@@ -1,17 +1,17 @@
 "use client";
 
-import { Briefcase, BookmarkCheck, CheckCircle } from "lucide-react";
+import { CheckCircle, PlusCircle, LayoutList } from "lucide-react";
 
 export const navItems = [
   {
-    title: "Jobs",
-    url: "/employer/jobs",
-    icon: Briefcase,
+    title: "Create Job",
+    url: "/employer/create-job",
+    icon: PlusCircle,
   },
   {
-    title: "candidate",
-    url: "/employer/candidates",
-    icon: BookmarkCheck,
+    title: "My Job Listings",
+    url: "/employer/my-joblistings",
+    icon: LayoutList,
   },
   {
     title: "Add a Blog",
