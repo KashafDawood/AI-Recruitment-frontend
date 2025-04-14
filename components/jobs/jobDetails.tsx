@@ -10,11 +10,12 @@ import {
   DollarSign,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Job } from "@/types/job";
+import { Employer, Job } from "@/types/job";
 import ProfileCard from "@/components/jobs/ProfileCard";
 import { applyForJob } from "@/api/candidate/ApplyForJob";
 import { toast } from "sonner";
 import SelectResume from "../custom/selectResume";
+import { useUserWithLoading } from "@/hooks/useUser";
 
 interface JobDetailsProps {
   selectedJob: Job;
@@ -22,6 +23,7 @@ interface JobDetailsProps {
   onSaveJob?: (jobId: number) => void;
   onJobApplied?: (jobId: number) => void;
   className?: string;
+  isPreview?: boolean;
 }
 
 const JobDetails: React.FC<JobDetailsProps> = ({
@@ -30,10 +32,12 @@ const JobDetails: React.FC<JobDetailsProps> = ({
   onSaveJob,
   onJobApplied,
   className,
+  isPreview = false,
 }) => {
   const [isApplying, setIsApplying] = useState(false);
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [jobData, setJobData] = useState<Job>(selectedJob);
+  const { user } = useUserWithLoading();
 
   // Update job data when selectedJob changes
   useEffect(() => {
@@ -157,9 +161,13 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                     }
                   }}
                 >
-                  <BookmarkIcon className={`h-5 w-5 ${
-                    selectedJob.is_saved ? "text-white dark:text-white" : "text-blue-600 dark:text-blue-400"
-                  }`} />
+                  <BookmarkIcon
+                    className={`h-5 w-5 ${
+                      selectedJob.is_saved
+                        ? "text-white dark:text-white"
+                        : "text-blue-600 dark:text-blue-400"
+                    }`}
+                  />
                 </Button>
                 <Button
                   variant="outline"
@@ -207,95 +215,6 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                 </div>
               </div>
             </div>
-
-            {/* Improved applicants summary section */}
-            {/* <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800/50 dark:to-indigo-900/20 rounded-xl p-5 mb-8 border border-blue-100 dark:border-gray-700 shadow-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                  Applicants Summary
-                </h3>
-              </div>
-
-              <div className="flex items-center gap-6">
-                <div className="relative w-24 h-24">
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold dark:text-white">
-                      67
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      applicants
-                    </span>
-                  </div>
-                  <svg
-                    viewBox="0 0 100 100"
-                    className="w-full h-full -rotate-90"
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="transparent"
-                      stroke="#e0e0e0"
-                      strokeWidth="12"
-                      className="dark:stroke-gray-700"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="transparent"
-                      stroke="#4f46e5"
-                      strokeWidth="12"
-                      strokeDasharray="251.2"
-                      strokeDashoffset="75"
-                      className="dark:stroke-indigo-500 transition-all duration-1000 ease-out"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="transparent"
-                      stroke="#3b82f6"
-                      strokeWidth="12"
-                      strokeDasharray="251.2"
-                      strokeDashoffset="175"
-                      className="dark:stroke-blue-500 transition-all duration-1000 ease-out"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      fill="transparent"
-                      stroke="#ef4444"
-                      strokeWidth="12"
-                      strokeDasharray="251.2"
-                      strokeDashoffset="240"
-                      className="dark:stroke-red-500 transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-grow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                    <span className="text-sm font-medium dark:text-blue-300 text-blue-700">
-                      32 New Applicants
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-500"></span>
-                    <span className="text-sm font-medium dark:text-indigo-300 text-indigo-700">
-                      24 Approved
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                    <span className="text-sm font-medium dark:text-red-300 text-red-700">
-                      11 Rejected
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div> */}
 
             {/* Section headers with visual separators */}
             <div className="mb-6">
@@ -391,7 +310,13 @@ const JobDetails: React.FC<JobDetailsProps> = ({
                   </h3>
                 </div>
                 <div>
-                  <ProfileCard employer={jobData.employer} />
+                  {isPreview && user ? (
+                    <ProfileCard employer={user as Employer} />
+                  ) : (
+                    jobData.employer && (
+                      <ProfileCard employer={jobData.employer} />
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -399,45 +324,47 @@ const JobDetails: React.FC<JobDetailsProps> = ({
         </div>
       )}
 
-      {/* Enhanced sticky Apply Job button */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-lg bg-opacity-95 dark:bg-opacity-95 backdrop-blur-sm">
-        {jobData.job_status.toLowerCase() === "closed" ? (
-          <div className="flex items-center justify-center gap-2 py-4 px-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-            <AlertCircle className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              Position closed for applications
-            </span>
-          </div>
-        ) : jobData.has_applied ? (
-          <div className="flex flex-col items-center justify-center gap-1 py-4 px-5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-            <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-800/50 flex items-center justify-center">
-                <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-              </div>
-              <span className="font-medium text-green-700 dark:text-green-400">
-                Already Applied
+      {/* Hide apply button if in preview mode */}
+      {!isPreview && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-lg bg-opacity-95 dark:bg-opacity-95 backdrop-blur-sm">
+          {jobData.job_status.toLowerCase() === "closed" ? (
+            <div className="flex items-center justify-center gap-2 py-4 px-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <AlertCircle className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <span className="font-medium text-gray-700 dark:text-gray-300">
+                Position closed for applications
               </span>
             </div>
-            <span className="text-xs text-green-600 dark:text-green-500 mt-1">
-              Your application is under review
-            </span>
-          </div>
-        ) : isApplying ? (
-          <Button
-            onClick={applyJob}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
-          >
-            Submit Application
-          </Button>
-        ) : (
-          <Button
-            onClick={triggerSelectResume}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
-          >
-            Apply for This Position
-          </Button>
-        )}
-      </div>
+          ) : jobData.has_applied ? (
+            <div className="flex flex-col items-center justify-center gap-1 py-4 px-5 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-800/50 flex items-center justify-center">
+                  <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                </div>
+                <span className="font-medium text-green-700 dark:text-green-400">
+                  Already Applied
+                </span>
+              </div>
+              <span className="text-xs text-green-600 dark:text-green-500 mt-1">
+                Your application is under review
+              </span>
+            </div>
+          ) : isApplying ? (
+            <Button
+              onClick={applyJob}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
+            >
+              Submit Application
+            </Button>
+          ) : (
+            <Button
+              onClick={triggerSelectResume}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
+            >
+              Apply for This Position
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 };
