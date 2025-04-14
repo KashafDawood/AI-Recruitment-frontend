@@ -58,7 +58,7 @@ export const createJob = async (_: unknown, formData: FormData) => {
 
   try {
     const response = await axiosInstance.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/jobs/publish/`,
+      `${process.env.NEXT_PUBLIC_URL}/api/jobs/publish-job-post/`,
       result.data
     );
 

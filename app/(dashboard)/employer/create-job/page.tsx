@@ -6,13 +6,26 @@ import { createJob } from "@/api/jobs/createJob";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import JobDetails from "@/components/jobs/jobDetails";
-import { Job } from "@/types/job";
+import JobPreview from "@/components/jobs/JobPreview";
+import { JobPreviewData } from "@/types/job";
+import { useUserWithLoading } from "@/hooks/useUser";
 
 const CreateJob: React.FC = () => {
   const [state, formAction] = useActionState(createJob, undefined);
   const router = useRouter();
-  const [previewJob, setPreviewJob] = useState<Job | null>(null);
+  const [formValues, setFormValues] = useState<JobPreviewData>({});
+  const { user } = useUserWithLoading();
+
+  // Initialize the form with user's company data if available
+  useEffect(() => {
+    if (user && user.company_name) {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        company: user.company_name,
+        industry: user.industry || "",
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (state?.message) {
@@ -33,106 +46,37 @@ const CreateJob: React.FC = () => {
   }, [state, router]);
 
   const handleAIGeneration = () => {
-    // Generate a sample job preview
-    const sampleJob: Job = {
-      id: 999,
-      title: "AI Generated Job Title",
-      company: "Your Company",
-      location: "Remote/Onsite",
-      job_type: "Full-time",
-      job_status: "Active",
-      experience_required: "3-5 years",
-      salary: "$80,000 - $120,000",
-      description:
-        "This is an AI-generated job description that showcases what your job posting could look like. You can edit all sections in the form.",
-      required_qualifications: [
-        "Bachelor's degree in relevant field",
-        "Experience with modern technologies",
-        "Strong communication skills",
-      ],
-      preferred_qualifications: [
-        "Master's degree",
-        "Industry certifications",
-        "Team leadership experience",
-      ],
-      responsibilities: [
-        "Design and develop scalable solutions",
-        "Collaborate with cross-functional teams",
-        "Troubleshoot and debug issues",
-      ],
-      benefits: [
-        "Competitive salary and bonus",
-        "Remote work flexibility",
-        "Health insurance and retirement plans",
-      ],
-      employer: {
-        company_name: "Your Company",
-        logo: "/default-employer.png",
-        company_size: "50-200 employees",
-        industry: "Technology",
-        website: "https://yourcompany.com",
-        description:
-          "A forward-thinking technology company focused on innovation.",
-      },
-      has_applied: false,
-      is_saved: false,
-    };
+    // AI generation logic will go here
+  };
 
-    setPreviewJob(sampleJob);
-    toast.info(
-      "AI job preview generated! You can now see a sample of how your job post will appear."
-    );
+  const handleFormChange = (values: Record<string, unknown>) => {
+    setFormValues(values as JobPreviewData);
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-full">
       <div className="flex-1 overflow-y-auto">
-        <div className="flex justify-between items-center p-4">
-          <h1 className="text-2xl font-bold mb-4">Create Job</h1>
+        <div className="flex justify-between items-center h-[82px] p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-10">
+          <h1 className="text-2xl font-bold">Create Job</h1>
           <Button
-            className="gradient-button"
-            variant="outline"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
             onClick={handleAIGeneration}
           >
-            Create using AI
+            Generate with AI
           </Button>
         </div>
-        <div>
-          <CreateJobForm formAction={formAction} state={state} />
+        <div className="p-4">
+          <CreateJobForm
+            formAction={formAction}
+            state={state}
+            onFormChange={handleFormChange}
+            initialValues={formValues}
+          />
         </div>
       </div>
 
       <div className="hidden md:block lg:w-1/2 border-l dark:border-gray-700 overflow-hidden">
-        {previewJob ? (
-          <div className="h-full">
-            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 border-b dark:border-gray-700">
-              <h2 className="text-xl font-medium">Job Preview</h2>
-              <p className="text-sm text-gray-500">
-                This is how your job will appear to candidates
-              </p>
-            </div>
-            <JobDetails
-              selectedJob={previewJob}
-              className="h-full border-none"
-              forceSheetOnLargeScreens={true}
-            />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full p-6 bg-gray-50 dark:bg-gray-800/20">
-            <div className="text-center max-w-md">
-              <h3 className="text-xl font-medium mb-2">Job Preview</h3>
-              <p className="text-gray-500 mb-6">
-                Click &quot;Create using AI&quot; to generate a preview of your
-                job posting
-              </p>
-              <div className="border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-10 bg-white dark:bg-gray-800/30">
-                <p className="text-gray-400 dark:text-gray-500">
-                  Preview will appear here
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        <JobPreview formData={formValues} />
       </div>
     </div>
   );

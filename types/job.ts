@@ -9,6 +9,24 @@ export interface Employer {
   company_size: string;
 }
 
+// Additional type specifically for job preview data from form
+export interface JobPreviewData {
+  title?: string;
+  company?: string;
+  location?: string;
+  job_type?: string;
+  experience_level?: string;
+  salary?: string;
+  description?: string;
+  required_qualifications?: string;
+  preferred_qualifications?: string;
+  responsibilities?: string;
+  benefits?: string;
+  industry?: string;
+  job_location_type?: string;
+  employer?: Employer;
+}
+
 export interface Job {
   id: number;
   title: string;
