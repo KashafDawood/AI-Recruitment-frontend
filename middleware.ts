@@ -14,6 +14,7 @@ const protectedRoutes = {
     "/employer/profile",
     "/employer/create-job",
     "/employer/my-joblistings",
+    "/employer/my-joblistings/job-detail",	
   ],
 };
 const publicRoutes = ["/login", "/signup"];
