@@ -35,7 +35,7 @@ const JobPreview: React.FC<JobPreviewProps> = ({
       location: data.location || "Location",
       job_type: data.job_type || "Full-time",
       job_location_type: data.job_location_type || "On-site",
-      job_status: "Active",
+      job_status: data.job_status || "Open",
       experience_required: data.experience_level || "Not specified",
       salary: data.salary || "Not specified",
       description: data.description || "Job description will appear here.",

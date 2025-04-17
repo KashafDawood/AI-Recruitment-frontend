@@ -10,13 +10,11 @@ const createJobSchema = z.object({
   experience: z.string().min(1, { message: "Experience is required" }),
   experience_level: z.enum(["entry", "mid", "senior"]).optional(),
   salary: z.string().optional(),
-  description: z
-    .array(z.string())
-    .min(1, { message: "Description is required" }),
-  responsibilities: z.array(z.string()).optional(),
-  required_qualifications: z.array(z.string()).optional(),
-  preferred_qualifications: z.array(z.string()).optional(),
-  benefits: z.array(z.string()).optional(),
+  description: z.string().min(1, { message: "Description is required" }),
+  responsibilities: z.string().optional(),
+  required_qualifications: z.string().optional(),
+  preferred_qualifications: z.string().optional(),
+  benefits: z.string().optional(),
   job_type: z
     .enum(["full time", "part time", "contract", "temporary", "internship"])
     .optional(),
@@ -24,30 +22,34 @@ const createJobSchema = z.object({
   job_status: z.enum(["open", "closed", "draft"]).optional(),
 });
 
+// Helper function to convert multi-line string to array
+const textToArray = (text: string | null | undefined): string[] => {
+  if (!text) return [];
+  return text.split("\n").filter((line) => line.trim() !== "");
+};
+
 export const createJob = async (_: unknown, formData: FormData) => {
   // Convert form data into the expected format
   const rawData = Object.fromEntries(formData.entries());
 
-  // Handle array fields
-  const processedData: Record<string, string | string[]> = {
-    ...rawData,
-    description: formData.getAll("description").map((value) => String(value)),
-  };
+  // Process data to ensure proper types
+  const processedData: Record<string, any> = { ...rawData };
 
-  // Process optional arrays if they exist
-  [
+  // Format multi-line fields for the backend, which expects arrays
+  const arrayFields = [
     "responsibilities",
     "required_qualifications",
     "preferred_qualifications",
     "benefits",
-  ].forEach((field) => {
-    if (formData.has(field)) {
-      processedData[field] = formData
-        .getAll(field)
-        .map((value) => String(value));
+  ];
+
+  arrayFields.forEach((field) => {
+    if (field in processedData && typeof processedData[field] === "string") {
+      processedData[field] = textToArray(processedData[field]);
     }
   });
 
+  // Validate the data
   const result = createJobSchema.safeParse(processedData);
 
   if (!result.success) {
@@ -57,9 +59,21 @@ export const createJob = async (_: unknown, formData: FormData) => {
   }
 
   try {
+    // Convert string fields to arrays before sending to the API
+    const dataToSend = {
+      ...result.data,
+      description: textToArray(result.data.description),
+      responsibilities: textToArray(result.data.responsibilities),
+      required_qualifications: textToArray(result.data.required_qualifications),
+      preferred_qualifications: textToArray(
+        result.data.preferred_qualifications
+      ),
+      benefits: textToArray(result.data.benefits),
+    };
+
     const response = await axiosInstance.post(
       `${process.env.NEXT_PUBLIC_URL}/api/jobs/publish-job-post/`,
-      result.data
+      dataToSend
     );
 
     if (response.status === 201) {

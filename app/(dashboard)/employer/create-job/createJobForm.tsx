@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Job } from "@/types/job";
-import { PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface CreateJobFormProps {
@@ -57,17 +56,6 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
   const [formValues, setFormValues] = useState<Record<string, unknown>>({
     ...initialValues,
   });
-  const [descriptionItems, setDescriptionItems] = useState<string[]>([""]);
-  const [responsibilityItems, setResponsibilityItems] = useState<string[]>([
-    "",
-  ]);
-  const [requiredQualifications, setRequiredQualifications] = useState<
-    string[]
-  >([""]);
-  const [preferredQualifications, setPreferredQualifications] = useState<
-    string[]
-  >([""]);
-  const [benefitItems, setBenefitItems] = useState<string[]>([""]);
 
   // Initialize form values from initialValues
   useEffect(() => {
@@ -85,53 +73,20 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
     if (onFormChange) {
       const formattedValues = { ...newValues };
 
-      // Convert arrays for preview formatting
-      if (Array.isArray(value)) {
-        // For preview we keep the arrays as arrays
-        formattedValues[name] = value.filter((item) => item.trim() !== "");
+      // For textarea fields, convert newline-separated text to arrays for the preview
+      if (
+        name === "responsibilities" ||
+        name === "required_qualifications" ||
+        name === "preferred_qualifications" ||
+        name === "benefits"
+      ) {
+        if (typeof value === "string") {
+          const lines = value.split("\n").filter((line) => line.trim() !== "");
+          formattedValues[name] = lines;
+        }
       }
 
       onFormChange(formattedValues);
-    }
-  };
-
-  // Helper function to handle array field updates
-  const updateArrayField = (
-    index: number,
-    value: string,
-    items: string[],
-    setItems: React.Dispatch<React.SetStateAction<string[]>>,
-    fieldName: string
-  ) => {
-    const newItems = [...items];
-    newItems[index] = value;
-    setItems(newItems);
-    updateFormValues(fieldName, newItems);
-  };
-
-  // Helper function to add new item to arrays
-  const addArrayItem = (
-    items: string[],
-    setItems: React.Dispatch<React.SetStateAction<string[]>>,
-    fieldName: string
-  ) => {
-    const newItems = [...items, ""];
-    setItems(newItems);
-    updateFormValues(fieldName, newItems);
-  };
-
-  // Helper function to remove item from arrays
-  const removeArrayItem = (
-    index: number,
-    items: string[],
-    setItems: React.Dispatch<React.SetStateAction<string[]>>,
-    fieldName: string
-  ) => {
-    if (items.length > 1) {
-      const newItems = [...items];
-      newItems.splice(index, 1);
-      setItems(newItems);
-      updateFormValues(fieldName, newItems);
     }
   };
 
@@ -146,6 +101,12 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
   // Handle select changes
   const handleSelectChange = (name: string, value: string) => {
     updateFormValues(name, value);
+  };
+
+  // Helper function to convert array to multi-line string
+  const arrayToMultilineString = (arr: string[] | undefined): string => {
+    if (!arr) return "";
+    return arr.join("\n");
   };
 
   return (
@@ -260,6 +221,37 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
               </div>
 
               <div className="space-y-2">
+                <Label
+                  htmlFor="experience_level"
+                  className="text-sm font-medium"
+                >
+                  Experience Level
+                </Label>
+                <Select
+                  name="experience_level"
+                  value={(formValues.experience_level as string) || "entry"}
+                  onValueChange={(value) =>
+                    handleSelectChange("experience_level", value)
+                  }
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entry">Entry Level</SelectItem>
+                    <SelectItem value="mid">Mid Level</SelectItem>
+                    <SelectItem value="senior">Senior Level</SelectItem>
+                    <SelectItem value="executive">Executive Level</SelectItem>
+                  </SelectContent>
+                </Select>
+                {state?.errors?.experience_level && (
+                  <p className="text-red-500 text-sm">
+                    {state.errors.experience_level}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="job_type" className="text-sm font-medium">
                   Job Type
                 </Label>
@@ -287,7 +279,9 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   </p>
                 )}
               </div>
+            </div>
 
+            <div className="grid md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="job_location_type"
@@ -317,6 +311,33 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   </p>
                 )}
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="job_status" className="text-sm font-medium">
+                  Job Status
+                </Label>
+                <Select
+                  name="job_status"
+                  value={(formValues.job_status as string) || "open"}
+                  onValueChange={(value) =>
+                    handleSelectChange("job_status", value)
+                  }
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="open">Open</SelectItem>
+                    <SelectItem value="closed">Closed</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
+                  </SelectContent>
+                </Select>
+                {state?.errors?.job_status && (
+                  <p className="text-red-500 text-sm">
+                    {state.errors.job_status}
+                  </p>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -334,62 +355,14 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   Provide a detailed description of the role
                 </span>
               </Label>
-              {descriptionItems.map((item, index) => (
-                <div key={index} className="flex gap-3">
-                  <Textarea
-                    name="description"
-                    placeholder={`Enter job description details...`}
-                    value={item}
-                    onChange={(e) =>
-                      updateArrayField(
-                        index,
-                        e.target.value,
-                        descriptionItems,
-                        setDescriptionItems,
-                        "description"
-                      )
-                    }
-                    className="min-h-[100px] flex-grow"
-                    required={index === 0}
-                  />
-                  <div className="flex flex-col gap-2 justify-start">
-                    {descriptionItems.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          removeArrayItem(
-                            index,
-                            descriptionItems,
-                            setDescriptionItems,
-                            "description"
-                          )
-                        }
-                        className="h-9 w-9 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  addArrayItem(
-                    descriptionItems,
-                    setDescriptionItems,
-                    "description"
-                  )
-                }
-                className="mt-2 text-blue-600 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Description Paragraph
-              </Button>
+              <Textarea
+                name="description"
+                placeholder="Enter job description details..."
+                value={formValues.description || ""}
+                onChange={handleInputChange}
+                className="min-h-[150px]"
+                required
+              />
               {state?.errors?.description && (
                 <p className="text-red-500 text-sm">
                   {state.errors.description}
@@ -401,237 +374,122 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
 
         {/* Requirements and Responsibilities */}
         <Card className="w-full p-6">
-          <h2 className="text-xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
+          <h2 className="text-xl font-semibold mb-6 text-blue-600 dark:text-blue-400">
             Requirements & Responsibilities
           </h2>
+
           <CardContent className="p-0 space-y-8">
+            {/* Requirements Section */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Requirements</h3>
+
+              {/* Required Qualifications Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-baseline">
+                  <Label className="text-sm font-medium">
+                    Required Qualifications
+                  </Label>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Enter each qualification on a new line
+                  </span>
+                </div>
+
+                <Textarea
+                  name="required_qualifications"
+                  placeholder="• Bachelor's degree in Computer Science or related field
+• 3+ years of experience in web development
+• Proficiency in JavaScript and React"
+                  value={
+                    typeof formValues.required_qualifications === "string"
+                      ? formValues.required_qualifications
+                      : arrayToMultilineString(
+                          formValues.required_qualifications as
+                            | string[]
+                            | undefined
+                        )
+                  }
+                  onChange={handleInputChange}
+                  className="min-h-[150px]"
+                />
+                {state?.errors?.required_qualifications && (
+                  <p className="text-red-500 text-sm">
+                    {state.errors.required_qualifications}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-4 mt-6">
+                <div className="flex justify-between items-baseline">
+                  <Label className="text-sm font-medium">
+                    Preferred Qualifications
+                  </Label>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Enter each qualification on a new line
+                  </span>
+                </div>
+
+                <Textarea
+                  name="preferred_qualifications"
+                  placeholder="• Master's degree in a technical field
+• Experience with TypeScript
+• Knowledge of cloud platforms (AWS, Azure, GCP)"
+                  value={
+                    typeof formValues.preferred_qualifications === "string"
+                      ? formValues.preferred_qualifications
+                      : arrayToMultilineString(
+                          formValues.preferred_qualifications as
+                            | string[]
+                            | undefined
+                        )
+                  }
+                  onChange={handleInputChange}
+                  className="min-h-[150px]"
+                />
+                {state?.errors?.preferred_qualifications && (
+                  <p className="text-red-500 text-sm">
+                    {state.errors.preferred_qualifications}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <Separator className="my-6" />
+
             {/* Responsibilities Section */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-baseline">
-                <Label className="text-sm font-medium">
-                  Key Responsibilities
-                </Label>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Add one responsibility per line
-                </span>
-              </div>
+            <div>
+              <h3 className="text-lg font-medium mb-4">Responsibilities</h3>
 
-              <div className="space-y-3">
-                {responsibilityItems.map((item, index) => (
-                  <div key={index} className="flex gap-3 items-center">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1"></div>
-                    <Input
-                      name="responsibilities"
-                      placeholder="e.g. Lead development of front-end features"
-                      value={item}
-                      onChange={(e) =>
-                        updateArrayField(
-                          index,
-                          e.target.value,
-                          responsibilityItems,
-                          setResponsibilityItems,
-                          "responsibilities"
+              <div className="space-y-4">
+                <div className="flex justify-between items-baseline">
+                  <Label className="text-sm font-medium">
+                    Key Responsibilities
+                  </Label>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Enter each responsibility on a new line
+                  </span>
+                </div>
+
+                <Textarea
+                  name="responsibilities"
+                  placeholder="• Lead development of front-end features
+• Collaborate with cross-functional teams
+• Write clean, maintainable code"
+                  value={
+                    typeof formValues.responsibilities === "string"
+                      ? formValues.responsibilities
+                      : arrayToMultilineString(
+                          formValues.responsibilities as string[] | undefined
                         )
-                      }
-                      className="flex-grow h-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        responsibilityItems.length > 1
-                          ? removeArrayItem(
-                              index,
-                              responsibilityItems,
-                              setResponsibilityItems,
-                              "responsibilities"
-                            )
-                          : null
-                      }
-                      disabled={responsibilityItems.length <= 1}
-                      className={`h-8 w-8 rounded-full ${
-                        responsibilityItems.length <= 1
-                          ? "text-gray-300"
-                          : "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      }`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+                  }
+                  onChange={handleInputChange}
+                  className="min-h-[150px]"
+                />
+                {state?.errors?.responsibilities && (
+                  <p className="text-red-500 text-sm">
+                    {state.errors.responsibilities}
+                  </p>
+                )}
               </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  addArrayItem(
-                    responsibilityItems,
-                    setResponsibilityItems,
-                    "responsibilities"
-                  )
-                }
-                className="mt-2 text-blue-600 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Responsibility
-              </Button>
-            </div>
-
-            <Separator className="my-6" />
-
-            {/* Required Qualifications Section */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-baseline">
-                <Label className="text-sm font-medium">
-                  Required Qualifications
-                </Label>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Add one qualification per line
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {requiredQualifications.map((item, index) => (
-                  <div key={index} className="flex gap-3 items-center">
-                    <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 mt-1"></div>
-                    <Input
-                      name="required_qualifications"
-                      placeholder="e.g. Bachelor's degree in Computer Science"
-                      value={item}
-                      onChange={(e) =>
-                        updateArrayField(
-                          index,
-                          e.target.value,
-                          requiredQualifications,
-                          setRequiredQualifications,
-                          "required_qualifications"
-                        )
-                      }
-                      className="flex-grow h-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        requiredQualifications.length > 1
-                          ? removeArrayItem(
-                              index,
-                              requiredQualifications,
-                              setRequiredQualifications,
-                              "required_qualifications"
-                            )
-                          : null
-                      }
-                      disabled={requiredQualifications.length <= 1}
-                      className={`h-8 w-8 rounded-full ${
-                        requiredQualifications.length <= 1
-                          ? "text-gray-300"
-                          : "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      }`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  addArrayItem(
-                    requiredQualifications,
-                    setRequiredQualifications,
-                    "required_qualifications"
-                  )
-                }
-                className="mt-2 text-blue-600 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Required Qualification
-              </Button>
-            </div>
-
-            <Separator className="my-6" />
-
-            {/* Preferred Qualifications Section */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-baseline">
-                <Label className="text-sm font-medium">
-                  Preferred Qualifications
-                </Label>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Add one qualification per line
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {preferredQualifications.map((item, index) => (
-                  <div key={index} className="flex gap-3 items-center">
-                    <div className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0 mt-1"></div>
-                    <Input
-                      name="preferred_qualifications"
-                      placeholder="e.g. Experience with React"
-                      value={item}
-                      onChange={(e) =>
-                        updateArrayField(
-                          index,
-                          e.target.value,
-                          preferredQualifications,
-                          setPreferredQualifications,
-                          "preferred_qualifications"
-                        )
-                      }
-                      className="flex-grow h-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        preferredQualifications.length > 1
-                          ? removeArrayItem(
-                              index,
-                              preferredQualifications,
-                              setPreferredQualifications,
-                              "preferred_qualifications"
-                            )
-                          : null
-                      }
-                      disabled={preferredQualifications.length <= 1}
-                      className={`h-8 w-8 rounded-full ${
-                        preferredQualifications.length <= 1
-                          ? "text-gray-300"
-                          : "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      }`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  addArrayItem(
-                    preferredQualifications,
-                    setPreferredQualifications,
-                    "preferred_qualifications"
-                  )
-                }
-                className="mt-2 text-blue-600 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Preferred Qualification
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -645,68 +503,29 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
             <div className="flex justify-between items-baseline">
               <Label className="text-sm font-medium">Benefits Offered</Label>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                List the benefits this position offers
+                Enter each benefit on a new line
               </span>
             </div>
 
-            <div className="space-y-3">
-              {benefitItems.map((item, index) => (
-                <div key={index} className="flex gap-3 items-center">
-                  <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 mt-1"></div>
-                  <Input
-                    name="benefits"
-                    placeholder="e.g. Medical, dental, and vision insurance"
-                    value={item}
-                    onChange={(e) =>
-                      updateArrayField(
-                        index,
-                        e.target.value,
-                        benefitItems,
-                        setBenefitItems,
-                        "benefits"
-                      )
-                    }
-                    className="flex-grow h-10"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      benefitItems.length > 1
-                        ? removeArrayItem(
-                            index,
-                            benefitItems,
-                            setBenefitItems,
-                            "benefits"
-                          )
-                        : null
-                    }
-                    disabled={benefitItems.length <= 1}
-                    className={`h-8 w-8 rounded-full ${
-                      benefitItems.length <= 1
-                        ? "text-gray-300"
-                        : "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    }`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                addArrayItem(benefitItems, setBenefitItems, "benefits")
+            <Textarea
+              name="benefits"
+              placeholder="• Competitive salary and bonuses
+• Medical, dental, and vision insurance
+• 401(k) matching
+• Flexible working hours"
+              value={
+                typeof formValues.benefits === "string"
+                  ? formValues.benefits
+                  : arrayToMultilineString(
+                      formValues.benefits as string[] | undefined
+                    )
               }
-              className="mt-2 text-blue-600 border-blue-300 hover:border-blue-400 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add Benefit
-            </Button>
+              onChange={handleInputChange}
+              className="min-h-[150px]"
+            />
+            {state?.errors?.benefits && (
+              <p className="text-red-500 text-sm">{state.errors.benefits}</p>
+            )}
           </CardContent>
         </Card>
 
