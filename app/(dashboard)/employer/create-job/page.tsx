@@ -56,12 +56,11 @@ const CreateJob: React.FC = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full">
       <div className="flex-1 overflow-y-auto">
-        <div className="flex justify-between items-center h-[82px] p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-10">
-          <h1 className="text-2xl font-bold">Create Job</h1>
-          <Button
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
-            onClick={handleAIGeneration}
-          >
+        <div className="flex justify-between items-center h-[82px] p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800/50 dark:to-gray-800/30 border-b dark:border-gray-700 sticky top-0 z-10">
+          <h1 className="text-2xl text-blue-700 dark:text-blue-400 font-bold">
+            Create Job
+          </h1>
+          <Button className="gradient-button" onClick={handleAIGeneration}>
             Generate with AI
           </Button>
         </div>

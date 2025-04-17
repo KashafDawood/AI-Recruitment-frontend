@@ -548,7 +548,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
           </div>
         )}
 
-        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[calc(50%-1rem)] p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-lg z-10">
+        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[calc(50%-1rem)] rounded-lg p-4 bg-white dark:bg-gray-900 border-t dark:border-gray-700 shadow-lg z-10">
           <SubmitButton />
         </div>
       </div>
