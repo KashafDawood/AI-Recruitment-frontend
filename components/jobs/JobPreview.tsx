@@ -20,45 +20,47 @@ const JobPreview: React.FC<JobPreviewProps> = ({
   // Update preview job whenever form data changes
   useEffect(() => {
     if (formData) {
-      setPreviewJob(convertPreviewToJob(formData));
+      // Creating job data directly inside the effect
+      setPreviewJob({
+        id: -1,
+        title: formData.title || "Job Title",
+        company: formData.company || "Your Company",
+        location: formData.location || "Location",
+        job_type: formData.job_type || "Full-time",
+        job_location_type: formData.job_location_type || "On-site",
+        job_status: formData.job_status || "open",
+        experience_required: formData.experience || "Not specified",
+        salary: formData.salary || "Not specified",
+        description: Array.isArray(formData.description)
+          ? formData.description.join("\n")
+          : formData.description || "Job description will appear here.",
+        required_qualifications: convertToArray(
+          formData.required_qualifications
+        ),
+        preferred_qualifications: convertToArray(
+          formData.preferred_qualifications
+        ),
+        responsibilities: convertToArray(formData.responsibilities),
+        benefits: convertToArray(formData.benefits),
+        created_at: new Date().toISOString(),
+        has_applied: false,
+        is_saved: false,
+        applicants: new Uint8Array(),
+        employer: {
+          username: "",
+          photo: "",
+          company_name: formData.company || "Your Company",
+          address: "",
+          name: formData.company || "Your Company",
+          industry: formData.industry || "",
+          about_company: "",
+          company_size: "",
+        },
+      });
     } else {
       setPreviewJob(null);
     }
   }, [formData]);
-
-  // Convert form data to job structure
-  const convertPreviewToJob = (data: JobPreviewData): Job => {
-    return {
-      id: -1,
-      title: data.title || "Job Title",
-      company: data.company || "Your Company",
-      location: data.location || "Location",
-      job_type: data.job_type || "Full-time",
-      job_location_type: data.job_location_type || "On-site",
-      job_status: data.job_status || "Open",
-      experience_required: data.experience || "Not specified", // This was missing - adding experience field
-      salary: data.salary || "Not specified",
-      description: data.description || "Job description will appear here.",
-      required_qualifications: convertToArray(data.required_qualifications),
-      preferred_qualifications: convertToArray(data.preferred_qualifications),
-      responsibilities: convertToArray(data.responsibilities),
-      benefits: convertToArray(data.benefits),
-      created_at: new Date().toISOString(),
-      has_applied: false,
-      is_saved: false,
-      applicants: new Uint8Array(),
-      employer: {
-        username: "",
-        photo: "",
-        company_name: data.company || "Your Company",
-        address: "",
-        name: data.company || "Your Company",
-        industry: data.industry || "",
-        about_company: "",
-        company_size: "",
-      },
-    };
-  };
 
   // Helper function to convert string or array to array
   const convertToArray = (value: string | string[] | undefined): string[] => {

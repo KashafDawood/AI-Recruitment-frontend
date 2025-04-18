@@ -6,7 +6,7 @@ import { createJob } from "@/api/jobs/createJob";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import JobPreview from "@/components/jobs/JobPreview";
+// import JobPreview from "@/components/jobs/JobPreview";
 import { JobPreviewData } from "@/types/job";
 import { useUserWithLoading } from "@/hooks/useUser";
 
@@ -72,7 +72,7 @@ const CreateJob: React.FC = () => {
             formAction={formAction}
             state={state}
             onFormChange={handleFormChange}
-            initialValues={formValues}
+            initialValues={formValues as Record<string, unknown>}
           />
         </div>
       </div>

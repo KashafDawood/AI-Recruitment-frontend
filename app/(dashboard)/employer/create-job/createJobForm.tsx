@@ -131,7 +131,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   placeholder="Senior Software Engineer"
                   required
                   onChange={handleInputChange}
-                  value={formValues.title || ""}
+                  value={(formValues.title as string) || ""}
                   className="h-11"
                 />
                 {state?.errors?.title && (
@@ -149,7 +149,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   type="text"
                   placeholder="Your Company"
                   onChange={handleInputChange}
-                  value={formValues.company || ""}
+                  value={(formValues.company as string) || ""}
                   className="h-11"
                 />
                 {state?.errors?.company && (
@@ -170,7 +170,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   placeholder="New York, NY"
                   required
                   onChange={handleInputChange}
-                  value={formValues.location || ""}
+                  value={(formValues.location as string) || ""}
                   className="h-11"
                 />
                 {state?.errors?.location && (
@@ -190,7 +190,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   type="text"
                   placeholder="$80,000 - $120,000"
                   onChange={handleInputChange}
-                  value={formValues.salary || ""}
+                  value={(formValues.salary as string) || ""}
                   className="h-11"
                 />
                 {state?.errors?.salary && (
@@ -211,7 +211,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   placeholder="3+ years"
                   required
                   onChange={handleInputChange}
-                  value={formValues.experience || ""}
+                  value={(formValues.experience as string) || ""}
                   className="h-11"
                 />
                 {state?.errors?.experience && (
@@ -356,7 +356,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
               <Textarea
                 name="description"
                 placeholder="Enter job description details..."
-                value={formValues.description || ""}
+                value={(formValues.description as string) || ""}
                 onChange={handleInputChange}
                 className="min-h-[150px]"
                 required

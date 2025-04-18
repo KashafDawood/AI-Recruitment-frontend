@@ -15,15 +15,17 @@ export interface JobPreviewData {
   company?: string;
   location?: string;
   job_type?: string;
+  experience?: string;
   experience_level?: string;
   salary?: string;
-  description?: string;
-  required_qualifications?: string;
-  preferred_qualifications?: string;
-  responsibilities?: string;
-  benefits?: string;
+  description?: string | string[];
+  required_qualifications?: string | string[];
+  preferred_qualifications?: string | string[];
+  responsibilities?: string | string[];
+  benefits?: string | string[];
   industry?: string;
   job_location_type?: string;
+  job_status?: string;
   employer?: Employer;
 }
 
