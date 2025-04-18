@@ -57,9 +57,23 @@ export const createJob = async (_: unknown, formData: FormData) => {
   }
 
   try {
+    // Convert string fields to arrays before sending to the API
+    const dataToSend = {
+      ...result.data,
+      description: textToArray(result.data.description),
+      responsibilities: textToArray(result.data.responsibilities),
+      required_qualifications: textToArray(result.data.required_qualifications),
+      preferred_qualifications: textToArray(
+        result.data.preferred_qualifications
+      ),
+      benefits: textToArray(result.data.benefits),
+      // Ensure job_status is explicitly passed
+      job_status: result.data.job_status || "open",
+    };
+
     const response = await axiosInstance.post(
       `${process.env.NEXT_PUBLIC_URL}/api/jobs/publish-job-post/`,
-      result.data
+      dataToSend
     );
 
     if (response.status === 201) {
@@ -84,3 +98,14 @@ export const createJob = async (_: unknown, formData: FormData) => {
     };
   }
 };
+/**
+ * Processes input that may be an array or undefined into a proper array
+ * - If the input is already an array, returns it
+ * - If the input is undefined, returns an empty array
+ * - If the input is a string or any other value, wraps it in an array
+ */
+function textToArray(input: string[] | undefined): string[] {
+  if (!input) return [];
+  if (Array.isArray(input)) return input;
+  return [input];
+}

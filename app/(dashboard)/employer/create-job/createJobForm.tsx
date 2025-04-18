@@ -269,8 +269,6 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   <SelectContent>
                     <SelectItem value="full time">Full Time</SelectItem>
                     <SelectItem value="part time">Part Time</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="temporary">Temporary</SelectItem>
                     <SelectItem value="internship">Internship</SelectItem>
                   </SelectContent>
                 </Select>
@@ -303,7 +301,6 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
                   <SelectContent>
                     <SelectItem value="remote">Remote</SelectItem>
                     <SelectItem value="onsite">Onsite</SelectItem>
-                    <SelectItem value="hybrid">Hybrid</SelectItem>
                   </SelectContent>
                 </Select>
                 {state?.errors?.job_location_type && (

@@ -33,6 +33,9 @@ const CreateJob: React.FC = () => {
 
       // If job was successfully created and approved without policy violations
       if (state.job && state.approved) {
+        // Reset form values
+        setFormValues({});
+
         // Navigate to job dashboard or job detail page after short delay
         setTimeout(() => {
           router.push("/employer/jobs");
@@ -74,9 +77,9 @@ const CreateJob: React.FC = () => {
         </div>
       </div>
 
-      <div className="hidden md:block lg:w-1/2 border-l dark:border-gray-700 overflow-hidden">
+      {/* <div className="hidden md:block lg:w-1/2 border-l dark:border-gray-700 overflow-hidden">
         <JobPreview formData={formValues} />
-      </div>
+      </div> */}
     </div>
   );
 };

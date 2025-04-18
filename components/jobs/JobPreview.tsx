@@ -36,7 +36,7 @@ const JobPreview: React.FC<JobPreviewProps> = ({
       job_type: data.job_type || "Full-time",
       job_location_type: data.job_location_type || "On-site",
       job_status: data.job_status || "Open",
-      experience_required: data.experience_level || "Not specified",
+      experience_required: data.experience || "Not specified", // This was missing - adding experience field
       salary: data.salary || "Not specified",
       description: data.description || "Job description will appear here.",
       required_qualifications: convertToArray(data.required_qualifications),
