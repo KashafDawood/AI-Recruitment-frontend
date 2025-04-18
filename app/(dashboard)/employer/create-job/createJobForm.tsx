@@ -78,7 +78,8 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({
         name === "responsibilities" ||
         name === "required_qualifications" ||
         name === "preferred_qualifications" ||
-        name === "benefits"
+        name === "benefits" ||
+        name === "description"
       ) {
         if (typeof value === "string") {
           const lines = value.split("\n").filter((line) => line.trim() !== "");
