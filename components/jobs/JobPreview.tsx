@@ -30,6 +30,7 @@ const JobPreview: React.FC<JobPreviewProps> = ({
         job_location_type: formData.job_location_type || "On-site",
         job_status: formData.job_status || "open",
         experience_required: formData.experience || "Not specified",
+        experience_level: formData.experience_level || "Not specified",
         salary: formData.salary || "Not specified",
         description: Array.isArray(formData.description)
           ? formData.description.join("\n")
