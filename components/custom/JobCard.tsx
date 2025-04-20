@@ -47,6 +47,23 @@ const JobCard: React.FC<JobCardProps> = ({
     : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
   const statusDot = isOpen ? "bg-green-500" : "bg-gray-500";
 
+  // Properly handle click events
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only trigger onClick if it exists and the click wasn't on a button
+    if (onClick && !e.defaultPrevented) {
+      onClick();
+    }
+  };
+
+  // Handle save button click
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent the card click event
+    if (onSaveJob) {
+      onSaveJob(job.id);
+    }
+  };
+
   return (
     <GlowCard color={cardColor} className="mb-4 !pl-0 shadow-lg">
       <div
@@ -56,10 +73,9 @@ const JobCard: React.FC<JobCardProps> = ({
             : "hover:bg-gray-50 dark:hover:bg-gray-750"
         }`}
         style={{
-          // ringColor: cardColor,
           boxShadow: isSelected ? `0 4px 14px 0 ${cardColor}30` : "none",
         }}
-        onClick={onClick}
+        onClick={handleCardClick}
       >
         <div className="flex gap-3">
           <div className="flex-grow">
@@ -111,10 +127,7 @@ const JobCard: React.FC<JobCardProps> = ({
                       ? "bg-blue-500 text-white hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
                       : "dark:bg-gray-800 dark:hover:bg-gray-700"
                   }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSaveJob && onSaveJob(job.id);
-                  }}
+                  onClick={handleSaveClick}
                 >
                   <BookmarkIcon
                     className="h-5 w-5"
