@@ -9,6 +9,29 @@ export interface Employer {
   company_size: string;
 }
 
+// Application interface for job applications
+export interface Application {
+  id: number;
+  job: number;
+  candidate: {
+    id: number;
+    username: string;
+    name: string;
+    email: string;
+    photo: string;
+  };
+  resume: string;
+  application_status:
+    | "pending"
+    | "reviewing"
+    | "shortlisted"
+    | "interviewed"
+    | "rejected"
+    | "hired";
+  applied_at: string;
+  extracted_resume?: string;
+}
+
 // Additional type specifically for job preview data from form
 export interface JobPreviewData {
   title?: string;
