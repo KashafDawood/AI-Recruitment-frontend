@@ -3,13 +3,11 @@ import React, { JSX } from "react";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
 
 interface PaginationProps {
   currentPage: number;
@@ -17,7 +15,11 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const PaginationUI: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const PaginationUI: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
   if (totalPages <= 1) return null; // Hide pagination if only one page exists
 
   const renderPaginationItems = () => {
@@ -25,7 +27,7 @@ const PaginationUI: React.FC<PaginationProps> = ({ currentPage, totalPages, onPa
 
     for (let i = 1; i <= totalPages; i++) {
       items.push(
-        <PaginationItem key={i}>
+        <PaginationItem key={i} className="cursor-pointer">
           <PaginationLink
             isActive={currentPage === i}
             onClick={() => onPageChange(i)}
@@ -42,24 +44,22 @@ const PaginationUI: React.FC<PaginationProps> = ({ currentPage, totalPages, onPa
   return (
     <Pagination className="mt-8">
       <PaginationContent>
-        <PaginationItem>
+        <PaginationItem className="cursor-pointer">
           <PaginationPrevious
             onClick={() => onPageChange(currentPage - 1)}
             className={
               currentPage === 1 ? "pointer-events-none opacity-50" : ""
             }
-              />
+          />
         </PaginationItem>
 
         {renderPaginationItems()}
 
-        <PaginationItem>
+        <PaginationItem className="cursor-pointer">
           <PaginationNext
             onClick={() => onPageChange(currentPage + 1)}
             className={
-              currentPage === totalPages
-                ? "pointer-events-none opacity-50"
-                : ""
+              currentPage === totalPages ? "pointer-events-none opacity-50" : ""
             }
           />
         </PaginationItem>
