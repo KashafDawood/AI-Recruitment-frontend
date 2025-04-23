@@ -9,17 +9,16 @@ export interface Employer {
   company_size: string;
 }
 
-// Application interface for job applications
+// Application interface for job applications// Update this interface in types/job.ts
 export interface Application {
   id: number;
   job: number;
-  candidate: {
-    id: number;
-    username: string;
-    name: string;
-    email: string;
-    photo: string;
-  };
+  candidate: number; // Now just the ID
+  candidate_username: string;
+  candidate_name: string;
+  candidate_photo: string | null;
+  candidate_email: string;
+  job_title: string;
   resume: string;
   application_status:
     | "pending"
@@ -28,7 +27,7 @@ export interface Application {
     | "interviewed"
     | "rejected"
     | "hired";
-  applied_at: string;
+  created_at: string;
   extracted_resume?: string;
 }
 

@@ -53,9 +53,9 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
 
   // Filter applications based on search term and status
   const filteredApplications = applicants.filter((app) => {
-    // Safely check if the candidate property exists and has name and email properties
-    const candidateName = app.candidate?.name || "";
-    const candidateEmail = app.candidate?.email || "";
+    // Safely check if the candidate properties exist
+    const candidateName = app.candidate_name || "";
+    const candidateEmail = app.candidate_email || "";
 
     const matchesSearch =
       candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -190,12 +190,12 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
-                      src={application.candidate?.photo || ""}
-                      alt={application.candidate?.name || "Applicant"}
+                      src={application.candidate_photo || ""}
+                      alt={application.candidate_name || "Applicant"}
                     />
                     <AvatarFallback>
-                      {application.candidate?.name
-                        ? application.candidate.name
+                      {application.candidate_name
+                        ? application.candidate_name
                             .split(" ")
                             .map((n) => n[0])
                             .join("")
@@ -204,10 +204,10 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">
-                      {application.candidate?.name || "Anonymous Applicant"}
+                      {application.candidate_name || "Anonymous Applicant"}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {application.candidate?.email || "No email provided"}
+                      {application.candidate_email || "No email provided"}
                     </p>
                   </div>
                   <Badge
@@ -225,7 +225,7 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center">
                   <Calendar className="h-3 w-3 mr-1" />
                   <span>
-                    Applied {formatAppliedDate(application.applied_at)}
+                    Applied {formatAppliedDate(application.created_at)}
                   </span>
                 </div>
               </div>
@@ -244,12 +244,12 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
             <div className="flex items-center gap-4 mb-6">
               <Avatar className="h-16 w-16">
                 <AvatarImage
-                  src={selectedApplication.candidate?.photo || ""}
-                  alt={selectedApplication.candidate?.name || "Applicant"}
+                  src={selectedApplication.candidate_photo || ""}
+                  alt={selectedApplication.candidate_name || "Applicant"}
                 />
                 <AvatarFallback>
-                  {selectedApplication.candidate?.name
-                    ? selectedApplication.candidate.name
+                  {selectedApplication.candidate_name
+                    ? selectedApplication.candidate_name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")
@@ -258,10 +258,10 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
               </Avatar>
               <div>
                 <h2 className="text-xl font-semibold">
-                  {selectedApplication.candidate?.name || "Anonymous Applicant"}
+                  {selectedApplication.candidate_name || "Anonymous Applicant"}
                 </h2>
                 <p className="text-gray-500 dark:text-gray-400">
-                  {selectedApplication.candidate?.email || "No email provided"}
+                  {selectedApplication.candidate_email || "No email provided"}
                 </p>
                 <div className="flex items-center mt-1 gap-2">
                   <Badge
@@ -279,7 +279,7 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                   </Badge>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     • Applied{" "}
-                    {formatAppliedDate(selectedApplication.applied_at)}
+                    {formatAppliedDate(selectedApplication.created_at)}
                   </span>
                 </div>
               </div>
@@ -304,10 +304,10 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                 size="sm"
                 className="text-sm"
                 onClick={() =>
-                  selectedApplication.candidate?.email &&
-                  (window.location.href = `mailto:${selectedApplication.candidate.email}`)
+                  selectedApplication.candidate_email &&
+                  (window.location.href = `mailto:${selectedApplication.candidate_email}`)
                 }
-                disabled={!selectedApplication.candidate?.email}
+                disabled={!selectedApplication.candidate_email}
               >
                 <Mail className="h-4 w-4 mr-1" />
                 Contact Candidate
