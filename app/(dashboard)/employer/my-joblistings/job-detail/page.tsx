@@ -14,8 +14,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { FileText } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import {
+  FileText,
+  Briefcase,
+  Users,
+  Calendar,
+  ArrowLeft,
+  ExternalLink,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 const JobDetailPage: React.FC = () => {
   const [jobData, setJobData] = useState<Job | null>(null);
@@ -23,6 +34,7 @@ const JobDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDetailsSheetOpen, setIsDetailsSheetOpen] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -54,112 +66,262 @@ const JobDetailPage: React.FC = () => {
     fetchJobDetails();
   }, [searchParams]);
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "open":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "closed":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "draft":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  };
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Job Details Management</h1>
+    <div className="container mx-auto py-6 px-4 max-w-7xl">
+      {/* Header with back button and actions */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => router.back()}
+            className="rounded-full h-9 w-9"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">
+              Job Details Management
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              Review and manage your job posting and applications
+            </p>
+          </div>
+        </div>
 
         {!loading && !error && jobData && (
-          <Sheet open={isDetailsSheetOpen} onOpenChange={setIsDetailsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button className="flex items-center gap-2 px-6 mt-4 md:mt-0">
-                <FileText className="h-5 w-5" />
-                View Job Details
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-full sm:max-w-lg md:max-w-xl overflow-y-auto"
+          <div className="flex gap-3 ml-12 md:ml-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => window.open(`/job/${jobData.id}`, "_blank")}
             >
-              <SheetHeader>
-                <SheetTitle>Complete Job Details</SheetTitle>
-                <SheetDescription>
-                  View all information about the job posting
-                </SheetDescription>
-              </SheetHeader>
-              <div className="mt-6">
-                {jobData && (
-                  <JobDetails selectedJob={jobData} isPreview={true} />
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
+              <ExternalLink className="h-4 w-4" />
+              View Public Page
+            </Button>
+            <Sheet
+              open={isDetailsSheetOpen}
+              onOpenChange={setIsDetailsSheetOpen}
+            >
+              <SheetTrigger asChild>
+                <Button className="flex items-center gap-2 px-4" size="sm">
+                  <FileText className="h-4 w-4" />
+                  Full Job Details
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="w-full sm:max-w-lg md:max-w-xl overflow-y-auto"
+              >
+                <SheetHeader>
+                  <SheetTitle>Complete Job Details</SheetTitle>
+                  <SheetDescription>
+                    View all information about the job posting
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6">
+                  {jobData && (
+                    <JobDetails
+                      className="!w-full"
+                      selectedJob={jobData}
+                      isPreview={true}
+                    />
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         )}
       </div>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+            <p className="text-muted-foreground">Loading job details...</p>
+          </div>
         </div>
       ) : error ? (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <strong className="font-bold">Error! </strong>
-          <span className="block sm:inline">{error}</span>
-        </div>
-      ) : jobData ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="col-span-1 lg:col-span-3">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-              <div className="mb-6">
-                <h2 className="text-2xl font-semibold mb-2">{jobData.title}</h2>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {jobData.company} • {jobData.location}
-                </p>
+        <Card className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-red-100 dark:bg-red-900/30 p-2">
+                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
-
-              <div className="flex flex-wrap gap-4 mb-6">
-                <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-md">
-                  <span className="font-medium">Type:</span> {jobData.job_type}
-                </div>
-                <div className="bg-green-50 dark:bg-green-900/20 px-4 py-2 rounded-md">
-                  <span className="font-medium">Salary:</span> {jobData.salary}
-                </div>
-                <div className="bg-purple-50 dark:bg-purple-900/20 px-4 py-2 rounded-md">
-                  <span className="font-medium">Experience:</span>{" "}
-                  {jobData.experience_required}
-                </div>
-                <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-2 rounded-md">
-                  <span className="font-medium">Status:</span>{" "}
-                  {jobData.job_status}
-                </div>
-              </div>
-
-              <div className="bg-indigo-50 dark:bg-indigo-900/20 px-4 py-3 rounded-md">
-                <div>
-                  <span className="font-medium">Total Applicants:</span>{" "}
-                  {jobData.applicants.toString()}
-                </div>
+              <div>
+                <h3 className="font-semibold text-red-700 dark:text-red-400">
+                  Error
+                </h3>
+                <p className="text-red-600 dark:text-red-300">{error}</p>
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
+      ) : jobData ? (
+        <div className="grid grid-cols-1 gap-6">
+          {/* Job Overview Card */}
+          <Card className="overflow-hidden border-0 shadow-md bg-white dark:bg-gray-800">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 px-6 py-4 border-b dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-blue-700 dark:text-blue-400">
+                Job Overview
+              </h2>
+            </div>
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex-1">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold mb-2">{jobData.title}</h2>
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mb-4">
+                      <Briefcase className="h-4 w-4 text-gray-500" />
+                      <span>{jobData.company}</span>
+                      <span className="text-gray-400">•</span>
+                      <span>{jobData.location}</span>
+                    </div>
 
-          <div className="col-span-1 lg:col-span-3">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-6">Job Applicants</h2>
-
-              {jobData && parseInt(jobData.applicants.toString()) > 0 ? (
-                <JobApplicantsList jobId={jobData.id} />
-              ) : (
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
-                  <div className="mb-4">
-                    <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mt-4">
+                      {jobData.description}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-3 rounded-lg flex flex-col">
+                      <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                        Type
+                      </span>
+                      <span className="font-medium mt-1">
+                        {jobData.job_type}
+                      </span>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-900/20 px-4 py-3 rounded-lg flex flex-col">
+                      <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                        Salary
+                      </span>
+                      <span className="font-medium mt-1">{jobData.salary}</span>
+                    </div>
+                    <div className="bg-purple-50 dark:bg-purple-900/20 px-4 py-3 rounded-lg flex flex-col">
+                      <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                        Experience
+                      </span>
+                      <span className="font-medium mt-1">
+                        {jobData.experience_required}
+                      </span>
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-3 rounded-lg flex flex-col">
+                      <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                        Status
+                      </span>
+                      <div className="mt-1">
+                        <Badge
+                          className={`${getStatusColor(jobData.job_status)}`}
+                        >
+                          {jobData.job_status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="md:w-72 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl p-5 flex flex-col items-center justify-center">
+                  <div className="relative mb-3">
+                    <div className="h-20 w-20 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
+                      <Users className="h-10 w-10 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">
+                      {jobData.applicants.toString()}
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-medium mb-1">Total Applicants</h3>
+                  <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                    {parseInt(jobData.applicants.toString()) > 0
+                      ? "Review applicants below"
+                      : "No applicants yet"}
+                  </p>
+                  <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                    <Calendar className="h-3.5 w-3.5 mr-1" />
+                    Posted on {formatDate(jobData.created_at)}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Applicants Card */}
+          <Card className="overflow-hidden border-0 shadow-md">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 px-6 py-4 border-b dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-blue-700 dark:text-blue-400">
+                Job Applicants
+              </h2>
+            </div>
+            <CardContent className="p-6">
+              {jobData && parseInt(jobData.applicants.toString()) > 0 ? (
+                <JobApplicantsList jobId={jobData.id} className="mt-2" />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-100 dark:border-gray-800">
+                  <div className="mb-5 p-3 rounded-full bg-blue-50 dark:bg-blue-900/20">
+                    <FileText className="h-10 w-10 text-blue-500 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-gray-200 mb-2">
                     No applicants yet
                   </h3>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    There are no applications for this job posting yet.
+                  <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                    When candidates apply for this position, they will appear
+                    here. You can then review their profiles and resumes.
                   </p>
+                  <Button
+                    variant="outline"
+                    className="mt-6"
+                    onClick={() => window.open(`/job/${jobData.id}`, "_blank")}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View Public Job Listing
+                  </Button>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       ) : (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative">
-          <strong className="font-bold">No job found! </strong>
-          <span className="block sm:inline">Could not find job details.</span>
-        </div>
+        <Card className="border-yellow-200 dark:border-yellow-900 bg-yellow-50 dark:bg-yellow-900/10">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-yellow-100 dark:bg-yellow-900/30 p-2">
+                <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-yellow-700 dark:text-yellow-400">
+                  Job Not Found
+                </h3>
+                <p className="text-yellow-600 dark:text-yellow-300">
+                  Could not find job details. The job may have been deleted or
+                  you don&apos;t have permission to view it.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
