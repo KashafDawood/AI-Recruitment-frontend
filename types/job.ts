@@ -9,7 +9,7 @@ export interface Employer {
   company_size: string;
 }
 
-// Application interface for job applications// Update this interface in types/job.ts
+// Application interface for job applications
 export interface Application {
   id: number;
   job: number;
@@ -25,11 +25,20 @@ export interface Application {
     | "reviewing"
     | "shortlisted"
     | "interviewed"
-    | "rejected"
-    | "hired";
+    | "hired"
+    | "rejected";
   created_at: string;
   extracted_resume?: string;
 }
+
+// Define a standalone type for application status that can be exported and reused
+export type ApplicationStatus =
+  | "pending"
+  | "reviewing"
+  | "short_listing"
+  | "interviewed"
+  | "hired"
+  | "rejected";
 
 // Additional type specifically for job preview data from form
 export interface JobPreviewData {

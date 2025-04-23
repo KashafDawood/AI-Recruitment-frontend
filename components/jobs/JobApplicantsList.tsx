@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getJobApplications } from "@/api/jobs/getJobApplications";
-import { Application } from "@/types/job";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { updateApplicationStatus } from "@/api/jobs/updateApplicationStatus";
+import { Application, ApplicationStatus } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, FileText, Mail } from "lucide-react";
@@ -9,6 +9,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import OptimizeImage from "../custom/optimizeImage";
 
 interface JobApplicantsListProps {
   jobId: number | string;
@@ -26,6 +27,10 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
     useState<Application | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [statusUpdateError, setStatusUpdateError] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchApplicants = async () => {
@@ -101,6 +106,42 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
         return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+    }
+  };
+
+  // Function to handle status update
+  const handleStatusUpdate = async (newStatus: ApplicationStatus) => {
+    if (!selectedApplication || isUpdatingStatus) return;
+
+    setIsUpdatingStatus(true);
+    setStatusUpdateError(null);
+
+    try {
+      await updateApplicationStatus(jobId, [selectedApplication.id], newStatus);
+
+      // Update the local state to reflect the change
+      const updatedApplications = applicants.map((app) =>
+        app.id === selectedApplication.id
+          ? {
+              ...app,
+              application_status:
+                newStatus as Application["application_status"],
+            }
+          : app
+      );
+
+      setApplicants(updatedApplications);
+
+      // Update the selected application
+      setSelectedApplication({
+        ...selectedApplication,
+        application_status: newStatus as Application["application_status"],
+      });
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      setStatusUpdateError("Failed to update status. Please try again.");
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -188,20 +229,14 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                 onClick={() => setSelectedApplication(application)}
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
+                  <div className="h-10 w-10 rounded-full overflow-hidden">
+                    <OptimizeImage
                       src={application.candidate_photo || ""}
                       alt={application.candidate_name || "Applicant"}
+                      width={150}
+                      className="h-full w-full object-cover"
                     />
-                    <AvatarFallback>
-                      {application.candidate_name
-                        ? application.candidate_name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                        : "A"}
-                    </AvatarFallback>
-                  </Avatar>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">
                       {application.candidate_name || "Anonymous Applicant"}
@@ -242,20 +277,14 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
         {selectedApplication ? (
           <div className="border rounded-lg p-6 dark:border-gray-700">
             <div className="flex items-center gap-4 mb-6">
-              <Avatar className="h-16 w-16">
-                <AvatarImage
+              <div className="h-32 w-32 rounded-full overflow-hidden">
+                <OptimizeImage
                   src={selectedApplication.candidate_photo || ""}
                   alt={selectedApplication.candidate_name || "Applicant"}
+                  width={150}
+                  className="h-full w-full object-cover"
                 />
-                <AvatarFallback>
-                  {selectedApplication.candidate_name
-                    ? selectedApplication.candidate_name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                    : "A"}
-                </AvatarFallback>
-              </Avatar>
+              </div>
               <div>
                 <h2 className="text-xl font-semibold">
                   {selectedApplication.candidate_name || "Anonymous Applicant"}
@@ -317,6 +346,11 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-medium mb-2">Update Status</h3>
+                {statusUpdateError && (
+                  <div className="text-red-500 text-sm mb-2">
+                    {statusUpdateError}
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2">
                   {[
                     "pending",
@@ -335,10 +369,15 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
                       }
                       size="sm"
                       className="capitalize"
-                      // TODO: Implement status update functionality
-                      onClick={() => console.log(`Update status to ${status}`)}
+                      onClick={() =>
+                        handleStatusUpdate(status as ApplicationStatus)
+                      }
+                      disabled={
+                        isUpdatingStatus ||
+                        selectedApplication.application_status === status
+                      }
                     >
-                      {status}
+                      {status.replace("_", " ")}
                     </Button>
                   ))}
                 </div>
