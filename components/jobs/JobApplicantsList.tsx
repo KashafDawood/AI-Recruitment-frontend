@@ -316,14 +316,6 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
 
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium mb-2">Resume Extract</h3>
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md text-sm whitespace-pre-line">
-                  {selectedApplication.extracted_resume ||
-                    "No resume text extracted"}
-                </div>
-              </div>
-
-              <div>
                 <h3 className="text-lg font-medium mb-2">Update Status</h3>
                 <div className="flex flex-wrap gap-2">
                   {[
