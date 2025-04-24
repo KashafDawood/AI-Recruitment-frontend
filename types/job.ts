@@ -28,6 +28,7 @@ export interface Application {
     | "hired"
     | "rejected";
   created_at: string;
+  contract?: string;
   extracted_resume?: string;
 }
 
