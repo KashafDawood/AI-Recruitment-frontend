@@ -50,7 +50,7 @@ const AiJobForm: React.FC<AiJobFormProps> = ({
           title: state.job_listing.title || "",
           company: state.job_listing.company || "",
           location: state.job_listing.location || "",
-          experience: state.job_listing.experience_required || "",
+          experience: state.job_listing.experience || "",
           experience_level: state.job_listing.experience_level || "mid",
           salary: state.job_listing.salary || "",
           description: state.job_listing.description || "",
@@ -98,14 +98,6 @@ const AiJobForm: React.FC<AiJobFormProps> = ({
   return (
     <form action={formAction} className="space-y-6">
       <Card className="w-full p-6">
-        <h2 className="text-xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
-          Generate Job with AI
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          Fill in the basic details and our AI will generate a complete job
-          listing for you with responsibilities, qualifications, and benefits.
-        </p>
-
         <CardContent className="p-0 space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">

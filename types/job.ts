@@ -70,6 +70,7 @@ export interface Job {
   description: string;
   job_location_type: string;
   job_type: string;
+  experience?: string;
   experience_required: string;
   experience_level: string;
   required_qualifications: string[];

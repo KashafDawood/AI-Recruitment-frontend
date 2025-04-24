@@ -509,41 +509,31 @@ const AIRecommendationDialog: React.FC<AIRecommendationDialogProps> = ({
                                   align="start"
                                   className="border-gray-200 dark:border-gray-700 shadow-lg"
                                 >
-                                  {[
-                                    "pending",
-                                    "reviewing",
-                                    "shortlisted",
-                                    "interviewed",
-                                    "hired",
-                                    "rejected",
-                                  ].map((status) => (
-                                    <DropdownMenuItem
-                                      key={status}
-                                      disabled={
-                                        currentStatus === status ||
-                                        updatingStatuses[rec.application_id]
-                                      }
-                                      onClick={() =>
-                                        handleStatusUpdate(
-                                          rec.application_id,
-                                          status as ApplicationStatus
-                                        )
-                                      }
-                                      className="capitalize"
-                                    >
-                                      <Badge
-                                        className={`${getStatusBadgeVariant(
-                                          status
-                                        )} mr-2.5 w-2.5 h-2.5 rounded-full p-0`}
-                                      />
-                                      {status.replace("_", " ")}
-                                    </DropdownMenuItem>
-                                  ))}
+                                  <DropdownMenuItem
+                                    disabled={
+                                      currentStatus === "reviewing" ||
+                                      updatingStatuses[rec.application_id]
+                                    }
+                                    onClick={() =>
+                                      handleStatusUpdate(
+                                        rec.application_id,
+                                        "reviewing" as ApplicationStatus
+                                      )
+                                    }
+                                    className="capitalize"
+                                  >
+                                    <Badge
+                                      className={`${getStatusBadgeVariant(
+                                        "reviewing"
+                                      )} mr-2.5 w-2.5 h-2.5 rounded-full p-0`}
+                                    />
+                                    Reviewing
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </TooltipTrigger>
                             <TooltipContent side="bottom">
-                              <p>Change candidate status</p>
+                              <p>Mark candidate as reviewing</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
