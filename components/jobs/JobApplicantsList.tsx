@@ -209,7 +209,7 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="ml-2 gap-1.5"
+            className="ml-2 gap-1.5 gradient-button"
             onClick={generateAIRecommendations}
             disabled={isGeneratingRecommendations || applicants.length === 0}
           >
