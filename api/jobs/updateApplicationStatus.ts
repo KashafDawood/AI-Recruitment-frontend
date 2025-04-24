@@ -1,12 +1,5 @@
+import { ApplicationStatus } from "@/types/job";
 import axiosInstance from "../axiosConfig";
-
-type ApplicationStatus =
-  | "pending"
-  | "reviewing"
-  | "short_listing"
-  | "interviewed"
-  | "hired"
-  | "rejected";
 
 export const updateApplicationStatus = async (
   jobId: number | string,

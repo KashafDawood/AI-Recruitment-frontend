@@ -35,7 +35,7 @@ export interface Application {
 export type ApplicationStatus =
   | "pending"
   | "reviewing"
-  | "short_listing"
+  | "shortlisted"
   | "interviewed"
   | "hired"
   | "rejected";

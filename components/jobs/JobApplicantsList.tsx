@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { getJobApplications } from "@/api/jobs/getJobApplications";
-import { updateApplicationStatus } from "@/api/jobs/updateApplicationStatus";
-import { Application, ApplicationStatus } from "@/types/job";
+import {
+  AIRecommendationResponse,
+  getAIRecommendations,
+} from "@/api/jobs/getAIRecommendations";
+import { Application } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Mail } from "lucide-react";
+import { Calendar, FileText, Mail, Sparkles } from "lucide-react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import OptimizeImage from "../custom/optimizeImage";
+import { toast } from "sonner";
+import AIRecommendationDialog from "./AIRecommendationDialog";
+import ApplicationStatusUpdate from "./ApplicationStatusUpdate";
 
 interface JobApplicantsListProps {
   jobId: number | string;
@@ -27,10 +33,12 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
     useState<Application | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [statusUpdateError, setStatusUpdateError] = useState<string | null>(
-    null
-  );
+  const [aiRecommendations, setAiRecommendations] =
+    useState<AIRecommendationResponse | null>(null);
+  const [isGeneratingRecommendations, setIsGeneratingRecommendations] =
+    useState(false);
+  const [showRecommendationDialog, setShowRecommendationDialog] =
+    useState(false);
 
   useEffect(() => {
     const fetchApplicants = async () => {
@@ -39,7 +47,6 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
         const data = await getJobApplications(jobId);
         setApplicants(data);
         setError(null);
-        // Select the first application by default if available
         if (data.length > 0) {
           setSelectedApplication(data[0]);
         }
@@ -56,9 +63,7 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
     }
   }, [jobId]);
 
-  // Filter applications based on search term and status
   const filteredApplications = applicants.filter((app) => {
-    // Safely check if the candidate properties exist
     const candidateName = app.candidate_name || "";
     const candidateEmail = app.candidate_email || "";
 
@@ -66,7 +71,6 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
       candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidateEmail.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Only compare status if statusFilter is not 'all'
     const matchesStatus =
       statusFilter === "all" ||
       app.application_status?.toLowerCase() === statusFilter.toLowerCase();
@@ -74,12 +78,10 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
     return matchesSearch && matchesStatus;
   });
 
-  // Helper function to safely format date distances
   const formatAppliedDate = (dateString: string) => {
     if (!dateString) return "date unknown";
 
     try {
-      // Parse ISO string to Date object
       const date = parseISO(dateString);
       return formatDistanceToNow(date, { addSuffix: true });
     } catch (error) {
@@ -88,7 +90,6 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
     }
   };
 
-  // Helper function to get badge color based on application status
   const getStatusBadgeVariant = (status: string = "") => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -109,40 +110,50 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
     }
   };
 
-  // Function to handle status update
-  const handleStatusUpdate = async (newStatus: ApplicationStatus) => {
-    if (!selectedApplication || isUpdatingStatus) return;
+  const generateAIRecommendations = async () => {
+    if (applicants.length === 0) {
+      toast.error("There are no applicants to analyze.");
+      return;
+    }
 
-    setIsUpdatingStatus(true);
-    setStatusUpdateError(null);
+    setIsGeneratingRecommendations(true);
+    setShowRecommendationDialog(true);
 
     try {
-      await updateApplicationStatus(jobId, [selectedApplication.id], newStatus);
-
-      // Update the local state to reflect the change
-      const updatedApplications = applicants.map((app) =>
-        app.id === selectedApplication.id
-          ? {
-              ...app,
-              application_status:
-                newStatus as Application["application_status"],
-            }
-          : app
-      );
-
-      setApplicants(updatedApplications);
-
-      // Update the selected application
-      setSelectedApplication({
-        ...selectedApplication,
-        application_status: newStatus as Application["application_status"],
-      });
+      const recommendations = await getAIRecommendations(jobId, applicants);
+      setAiRecommendations(recommendations);
     } catch (error) {
-      console.error("Failed to update status:", error);
-      setStatusUpdateError("Failed to update status. Please try again.");
+      console.error("Failed to generate AI recommendations:", error);
+      toast.error(
+        (error instanceof Error ? error.message : String(error)) ||
+          "An error occurred while generating AI recommendations."
+      );
+      setShowRecommendationDialog(false);
     } finally {
-      setIsUpdatingStatus(false);
+      setIsGeneratingRecommendations(false);
     }
+  };
+
+  const selectRecommendedApplicant = (applicationId: string) => {
+    const applicant = applicants.find(
+      (app) => app.id.toString() === applicationId
+    );
+    if (applicant) {
+      setSelectedApplication(applicant);
+      setShowRecommendationDialog(false);
+    }
+  };
+
+  const handleStatusUpdated = (updatedApplication: Application) => {
+    // Update the applicants list with the updated application
+    setApplicants(
+      applicants.map((app) =>
+        app.id === updatedApplication.id ? updatedApplication : app
+      )
+    );
+
+    // Update the selected application
+    setSelectedApplication(updatedApplication);
   };
 
   if (isLoading) {
@@ -185,14 +196,35 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
   return (
     <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${className}`}>
       <div className="md:col-span-1">
-        <div className="mb-4 relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search applicants..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex justify-between items-center mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search applicants..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-2 gap-1.5"
+            onClick={generateAIRecommendations}
+            disabled={isGeneratingRecommendations || applicants.length === 0}
+          >
+            {isGeneratingRecommendations ? (
+              <>
+                <Sparkles className="h-4 w-4 animate-pulse" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                AI Recommend
+              </>
+            )}
+          </Button>
         </div>
 
         <Tabs
@@ -344,44 +376,12 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
             </div>
 
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-medium mb-2">Update Status</h3>
-                {statusUpdateError && (
-                  <div className="text-red-500 text-sm mb-2">
-                    {statusUpdateError}
-                  </div>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "pending",
-                    "reviewing",
-                    "shortlisted",
-                    "interviewed",
-                    "hired",
-                    "rejected",
-                  ].map((status) => (
-                    <Button
-                      key={status}
-                      variant={
-                        selectedApplication.application_status === status
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                      className="capitalize"
-                      onClick={() =>
-                        handleStatusUpdate(status as ApplicationStatus)
-                      }
-                      disabled={
-                        isUpdatingStatus ||
-                        selectedApplication.application_status === status
-                      }
-                    >
-                      {status.replace("_", " ")}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+              {/* Use the new ApplicationStatusUpdate component */}
+              <ApplicationStatusUpdate
+                jobId={jobId}
+                application={selectedApplication}
+                onStatusUpdated={handleStatusUpdated}
+              />
             </div>
           </div>
         ) : (
@@ -397,6 +397,17 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
           </div>
         )}
       </div>
+
+      {/* Use the new AIRecommendationDialog component */}
+      <AIRecommendationDialog
+        isOpen={showRecommendationDialog}
+        onOpenChange={setShowRecommendationDialog}
+        isGenerating={isGeneratingRecommendations}
+        recommendations={aiRecommendations}
+        onSelectApplicant={selectRecommendedApplicant}
+        jobId={jobId}
+        applicants={applicants}
+      />
     </div>
   );
 };
