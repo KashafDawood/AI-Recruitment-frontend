@@ -6,6 +6,8 @@ interface AIRecommendation {
   rank: number;
   candidate_id: string;
   application_id: string;
+  application_status: string;
+  candidate_username: string;
   candidate_name: string;
   match_score: number;
   match_reasons: {

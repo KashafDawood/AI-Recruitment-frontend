@@ -58,23 +58,34 @@ export default function OptimizeImage({
       className={`flex items-center justify-center w-full h-full ${className}`}
       style={{ backgroundColor: bgColor }}
     >
-      <div
-        className={`w-[${width}px] h-[${height}px] h-auto  flex items-center justify-center text-white font-medium text-lg`}
-      >
+      <span className="text-white font-medium text-lg">
         {alt?.charAt(0)?.toUpperCase() || "U"}
-      </div>
+      </span>
     </div>
   );
 
   // Show fallback if source is missing or there was an error loading the image
-  if (!src || (imageError && showFallbackOnError)) {
+  if (!src || src === "" || (imageError && showFallbackOnError)) {
     return defaultFallback;
+  }
+
+  // Handle relative URLs by prepending the API base URL
+  let imgSrc = src;
+  if (
+    src &&
+    !src.startsWith("http") &&
+    !src.startsWith("data:") &&
+    !src.startsWith("/")
+  ) {
+    imgSrc = `${process.env.NEXT_PUBLIC_URL}${
+      src.startsWith("/") ? "" : "/"
+    }${src}`;
   }
 
   if (!cloudinaryName) {
     return (
       <Image
-        src={src}
+        src={imgSrc}
         width={width}
         height={height || width}
         alt={alt || "Image"}
@@ -87,10 +98,14 @@ export default function OptimizeImage({
   // Check if the src is a valid URL before passing to CldImage
   try {
     // Simple validation to check if src could be a valid URL or path
-    if (src.startsWith("http") || src.startsWith("/") || !src.includes(" ")) {
+    if (
+      imgSrc.startsWith("http") ||
+      imgSrc.startsWith("/") ||
+      imgSrc.startsWith("data:")
+    ) {
       return (
         <CldImage
-          src={src}
+          src={imgSrc}
           width={width}
           height={height || width}
           alt={alt || "Image"}
@@ -102,7 +117,6 @@ export default function OptimizeImage({
       );
     } else {
       // If src doesn't look like a valid URL, show fallback
-      setImageError(true);
       return defaultFallback;
     }
   } catch (error) {
