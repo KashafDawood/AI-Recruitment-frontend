@@ -11,11 +11,11 @@ const protectedRoutes = {
   ],
   employer: [
     "/employer",
-    "/employer/analytics",
     "/employer/profile",
     "/employer/create-job",
     "/employer/my-joblistings",
     "/employer/my-joblistings/job-detail",
+    "/employer/my-joblistings/edit-job",
   ],
 };
 const publicRoutes = ["/login", "/signup"];

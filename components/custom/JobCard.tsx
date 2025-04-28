@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Job } from "@/types/job";
 import {
   BookmarkIcon,
@@ -7,16 +6,19 @@ import {
   User,
   Clock,
   CheckCircle,
+  Edit,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GlowCard, vibrantColors } from "./GlowCard";
+import { useRouter } from "next/navigation";
 
 interface JobCardProps {
   job: Job;
   index: number;
   isSelected: boolean;
   showSaveJob?: boolean;
+  showEditButton?: boolean;
   onClick?: () => void;
   onSaveJob?: (jobId: number) => void;
 }
@@ -34,9 +36,12 @@ const JobCard: React.FC<JobCardProps> = ({
   index,
   isSelected,
   showSaveJob = false,
+  showEditButton = false,
   onClick,
   onSaveJob,
 }) => {
+  const router = useRouter();
+
   // Select a color from vibrantColors based on job index
   const cardColor = vibrantColors[index % vibrantColors.length];
 
@@ -44,8 +49,14 @@ const JobCard: React.FC<JobCardProps> = ({
   const isOpen = job.job_status.toLowerCase() === "open";
   const statusColor = isOpen
     ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+    : job.job_status.toLowerCase() === "draft"
+    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
     : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
-  const statusDot = isOpen ? "bg-green-500" : "bg-gray-500";
+  const statusDot = isOpen
+    ? "bg-green-500"
+    : job.job_status.toLowerCase() === "draft"
+    ? "bg-yellow-500"
+    : "bg-gray-500";
 
   // Properly handle click events
   const handleCardClick = (e: React.MouseEvent) => {
@@ -62,6 +73,13 @@ const JobCard: React.FC<JobCardProps> = ({
     if (onSaveJob) {
       onSaveJob(job.id);
     }
+  };
+
+  // Handle edit button click
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent the card click event
+    router.push(`/employer/my-joblistings/edit-job?id=${job.id}`);
   };
 
   return (
@@ -118,23 +136,35 @@ const JobCard: React.FC<JobCardProps> = ({
                   </div>
                 </div>
               </div>
-              {showSaveJob && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`rounded-lg h-10 w-10 border-gray-200 dark:border-gray-700 z-10 ${
-                    job.is_saved
-                      ? "bg-blue-500 text-white hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
-                      : "dark:bg-gray-800 dark:hover:bg-gray-700"
-                  }`}
-                  onClick={handleSaveClick}
-                >
-                  <BookmarkIcon
-                    className="h-5 w-5"
-                    style={{ color: job.is_saved ? "white" : cardColor }}
-                  />
-                </Button>
-              )}
+              <div className="flex gap-2">
+                {showEditButton && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-lg h-10 w-10 border-gray-200 dark:border-gray-700 z-10 dark:bg-gray-800 dark:hover:bg-gray-700"
+                    onClick={handleEditClick}
+                  >
+                    <Edit className="h-4 w-4" style={{ color: cardColor }} />
+                  </Button>
+                )}
+                {showSaveJob && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={`rounded-lg h-10 w-10 border-gray-200 dark:border-gray-700 z-10 ${
+                      job.is_saved
+                        ? "bg-blue-500 text-white hover:bg-blue-400 dark:bg-blue-700 dark:hover:bg-blue-600"
+                        : "dark:bg-gray-800 dark:hover:bg-gray-700"
+                    }`}
+                    onClick={handleSaveClick}
+                  >
+                    <BookmarkIcon
+                      className="h-5 w-5"
+                      style={{ color: job.is_saved ? "white" : cardColor }}
+                    />
+                  </Button>
+                )}
+              </div>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-6 mt-3">
               {job.description}

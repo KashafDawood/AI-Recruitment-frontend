@@ -217,6 +217,7 @@ const MyJobListings: React.FC = () => {
                     job={job}
                     index={index}
                     isSelected={selectedJob?.id === job.id}
+                    showEditButton={true} // Enable edit button for employer job listings
                   />
                 </div>
               ))

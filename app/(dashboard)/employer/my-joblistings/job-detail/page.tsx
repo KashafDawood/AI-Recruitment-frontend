@@ -23,6 +23,7 @@ import {
   ExternalLink,
   AlertTriangle,
   Loader2,
+  Edit,
 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -121,6 +122,19 @@ const JobDetailPage: React.FC = () => {
             >
               <ExternalLink className="h-4 w-4" />
               View Public Page
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() =>
+                router.push(
+                  `/employer/my-joblistings/edit-job?id=${jobData.id}`
+                )
+              }
+            >
+              <Edit className="h-4 w-4" />
+              Edit Job
             </Button>
             <Sheet
               open={isDetailsSheetOpen}
