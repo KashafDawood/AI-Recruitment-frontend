@@ -6,7 +6,7 @@ import {
   User,
   Clock,
   CheckCircle,
-  Edit,
+  Pen,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,10 +141,10 @@ const JobCard: React.FC<JobCardProps> = ({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="rounded-lg h-10 w-10 border-gray-200 dark:border-gray-700 z-10 dark:bg-gray-800 dark:hover:bg-gray-700"
+                    className="rounded-full h-10 w-10 border-gray-200 dark:border-gray-700 z-10 dark:bg-gray-800 dark:hover:bg-gray-700"
                     onClick={handleEditClick}
                   >
-                    <Edit className="h-4 w-4" style={{ color: cardColor }} />
+                    <Pen className="h-4 w-4" style={{ color: cardColor }} />
                   </Button>
                 )}
                 {showSaveJob && (
