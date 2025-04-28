@@ -20,7 +20,6 @@ import {
   Users,
   Calendar,
   ArrowLeft,
-  ExternalLink,
   AlertTriangle,
   Loader2,
   Edit,
@@ -67,19 +66,6 @@ const JobDetailPage: React.FC = () => {
     fetchJobDetails();
   }, [searchParams]);
 
-  // const getStatusColor = (status: string) => {
-  //   switch (status.toLowerCase()) {
-  //     case "open":
-  //       return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-  //     case "closed":
-  //       return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-  //     case "draft":
-  //       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-  //     default:
-  //       return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-  //   }
-  // };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
@@ -114,15 +100,6 @@ const JobDetailPage: React.FC = () => {
 
         {!loading && !error && jobData && (
           <div className="flex gap-3 ml-12 md:ml-0">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => window.open(`/job/${jobData.id}`, "_blank")}
-            >
-              <ExternalLink className="h-4 w-4" />
-              View Public Page
-            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -308,14 +285,6 @@ const JobDetailPage: React.FC = () => {
                     When candidates apply for this position, they will appear
                     here. You can then review their profiles and resumes.
                   </p>
-                  <Button
-                    variant="outline"
-                    className="mt-6"
-                    onClick={() => window.open(`/job/${jobData.id}`, "_blank")}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View Public Job Listing
-                  </Button>
                 </div>
               )}
             </CardContent>
