@@ -25,8 +25,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import JobStatusToggle from "@/components/jobs/JobStatusToggle";
 
 const JobDetailPage: React.FC = () => {
   const [jobData, setJobData] = useState<Job | null>(null);
@@ -66,18 +66,18 @@ const JobDetailPage: React.FC = () => {
     fetchJobDetails();
   }, [searchParams]);
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "open":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-      case "closed":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-      case "draft":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status.toLowerCase()) {
+  //     case "open":
+  //       return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+  //     case "closed":
+  //       return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+  //     case "draft":
+  //       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+  //     default:
+  //       return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+  //   }
+  // };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -229,17 +229,21 @@ const JobDetailPage: React.FC = () => {
                         {jobData.experience_required}
                       </span>
                     </div>
+                    {/* Replace the static status badge with our interactive JobStatusToggle component */}
                     <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-3 rounded-lg flex flex-col">
-                      <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                        Status
-                      </span>
-                      <div className="mt-1">
-                        <Badge
-                          className={`${getStatusColor(jobData.job_status)}`}
-                        >
-                          {jobData.job_status}
-                        </Badge>
-                      </div>
+                      <JobStatusToggle
+                        jobId={jobData.id}
+                        currentStatus={
+                          jobData.job_status as "open" | "closed" | "draft"
+                        }
+                        onStatusChange={(newStatus) => {
+                          // Update the local job data with the new status
+                          setJobData({
+                            ...jobData,
+                            job_status: newStatus,
+                          });
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
