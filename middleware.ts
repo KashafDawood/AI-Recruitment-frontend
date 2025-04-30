@@ -13,7 +13,8 @@ const protectedRoutes = {
     "/employer",
     "/employer/blogs",
     "/employer/create-blog",
-    "/employer/edit-blog/[slug]",
+    "/employer/edit-blog",
+    "/employer/edit-blog/:slug",
     "/employer/profile",
     "/employer/create-job",
     "/employer/my-joblistings",
@@ -47,7 +48,7 @@ export default async function middleware(req: NextRequest) {
 
     // Role-based access control
     const allowedRoutes = protectedRoutes[userRole] || [];
-    if (!allowedRoutes.includes(path)) {
+    if (!isAllowedRoute(path, allowedRoutes)) {
       return NextResponse.redirect(
         new URL(protectedRoutes[userRole][0], req.nextUrl)
       );
@@ -56,6 +57,13 @@ export default async function middleware(req: NextRequest) {
 
   return NextResponse.next();
 }
+
+const isAllowedRoute = (path: string, allowedRoutes: string[]) => {
+  return allowedRoutes.some((route) => {
+    const routeRegex = new RegExp(`^${route.replace(/:\\w+/g, "\\w+")}$`);
+    return routeRegex.test(path);
+  });
+};
 
 // Update matcher to include signup route
 export const config = {
