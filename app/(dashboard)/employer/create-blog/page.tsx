@@ -138,7 +138,7 @@ export default function CreateBlogPage() {
   };
 
   // Add a function to handle AI-generated blog content
-  const handleBlogGenerated = (blogContent: string) => {
+  const handleBlogGenerated = (blogContent: string, blogKeywords?: string) => {
     // Set the form values from the AI-generated content
     setValue("content", blogContent, { shouldDirty: true });
     setBlogContent(blogContent);
@@ -159,8 +159,11 @@ export default function CreateBlogPage() {
       }
     }
 
-    // Try to extract keywords from the content if they exist
-    if (!(watch("keywords") ?? "").trim()) {
+    // Set keywords directly if provided by AI
+    if (blogKeywords) {
+      setValue("keywords", blogKeywords, { shouldDirty: true });
+    } else if (!(watch("keywords") ?? "").trim()) {
+      // Try to extract keywords from the content if they exist
       const keywordsMatch = blogContent
         .toLowerCase()
         .match(/keywords?:?\s*([^<.]+)/i);

@@ -21,7 +21,9 @@ import { generateBlog } from "@/api/ai/generateBlog";
 
 const blogGeneratorSchema = z.object({
   blog_title: z.string().min(5, "Title must be at least 5 characters"),
-  blog_description: z.string().min(20, "Description must be at least 20 characters"),
+  blog_description: z
+    .string()
+    .min(20, "Description must be at least 20 characters"),
   blog_keywords: z.string().optional(),
   blog_length: z.string().optional(),
 });
@@ -33,7 +35,10 @@ interface BlogGeneratorFormProps {
   onClose: () => void;
 }
 
-export default function BlogGeneratorForm({ onBlogGenerated, onClose }: BlogGeneratorFormProps) {
+export default function BlogGeneratorForm({
+  onBlogGenerated,
+  onClose,
+}: BlogGeneratorFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const {
@@ -52,12 +57,26 @@ export default function BlogGeneratorForm({ onBlogGenerated, onClose }: BlogGene
     },
   });
 
+  const formatBlogContent = (content: string): string => {
+    // Remove <hr> tags
+    const contentWithoutHr = content.replace(/<hr\s*\/?>/g, "");
+
+    // Add vertical padding between paragraphs
+    const formattedContent = contentWithoutHr.replace(
+      /<p>(.*?)<\/p>/g,
+      '<p style="padding-bottom: 1rem;">$1</p>'
+    );
+
+    return formattedContent;
+  };
+
   const onSubmit = async (data: BlogGeneratorFormValues) => {
     setIsGenerating(true);
     try {
       const response = await generateBlog(data);
+      const formattedBlog = formatBlogContent(response.blog);
       toast.success("Blog post generated successfully!");
-      onBlogGenerated(response.blog);
+      onBlogGenerated(formattedBlog);
       onClose();
     } catch (error) {
       console.error("Error generating blog post:", error);
@@ -140,7 +159,12 @@ export default function BlogGeneratorForm({ onBlogGenerated, onClose }: BlogGene
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
-        <Button type="button" variant="outline" onClick={onClose} disabled={isGenerating}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          disabled={isGenerating}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={isGenerating} className="relative">
