@@ -1,9 +1,26 @@
 import axiosInstance from "../axiosConfig";
 
-export const getAllBlogs = async (page = 1, pageSize = 10) => {
+export const getAllBlogs = async (page = 1, pageSize = 10, status = "") => {
   try {
+    const statusQuery = status ? `&status=${status}` : "";
     const response = await axiosInstance.get(
-      `/api/blogs?page=${page}&page_size=${pageSize}`
+      `/api/blogs?page=${page}&page_size=${pageSize}${statusQuery}`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getEmployerAllBlogs = async (
+  page = 1,
+  pageSize = 10,
+  status = ""
+) => {
+  try {
+    const statusQuery = status ? `&status=${status}` : "";
+    const response = await axiosInstance.get(
+      `/api/blogs/my-blogs?page=${page}&page_size=${pageSize}${statusQuery}`
     );
     return response.data;
   } catch (error) {

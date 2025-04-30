@@ -13,7 +13,7 @@ const protectedRoutes = {
     "/employer",
     "/employer/blogs",
     "/employer/create-blog",
-    "/employer/edit-blog/",
+    "/employer/edit-blog/[slug]",
     "/employer/profile",
     "/employer/create-job",
     "/employer/my-joblistings",

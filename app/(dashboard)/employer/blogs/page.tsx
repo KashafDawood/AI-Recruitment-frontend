@@ -19,7 +19,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { getAllBlogs, updateBlogStatus, deleteBlog } from "@/api/blogs/blogApi";
+import {
+  getEmployerAllBlogs,
+  updateBlogStatus,
+  deleteBlog,
+} from "@/api/blogs/blogApi";
 import { Blog } from "@/types/blog";
 import { toast } from "sonner";
 import {
@@ -57,6 +61,7 @@ export default function BlogsPage() {
   const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusUpdating, setStatusUpdating] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -87,10 +92,28 @@ export default function BlogsPage() {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const response = await getAllBlogs();
+      const response = await getEmployerAllBlogs(
+        1,
+        10,
+        statusFilter !== "all" ? statusFilter : ""
+      );
       const blogsData = response.results || [];
       setBlogs(blogsData);
-      setFilteredBlogs(blogsData);
+
+      // Reapply filters after fetching blogs
+      let result = [...blogsData];
+
+      // Filter by search query
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        result = result.filter(
+          (blog) =>
+            blog.title.toLowerCase().includes(query) ||
+            (blog.category && blog.category.toLowerCase().includes(query))
+        );
+      }
+
+      setFilteredBlogs(result);
     } catch (error) {
       console.error("Error fetching blogs:", error);
       toast.error("Failed to load blogs");
@@ -128,17 +151,30 @@ export default function BlogsPage() {
   };
 
   const handleStatusChange = async (blog: Blog, newStatus: string) => {
+    setStatusUpdating(blog.slug); // Set loading state
     try {
-      await updateBlogStatus(blog.slug, { status: newStatus });
+      const formData = new FormData();
+      formData.append("status", newStatus);
+      await updateBlogStatus(blog.slug, formData);
       toast.success(`Blog status updated to ${newStatus}`);
       fetchBlogs();
     } catch (error) {
       console.error("Error updating blog status:", error);
       toast.error("Failed to update blog status");
+    } finally {
+      setStatusUpdating(null); // Reset loading state
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, slug: string) => {
+    if (statusUpdating === slug) {
+      return (
+        <Badge className="bg-gray-500 hover:bg-gray-600 flex items-center">
+          <Loader2 className="h-4 w-4 animate-spin mr-2" /> Updating...
+        </Badge>
+      );
+    }
+
     switch (status) {
       case "published":
         return (
@@ -352,7 +388,7 @@ interface BlogTableProps {
   onEdit: (slug: string) => void;
   onDelete: (blog: Blog) => void;
   onStatusChange: (blog: Blog, newStatus: string) => void;
-  getStatusBadge: (status: string) => React.ReactNode;
+  getStatusBadge: (status: string, slug: string) => React.ReactNode;
   onCreateClick: () => void;
 }
 
@@ -438,7 +474,7 @@ function BlogTable({
                     day: "numeric",
                   })}
                 </TableCell>
-                <TableCell>{getStatusBadge(blog.status)}</TableCell>
+                <TableCell>{getStatusBadge(blog.status, blog.slug)}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
