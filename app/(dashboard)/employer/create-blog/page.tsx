@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/custom/richTextEditor";
 import {
   Select,
   SelectContent,
@@ -26,8 +26,17 @@ import {
 } from "@/components/ui/select";
 import { createBlog } from "@/api/blogs/blogApi";
 import { toast } from "sonner";
-import { Loader2, FileImage, Info } from "lucide-react";
+import { Loader2, FileImage, Info, Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import OptimizeImage from "@/components/custom/optimizeImage";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import BlogGeneratorForm from "@/components/custom/BlogGeneratorForm";
 
 const blogFormSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -44,6 +53,10 @@ export default function CreateBlogPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [blogContent, setBlogContent] = useState("");
+  // Add a ref for the file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -52,6 +65,7 @@ export default function CreateBlogPage() {
     reset,
     setValue,
     watch,
+    trigger,
   } = useForm<BlogFormValues>({
     resolver: zodResolver(blogFormSchema),
     defaultValues: {
@@ -62,6 +76,16 @@ export default function CreateBlogPage() {
       status: "draft",
     },
   });
+
+  // Handle rich text editor content changes
+  const handleContentChange = (html: string) => {
+    setBlogContent(html);
+    setValue("content", html, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    trigger("content");
+  };
 
   const onSubmit = async (data: BlogFormValues) => {
     setIsLoading(true);
@@ -80,6 +104,7 @@ export default function CreateBlogPage() {
       await createBlog(formData);
       toast.success("Blog post created successfully!");
       reset();
+      setBlogContent("");
       setThumbnail(null);
       setThumbnailPreview(null);
       router.push("/employer/blogs");
@@ -102,6 +127,46 @@ export default function CreateBlogPage() {
         setThumbnailPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Add a function to trigger file input click
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // Add a function to handle AI-generated blog content
+  const handleBlogGenerated = (blogContent: string) => {
+    // Set the form values from the AI-generated content
+    setValue("content", blogContent, { shouldDirty: true });
+    setBlogContent(blogContent);
+
+    // Extract title from the blog content if the title field is empty
+    const currentTitle = watch("title");
+    if (!currentTitle || currentTitle.trim() === "") {
+      // Try to extract the title from the HTML content
+      const titleMatch =
+        blogContent.match(/<h1[^>]*>(.*?)<\/h1>/i) ||
+        blogContent.match(/<h2[^>]*>(.*?)<\/h2>/i) ||
+        blogContent.match(/<strong[^>]*>(.*?)<\/strong>/i);
+
+      if (titleMatch && titleMatch[1]) {
+        // Remove any HTML tags from the extracted title
+        const titleText = titleMatch[1].replace(/<\/?[^>]+(>|$)/g, "");
+        setValue("title", titleText, { shouldDirty: true });
+      }
+    }
+
+    // Try to extract keywords from the content if they exist
+    if (!(watch("keywords") ?? "").trim()) {
+      const keywordsMatch = blogContent
+        .toLowerCase()
+        .match(/keywords?:?\s*([^<.]+)/i);
+      if (keywordsMatch && keywordsMatch[1]) {
+        setValue("keywords", keywordsMatch[1].trim(), { shouldDirty: true });
+      }
     }
   };
 
@@ -136,9 +201,21 @@ export default function CreateBlogPage() {
             className="space-y-7"
           >
             <div className="space-y-3">
-              <Label htmlFor="title" className="text-base font-medium">
-                Blog Title
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="title" className="text-base font-medium">
+                  Blog Title
+                </Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gradient-button flex items-center gap-1 text-xs"
+                  onClick={() => setIsAiDialogOpen(true)}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Generate using AI
+                </Button>
+              </div>
               <Input
                 id="title"
                 placeholder="Enter a compelling title for your blog post"
@@ -199,11 +276,16 @@ export default function CreateBlogPage() {
               <Label htmlFor="content" className="text-base font-medium">
                 Content
               </Label>
-              <Textarea
-                id="content"
-                placeholder="Write your blog content here..."
-                className="min-h-[250px] resize-y"
+              <input
+                type="hidden"
                 {...register("content")}
+                value={blogContent}
+              />
+              <RichTextEditor
+                content={blogContent}
+                onChange={handleContentChange}
+                placeholder="Write your blog content here..."
+                showToolbar={true}
               />
               {errors.content && (
                 <p className="text-sm text-destructive font-medium">
@@ -217,13 +299,17 @@ export default function CreateBlogPage() {
                 Thumbnail Image
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                <div className="border-2 border-dashed rounded-lg p-4 text-center hover:bg-secondary/20 transition-colors cursor-pointer relative overflow-hidden">
+                <div
+                  onClick={handleUploadClick}
+                  className="border-2 border-dashed rounded-lg p-4 text-center hover:bg-secondary/20 transition-colors cursor-pointer relative overflow-hidden"
+                >
                   <Input
+                    ref={fileInputRef}
                     id="thumbnail"
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    className="hidden" // Hide the input completely
                   />
                   <div className="py-4 flex flex-col items-center justify-center">
                     <FileImage className="h-10 w-10 text-muted-foreground mb-2" />
@@ -236,10 +322,12 @@ export default function CreateBlogPage() {
 
                 {thumbnailPreview ? (
                   <div className="border rounded-lg overflow-hidden h-[150px]">
-                    <img
+                    <OptimizeImage
                       src={thumbnailPreview}
                       alt="Thumbnail preview"
                       className="w-full h-full object-cover"
+                      width={1200}
+                      height={630}
                     />
                   </div>
                 ) : (
@@ -306,6 +394,26 @@ export default function CreateBlogPage() {
           </Button>
         </CardFooter>
       </Card>
+
+      {/* AI Blog Generator Dialog */}
+      <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Generate Blog with AI
+            </DialogTitle>
+            <DialogDescription>
+              Describe what you want to write about and our AI will create a
+              professional blog post for you.
+            </DialogDescription>
+          </DialogHeader>
+          <BlogGeneratorForm
+            onBlogGenerated={handleBlogGenerated}
+            onClose={() => setIsAiDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
