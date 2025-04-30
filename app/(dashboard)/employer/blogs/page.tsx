@@ -131,7 +131,7 @@ export default function BlogsPage() {
   };
 
   const handleEditBlog = (slug: string) => {
-    router.push(`/employer/edit-blog/${slug}`);
+    router.push(`/employer/edit-blog?slug=${slug}`);
   };
 
   const handleDeleteBlog = async () => {

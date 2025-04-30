@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/custom/richTextEditor";
 import {
   Select,
   SelectContent,
@@ -26,7 +26,13 @@ import {
 } from "@/components/ui/select";
 import { getBlogBySlug, updateBlog } from "@/api/blogs/blogApi";
 import { toast } from "sonner";
-import { Loader2, Image as ImageIcon, UploadCloud } from "lucide-react";
+import {
+  Loader2,
+  Image as ImageIcon,
+  UploadCloud,
+  ArrowLeft,
+} from "lucide-react";
+import OptimizeImage from "@/components/custom/optimizeImage";
 
 const blogFormSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -38,9 +44,11 @@ const blogFormSchema = z.object({
 
 type BlogFormValues = z.infer<typeof blogFormSchema>;
 
-export default function EditBlogPage({ params }: { params: { slug: string } }) {
+export default function EditBlogPage() {
   const router = useRouter();
-  const { slug } = params;
+  const searchParams = useSearchParams();
+  const slug = searchParams.get("slug");
+
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -68,6 +76,12 @@ export default function EditBlogPage({ params }: { params: { slug: string } }) {
   });
 
   useEffect(() => {
+    if (!slug) {
+      toast.error("Blog not found");
+      router.push("/employer/blogs");
+      return;
+    }
+
     const fetchBlog = async () => {
       setIsFetching(true);
       try {
@@ -95,6 +109,8 @@ export default function EditBlogPage({ params }: { params: { slug: string } }) {
   }, [slug, reset, router]);
 
   const onSubmit = async (data: BlogFormValues) => {
+    if (!slug) return;
+
     setIsLoading(true);
     try {
       const formData = new FormData();
@@ -161,6 +177,15 @@ export default function EditBlogPage({ params }: { params: { slug: string } }) {
       transition={{ duration: 0.5 }}
       className="container mx-auto py-8 px-4 max-w-4xl"
     >
+      <Button
+        variant="ghost"
+        className="mb-4"
+        onClick={() => router.push("/employer/blogs")}
+      >
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Back to Blogs
+      </Button>
+
       <Card className="border-none shadow-xl overflow-hidden bg-white/90 backdrop-blur-md dark:bg-gray-900/90">
         <CardHeader className="bg-gradient-to-r from-green-600 to-green-400 text-white">
           <CardTitle className="text-2xl">Edit Blog Post</CardTitle>
@@ -191,12 +216,12 @@ export default function EditBlogPage({ params }: { params: { slug: string } }) {
               <Label htmlFor="content" className="text-base font-medium">
                 Content
               </Label>
-              <Textarea
-                id="content"
-                placeholder="Write your blog content here... (You can use HTML for formatting)"
-                rows={15}
-                className="min-h-[300px] font-mono text-sm"
-                {...register("content")}
+              <RichTextEditor
+                content={watch("content")}
+                onChange={(html) =>
+                  setValue("content", html, { shouldValidate: true })
+                }
+                placeholder="Write your blog content here..."
               />
               {errors.content && (
                 <p className="text-sm text-red-500 mt-1">
@@ -258,10 +283,12 @@ export default function EditBlogPage({ params }: { params: { slug: string } }) {
                           Current thumbnail:
                         </p>
                         <div className="w-full h-48 max-w-md mx-auto relative rounded-lg overflow-hidden shadow-md">
-                          <img
+                          <OptimizeImage
                             src={currentThumbnailUrl}
                             alt="Current thumbnail"
                             className="w-full h-full object-cover"
+                            width={500}
+                            height={300}
                           />
                         </div>
                       </div>
@@ -271,10 +298,12 @@ export default function EditBlogPage({ params }: { params: { slug: string } }) {
                           New thumbnail preview:
                         </p>
                         <div className="w-full h-48 max-w-md mx-auto relative rounded-lg overflow-hidden shadow-md">
-                          <img
+                          <OptimizeImage
                             src={previewUrl}
                             alt="New thumbnail preview"
                             className="w-full h-full object-cover"
+                            width={500}
+                            height={300}
                           />
                         </div>
                       </div>
