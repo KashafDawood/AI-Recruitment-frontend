@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, PlusCircle, LayoutList } from "lucide-react";
+import { PlusCircle, LayoutList, ListMinus } from "lucide-react";
 
 export const navItems = [
   {
@@ -14,8 +14,13 @@ export const navItems = [
     icon: LayoutList,
   },
   {
-    title: "Add a Blog",
-    url: "/employer/Blogposts",
-    icon: CheckCircle,
+    title: "Create a Blog",
+    url: "/employer/create-blog",
+    icon: PlusCircle,
+  },
+  {
+    title: "Blogs",
+    url: "/employer/blogs",
+    icon: ListMinus,
   },
 ];

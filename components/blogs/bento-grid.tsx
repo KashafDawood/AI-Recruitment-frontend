@@ -36,7 +36,7 @@ export default function BentoGrid() {
         setLoading(false);
       }
     };
-  
+
     fetchPosts();
   }, [currentPage]);
 
@@ -72,13 +72,13 @@ export default function BentoGrid() {
       )}
 
       {/* Only show pagination if there are posts */}
-      { totalPages > 0 && 
+      {totalPages > 0 && (
         <PaginationUI
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
-      }
+      )}
     </div>
   );
 }

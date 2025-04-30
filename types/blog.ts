@@ -1,11 +1,24 @@
-export interface BlogPost {
+export interface Blog {
   id: number;
   title: string;
-  slug: string;
   content: string;
-  image?: string;
-  bgColor?: string;
-  category?: string;
-  thumbnail?: string;
-  created_at?: Date;
+  thumbnail: string | null;
+  keywords: string;
+  created_at: string;
+  updated_at: string;
+  status: "draft" | "published" | "archived";
+  slug: string;
+  category: string;
+  employer?: {
+    id: number;
+    email: string;
+    name: string;
+  };
+}
+
+export interface BlogListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Blog[];
 }

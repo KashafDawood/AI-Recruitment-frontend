@@ -4,32 +4,70 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DOMPurify from "dompurify";
-import { getLatestBlogs } from "@/api/blogs/getLatestBlogs";
-import { BlogPost } from "@/types/blog";
+import { getAllBlogs } from "@/api/blogs/blogApi";
 import OptimizeImage from "../custom/optimizeImage";
 import { motion } from "framer-motion";
+import { Blog } from "@/types/blog";
 
 export default function Blogs() {
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    getLatestBlogs()
-      .then((data) => setBlogs(data))
-      .finally(() => setLoading(false));
+    getAllBlogs()
+      .then((response) => {
+        // Check if response is valid
+        if (!response) {
+          setError("No data received from server");
+          return;
+        }
+
+        // Extract blog data - handle both array and object with results property
+        const blogsData = Array.isArray(response)
+          ? response
+          : response.results
+          ? response.results
+          : [];
+
+        // Sort blogs by created_at date (newest first) and take only the 3 most recent
+        const sortedBlogs = [...blogsData]
+          .sort((a, b) => {
+            // Safely handle date conversion
+            const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return dateB - dateA;
+          })
+          .slice(0, 3);
+
+        setBlogs(sortedBlogs);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching blogs:", err);
+        setError("Failed to load blog posts");
+        setLoading(false);
+      });
   }, []);
 
   const handleReadMore = (slug: string) => {
     router.push(`/blogs/${slug}`);
   };
 
-  const formatDate = (date: Date | undefined) => {
-    return new Date(date || Date.now()).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+  const formatDate = (dateString: string | Date | undefined) => {
+    if (!dateString) return ""; // Handle undefined dates
+
+    try {
+      return new Date(dateString).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch (e) {
+      console.error("Date formatting error:", e);
+      return ""; // Return empty string on invalid dates
+    }
   };
 
   // Animation variants
@@ -115,6 +153,38 @@ export default function Blogs() {
               ></div>
             ))}
           </div>
+        ) : error ? (
+          <motion.div
+            className="text-center py-16"
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="mx-auto max-w-md">
+              <h3 className="text-xl font-medium text-red-500 dark:text-red-400 mb-4">
+                {error}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                Please try again later.
+              </p>
+            </div>
+          </motion.div>
+        ) : blogs.length === 0 ? (
+          <motion.div
+            className="text-center py-16"
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="mx-auto max-w-md">
+              <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-4">
+                No blogs published yet
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                Check back later for new articles and insights from our experts.
+              </p>
+            </div>
+          </motion.div>
         ) : (
           <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
