@@ -42,7 +42,7 @@ const PaginationUI: React.FC<PaginationProps> = ({
   };
 
   return (
-    <Pagination className="mt-8">
+    <Pagination className="mt-2">
       <PaginationContent>
         <PaginationItem className="cursor-pointer">
           <PaginationPrevious

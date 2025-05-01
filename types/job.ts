@@ -84,3 +84,11 @@ export interface Job {
   is_saved: boolean;
   employer: Employer | null;
 }
+
+export type JobStatus = "applied" | "interviewing" | "rejected" | "offered"
+
+export interface TimelineEvent {
+  title: string
+  date: string
+  description: string
+}

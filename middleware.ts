@@ -8,6 +8,7 @@ const protectedRoutes = {
     "/candidate/profile",
     "/candidate/jobs",
     "/candidate/savedjobs",
+    "/candidate/appliedjobs",	
   ],
   employer: [
     "/employer",
