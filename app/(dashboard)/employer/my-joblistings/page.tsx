@@ -98,6 +98,20 @@ const MyJobListings: React.FC = () => {
     }
   };
 
+  // Handle job deletion from the list view
+  const handleDeleteJob = (jobId: number) => {
+    // Update the local jobs list by removing the deleted job
+    setJobs((currentJobs) => currentJobs.filter((job) => job.id !== jobId));
+
+    // Update total job count
+    setTotalJobs((prevTotal) => prevTotal - 1);
+
+    // If we've deleted all jobs on the current page and it's not the first page, go to previous page
+    if (jobs.length === 1 && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -218,6 +232,8 @@ const MyJobListings: React.FC = () => {
                     index={index}
                     isSelected={selectedJob?.id === job.id}
                     showEditButton={true} // Enable edit button for employer job listings
+                    showDeleteButton={true}
+                    onDeleteJob={handleDeleteJob}
                   />
                 </div>
               ))
