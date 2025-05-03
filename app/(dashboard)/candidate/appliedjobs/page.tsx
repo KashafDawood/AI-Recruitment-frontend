@@ -21,23 +21,15 @@ export default function FindJobs() {
   const [totalJobs, setTotalJobs] = useState(0);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<Record<string, string>>({});
   const jobsPerPage = 10;
-
-  // Lock scrolling on the main document
-  useEffect(() => {
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      document.documentElement.style.overflow = "";
-    };
-  }, []);
+  const [order, setOrder] = useState("desc"); // Default order
 
   // Fetch jobs based on current filters and pagination
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        const data = await getAppliedJobs(currentPage, jobsPerPage);
+        const data = await getAppliedJobs(currentPage, jobsPerPage, order);
         console.log("Fetched jobs:", data); // Debugging line
         if (data && data.results) {
           setJobs(data.results);
@@ -63,17 +55,11 @@ export default function FindJobs() {
     };
 
     fetchJobs();
-  }, [currentPage, filters, width]);
+  }, [currentPage, width, order]);
 
   // Handle job selection
   const handleJobSelect = (job: Job) => {
     setSelectedJob(job);
-  };
-
-  // Handle filter changes
-  const handleFilterChange = (newFilters: Record<string, string>) => {
-    setFilters(newFilters);
-    setCurrentPage(1); // Reset to first page when filters change
   };
 
   // Handle job application
@@ -115,8 +101,18 @@ export default function FindJobs() {
     }
   };
 
+  const handleSortChange = async (sortOption: string) => {
+    if (sortOption === "recent") {
+      setOrder("desc");
+    }
+    if (sortOption === "oldest") {
+      setOrder("asc");
+    }
+    setCurrentPage(1); // Reset to the first page when sorting changes
+  };
+
   return (
-    <div className="h-screen overflow-y-auto custom-scrollbar mr-[-16px]">
+    <div className="h-screen">
       <div className="xl:container mx-auto py-6 space-y-6 p-[22px]">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -126,31 +122,22 @@ export default function FindJobs() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 border-blue-500/20 hover:bg-blue-500/5 hover:text-blue-500 dark:border-blue-500/30 dark:hover:bg-blue-500/10 dark:hover:text-blue-500"
-            >
-              <Filter className="h-4 w-4" />
-              <span>Filter</span>
-            </Button>
-            <Select defaultValue="recent">
+            <Select defaultValue="recent" onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px] border-blue-500/20 dark:border-blue-500/30">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="recent">Most Recent</SelectItem>
                 <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="company">Company Name</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <JobStats />
+        <JobStats stats={jobs || []} applications={totalJobs} />
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Job List Section - Responsive width */}
-          <div className="lg:w-3/5 flex flex-col h-[49rem] overflow-y-auto custom-scrollbar">
+          <div className="lg:w-3/5 flex flex-col h-[78rem] overflow-y-auto custom-scrollbar">
             <JobList
               jobs={jobs}
               totalJobs={totalJobs}
@@ -167,7 +154,7 @@ export default function FindJobs() {
 
           {/* Job Details Section - Only visible on larger screens */}
           {width !== null && width > 1023 && selectedJob && (
-            <div className="lg:w-2/5 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-blue-500/10 dark:border-blue-500/20 p-6 h-fit sticky top-6 mb-20">
+            <div className="lg:w-2/5 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-blue-500/10 dark:border-blue-500/20 p-6 h-fit sticky top-6">
               <JobDetail job={selectedJob} />
             </div>
           )}

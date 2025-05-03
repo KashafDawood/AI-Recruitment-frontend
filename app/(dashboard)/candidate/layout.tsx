@@ -33,7 +33,7 @@ export default function CandidateLayout({
         <SidebarTrigger className="absolute top-0 " />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4">{children}</main>
+        <main className="flex-1 p-4">{children}</main>
       </div>
     </SidebarProvider>
   );
