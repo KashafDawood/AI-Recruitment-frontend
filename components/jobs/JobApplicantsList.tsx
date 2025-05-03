@@ -45,6 +45,7 @@ const JobApplicantsList: React.FC<JobApplicantsListProps> = ({
       try {
         setIsLoading(true);
         const data = await getJobApplications(jobId);
+        console.log(data)
         setApplicants(data);
         setError(null);
         if (data.length > 0) {

@@ -12,7 +12,7 @@ import {
   Share2,
   Calendar,
 } from "lucide-react"
-import type { Job } from "@/types/job"
+import type { Job, JobStatus } from "@/types/job"
 import { getStatusColor, getStatusText } from "./utils"
 import { ApplicationTimeline }  from "./applicationTimeline"
 import { useUserStore } from "@/store/userStore";
@@ -32,7 +32,7 @@ export default function JobDetails({ job }: JobDetailProps) {
         <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-blue-500/20 dark:border-blue-500/30 mb-4">
           <OptimizeImage
             src={job.candidate_photo || ""}
-            alt={job.candidate_name}
+            alt={job.candidate_name || ""}
             width={200}
             height={200}
             className="object-cover"
@@ -48,8 +48,8 @@ export default function JobDetails({ job }: JobDetailProps) {
           <span>{job.location}</span>
         </div>
 
-        <Badge className={`${getStatusColor(job.status)} mt-4 px-3 py-1 rounded-md border`}>
-          {getStatusText(job.status)}
+        <Badge className={`${getStatusColor(job.status as JobStatus)} mt-4 px-3 py-1 rounded-md border`}>
+          {getStatusText(job.status as JobStatus)}
         </Badge>
 
       </div>
@@ -82,7 +82,7 @@ export default function JobDetails({ job }: JobDetailProps) {
           <div className="text-xs text-muted-foreground dark:text-muted-foreground mb-1">Applied On</div>
           <div className="font-medium text-blue-500 dark:text-blue-500 flex items-center justify-center gap-1">
             <CalendarDays className="h-3.5 w-3.5" />
-            <span>{new Date(job.applied_date).toLocaleDateString()}</span>
+            <span>{job.applied_date ? new Date(job.applied_date).toLocaleDateString() : "N/A"}</span>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function JobDetails({ job }: JobDetailProps) {
         </p>
       </div>
 
-      {user.role === "employer" && (
+      {user?.role === "employer" && (
         <div className="flex flex-wrap gap-3">
           <Button className="flex-1 bg-blue-500 hover:bg-blue-500/90 dark:bg-blue-500 dark:hover:bg-blue-500/90 dark:text-white transition-colors">
             <Calendar className="mr-2 h-4 w-4" /> Schedule Interview

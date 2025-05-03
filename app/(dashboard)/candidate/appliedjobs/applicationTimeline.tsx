@@ -5,8 +5,11 @@ import { cn } from "@/lib/utils"
 // Define the application status choices and their order
 export const APPLICATION_STATUS_CHOICES = [
   { value: "applied", label: "Applied" },
-  { value: "interviewing", label: "Interviewing" },
-  { value: "offered", label: "Offered" },
+  { value: "pending", label: "Pending" },
+  { value: "reviewing", label: "Reviewing" },
+  { value: "shortlisted", label: "ShortListed" },
+  { value: "interviewed", label: "Interviewed" },
+  { value: "hired", label: "Hired" },
   { value: "rejected", label: "Rejected" },
 ]
 
@@ -15,6 +18,7 @@ interface ApplicationTimelineProps {
   className?: string
 }
 
+// Updated the application timeline to include the new statuses
 export function ApplicationTimeline({ job, className = "" }: ApplicationTimelineProps) {
   // Determine which stages should be active based on the job status
   const getStageStatus = (stageValue: string) => {
@@ -40,7 +44,7 @@ export function ApplicationTimeline({ job, className = "" }: ApplicationTimeline
     if (status === "active" || status === "completed") {
       if (stageValue === "rejected") {
         return <X className="h-4 w-4" />
-      } else if (stageValue === "interviewing" && status === "active") {
+      } else if (stageValue === "interviewed" && status === "active") {
         return <Clock className="h-4 w-4" />
       } else {
         return <CheckCircle className="h-4 w-4" />
@@ -131,7 +135,7 @@ export function ApplicationTimeline({ job, className = "" }: ApplicationTimeline
 
                   {status === "active" && (
                     <span className="text-xs text-muted-foreground dark:text-muted-foreground">
-                      {stage.value === "applied" ? new Date(job.applied_date).toLocaleDateString() : "In progress"}
+                      {stage.value === "applied" ? new Date(job.applied_date ?? "").toLocaleDateString() : "In progress"}
                     </span>
                   )}
                 </div>
@@ -139,12 +143,20 @@ export function ApplicationTimeline({ job, className = "" }: ApplicationTimeline
                 {status === "active" && (
                   <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1 ml-6">
                     {stage.value === "applied"
-                      ? "Your application is being reviewed"
-                      : stage.value === "interviewing"
-                        ? "Interview process in progress"
-                        : stage.value === "offered"
-                          ? "Offer has been extended"
-                          : "Application was not selected"}
+                      ? "Your application was received and is under review."
+                      : stage.value === "pending"
+                        ? "Your application is pending review."
+                        : stage.value === "reviewing"
+                          ? "Your application is being reviewed by our team."
+                          : stage.value === "shortlisted"
+                            ? "Congratulations! You have been shortlisted for the next stage."
+                            : stage.value === "interviewed"
+                              ? "You've completed the interview. We will update you with the results soon."
+                              : stage.value === "hired"
+                                ? "Congratulations! You have been hired. Welcome to the team!"
+                                : stage.value === "rejected"
+                                  ? "Thank you for your interest. We've decided to proceed with other candidates at this time."
+                                  : "Your application is being processed."}
                   </p>
                 )}
               </div>

@@ -62,37 +62,15 @@ export default function FindJobs() {
     setSelectedJob(job);
   };
 
-  // Handle job application
-  const handleJobApplied = (jobId: number) => {
-    // Update jobs list with applied status
-    const updatedJobs = jobs.map((job) =>
-      job.id === jobId ? { ...job, has_applied: true } : job
-    );
-    setJobs(updatedJobs);
-
-    // Update selected job if it's the one that was applied for
-    if (selectedJob && selectedJob.id === jobId) {
-      setSelectedJob({ ...selectedJob, has_applied: true });
-    }
-  };
-
   const handleSaveJob = async (jobId: number) => {
     try {
       const response = await saveJob(jobId);
 
-      // Update the saved state for the job in the jobs list
-      setJobs((prevJobs) =>
-        prevJobs.map((job) =>
-          job.id === jobId ? { ...job, is_saved: !job.is_saved } : job
-        )
-      );
-
-      // Update the saved state for the selected job
-      setSelectedJob((prevSelectedJob) =>
-        prevSelectedJob && prevSelectedJob.id === jobId
-          ? { ...prevSelectedJob, is_saved: !prevSelectedJob.is_saved }
-          : prevSelectedJob
-      );
+      // Fetch the updated job state after saving/unsaving
+      const updatedJobs = await getAppliedJobs(currentPage, jobsPerPage, order);
+      if (updatedJobs && updatedJobs.results) {
+        setJobs(updatedJobs.results);
+      }
 
       toast.success(response.message);
     } catch (error) {
@@ -134,7 +112,7 @@ export default function FindJobs() {
           </div>
         </div>
 
-        <JobStats stats={jobs || []} applications={totalJobs} />
+        {jobs.length > 0 && <JobStats jobs={jobs} applications={totalJobs} />}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Job List Section - Responsive width */}
           <div className="lg:w-3/5 flex flex-col h-[78rem] overflow-y-auto custom-scrollbar">

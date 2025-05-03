@@ -68,27 +68,36 @@ export interface Job {
   salary: string;
   location: string;
   company: string;
-  description: string;
+  description: string[];
   job_location_type: string;
   job_type: string;
   experience?: string;
   experience_required: string;
-  experience_level: string;
-  required_qualifications: string[];
-  preferred_qualifications: string[];
-  responsibilities: string[];
-  benefits: string[];
+  experience_level?: string;
+  required_qualifications?: string[];
+  preferred_qualifications?: string[];
+  responsibilities?: string[];
+  benefits?: string[];
   created_at: string;
   applicants: BigInteger;
-  has_applied: boolean;
+  has_applied?: boolean;
   is_saved: boolean;
-  employer: Employer | null;
+  employer?: Employer | null;
+  job?: number;
+  applied_date?: string;
+  candidate?: number;
+  candidate_email?: string;
+  candidate_name?: string;
+  candidate_photo?: string;
+  candidate_username?: string;
+  status?: string;
 }
 
-export type JobStatus = "applied" | "interviewing" | "rejected" | "offered"
+export type JobStatus = "applied" |  "pending" | "reviewing" | "shortlisted" | "interviewed" | "hired" | "rejected";
 
 export interface TimelineEvent {
   title: string
   date: string
   description: string
 }
+
