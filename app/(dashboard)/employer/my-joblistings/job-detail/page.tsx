@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { getJobById } from "@/api/jobs/getJobById";
+import { deleteJob } from "@/api/jobs/deleteJob";
 import JobDetails from "@/components/jobs/jobDetails";
 import JobApplicantsList from "@/components/jobs/JobApplicantsList";
 import { Job } from "@/types/job";
@@ -23,16 +24,30 @@ import {
   AlertTriangle,
   Loader2,
   Edit,
+  Trash2,
 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import JobStatusToggle from "@/components/jobs/JobStatusToggle";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const JobDetailPage: React.FC = () => {
   const [jobData, setJobData] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDetailsSheetOpen, setIsDetailsSheetOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -40,7 +55,6 @@ const JobDetailPage: React.FC = () => {
     const fetchJobDetails = async () => {
       try {
         setLoading(true);
-        // Extract job ID from query parameters
         const jobId = searchParams.get("id");
 
         if (!jobId) {
@@ -73,6 +87,24 @@ const JobDetailPage: React.FC = () => {
       month: "long",
       day: "numeric",
     }).format(date);
+  };
+
+  const handleDeleteJob = async () => {
+    if (!jobData) return;
+
+    try {
+      setDeleteLoading(true);
+      await deleteJob(jobData.id);
+      toast.success("Job successfully deleted");
+
+      router.push("/employer/my-joblistings");
+    } catch (err) {
+      console.error("Error deleting job:", err);
+      toast.error("Failed to delete job. Please try again.");
+    } finally {
+      setDeleteLoading(false);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   return (
@@ -113,6 +145,15 @@ const JobDetailPage: React.FC = () => {
               <Edit className="h-4 w-4" />
               Edit Job
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 hover:text-red-700"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Job
+            </Button>
             <Sheet
               open={isDetailsSheetOpen}
               onOpenChange={setIsDetailsSheetOpen}
@@ -147,6 +188,54 @@ const JobDetailPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the job listing
+              <span className="font-medium text-foreground">
+                {" "}
+                {jobData?.title}
+              </span>
+              .
+              {parseInt(jobData?.applicants.toString() || "0") > 0 && (
+                <span className="block mt-2 text-orange-600 dark:text-orange-400">
+                  Warning: This job has {jobData?.applicants} applicant(s).
+                  Deleting it will remove their applications too.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteLoading}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteJob();
+              }}
+              disabled={deleteLoading}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {deleteLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Job"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
@@ -220,7 +309,6 @@ const JobDetailPage: React.FC = () => {
                         {jobData.experience_required}
                       </span>
                     </div>
-                    {/* Replace the static status badge with our interactive JobStatusToggle component */}
                     <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-3 rounded-lg flex flex-col">
                       <JobStatusToggle
                         jobId={jobData.id}
@@ -228,7 +316,6 @@ const JobDetailPage: React.FC = () => {
                           jobData.job_status as "open" | "closed" | "draft"
                         }
                         onStatusChange={(newStatus) => {
-                          // Update the local job data with the new status
                           setJobData({
                             ...jobData,
                             job_status: newStatus,
