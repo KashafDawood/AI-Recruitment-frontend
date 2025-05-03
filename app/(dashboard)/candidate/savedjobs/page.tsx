@@ -28,7 +28,6 @@ export default function SavedJobs() {
       try {
         setLoading(true);
         const res = await getSavedJobs(currentPage, JobsPerPage);
-        console.log(res);
         setJobs(res.results || []);
         setTotalJobs(res.count || 0);
       } catch (error) {
@@ -42,7 +41,6 @@ export default function SavedJobs() {
   }, [currentPage]);
 
   const handleJobClick = (job: Job) => {
-    console.log("Job clicked in OpeningsCard:", job); // Debugging log
     setSelectedJob(job);
   };
 

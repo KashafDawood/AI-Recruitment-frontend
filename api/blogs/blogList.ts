@@ -10,7 +10,6 @@ export const blogList = async (page: number, limit: number) => {
         }
       }
     );
-    console.log("API response: ", response.data);
     return response.data;
   } catch (error) {
     throw error;

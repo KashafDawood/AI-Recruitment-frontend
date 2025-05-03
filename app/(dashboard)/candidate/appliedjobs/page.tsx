@@ -30,7 +30,6 @@ export default function FindJobs() {
       setLoading(true);
       try {
         const data = await getAppliedJobs(currentPage, jobsPerPage, order);
-        console.log("Fetched jobs:", data); // Debugging line
         if (data && data.results) {
           setJobs(data.results);
 

@@ -33,7 +33,7 @@ export default function BlogDetailPage({
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
-  const { slug } = use(params);
+  const { slug } = params;
 
   useEffect(() => {
     const fetchBlog = async () => {
