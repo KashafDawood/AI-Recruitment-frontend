@@ -8,6 +8,7 @@ import {
   Briefcase,
   Clock,
   DollarSign,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Employer, Job } from "@/types/job";
@@ -38,6 +39,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [jobData, setJobData] = useState<Job>(selectedJob);
   const { user } = useUserWithLoading();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Update job data when selectedJob changes
   useEffect(() => {
@@ -50,6 +52,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({
 
   const applyJob = async () => {
     try {
+      setIsLoading(true);
       const applicationData = {
         resume: selectedResume,
         job: jobData.id,
@@ -92,6 +95,8 @@ const JobDetails: React.FC<JobDetailsProps> = ({
         );
       }
       setIsApplying(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -351,16 +356,32 @@ const JobDetails: React.FC<JobDetailsProps> = ({
           ) : isApplying ? (
             <Button
               onClick={applyJob}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
             >
-              Submit Application
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Application"
+              )}
             </Button>
           ) : (
             <Button
               onClick={triggerSelectResume}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 rounded-xl font-medium text-lg shadow-md transition-all duration-200 dark:from-blue-600 dark:to-indigo-600"
             >
-              Apply for This Position
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                  Loading...
+                </>
+              ) : (
+                "Apply for This Position"
+              )}
             </Button>
           )}
         </div>

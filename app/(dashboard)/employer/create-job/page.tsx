@@ -116,7 +116,8 @@ const CreateJob: React.FC = () => {
             Create Job
           </h1>
           <Button
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+            variant={"outline"}
+            className="gradient-button"
             onClick={handleAIGeneration}
           >
             Generate with AI
